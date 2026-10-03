@@ -365,49 +365,65 @@ const INICIACAO_QUESTIONS = [
 ];
 
 const MENTOR_LEVELS = [
-  { id: 1, label: 'Pergunta socrática', description: 'Faça o aluno refletir sobre o problema sem entregar a resposta.' },
-  { id: 2, label: 'Dica conceitual', description: 'Explique a ideia central e a estratégia de solução.' },
-  { id: 3, label: 'Exemplo análogo', description: 'Use um caso parecido para ilustrar o conceito.' },
-  { id: 4, label: 'Pseudocódigo parcial', description: 'Mostre a estrutura sem entregar a solução final.' }
+  { id: 1, label: 'Pergunta socrática', description: 'Uma pergunta para você construir o próximo passo.' },
+  { id: 2, label: 'Dica conceitual', description: 'Uma pista sobre o conceito, sem resolver o exercício.' },
+  { id: 3, label: 'Exemplo análogo', description: 'Um exemplo diferente que usa a mesma ideia.' },
+  { id: 4, label: 'Roteiro parcial', description: 'Etapas abstratas, sem código executável ou resposta final.' }
 ];
 
 const IA_PROMPT_LIBRARY = [
-  'Explique o conceito de busca binária.',
-  'Gere uma variação deste problema.',
-  'O que meu código está fazendo de errado?',
-  'Qual é a diferença entre complexidade linear e logarítmica?',
-  'Como posso testar casos de borda em um problema de grafos?',
-  'Explique por que esta estrutura de dados é adequada para este caso.'
+  { id: 'binary', category: 'Busca binária', text: 'Explique o conceito de busca binária sem resolver o exercício.' },
+  { id: 'dp', category: 'Programação dinâmica', text: 'Que subproblemas menores podem aparecer aqui?' },
+  { id: 'graphs', category: 'Grafos', text: 'Como posso distinguir busca em largura de menor caminho?' },
+  { id: 'structures', category: 'Estruturas de dados', text: 'Que operações desta estrutura são importantes para o problema?' },
+  { id: 'stl', category: 'STL', text: 'Qual custo das operações da estrutura que estou usando?' },
+  { id: 'python', category: 'Python', text: 'Explique este conceito usando recursos idiomáticos de Python.' },
+  { id: 'variation', category: 'Variações', text: 'Gere uma variação deste problema mudando uma restrição.' },
+  { id: 'debug', category: 'Depuração', text: 'O que meu código pode estar fazendo de errado? Faça perguntas, sem corrigir.' },
+  { id: 'review', category: 'Revisão', text: 'Revise minha abordagem e aponte uma hipótese que devo testar.' }
 ];
 
 const DEBUG_GUIDE = {
-  'Runtime Error': 'O erro aconteceu durante a execução. Verifique se há divisão por zero, acesso a índice fora do vetor ou uso de memória inválida.',
-  'Wrong Answer': 'A saída está diferente do esperado. Revise a lógica, os casos de borda e a ordem dos cálculos.',
-  'Time Limit Exceeded': 'A solução está correta em princípio, mas é lenta demais. Avalie a complexidade e reduza a quantidade de operações.',
-  'Compilation Error': 'O programa não compila. Observe erros de sintaxe, tipos e chaves ou ponto e vírgula faltando.',
-  'Memory Limit': 'O programa usa mais memória do que o permitido. Reavalie estruturas gigantes ou cópias desnecessárias.'
+  Accepted: 'A solução foi aceita pelo juiz. Use este resultado como ponto de partida: explique a ideia e procure uma variação ou caso-limite para consolidar o aprendizado.',
+  'Runtime Error': 'O programa iniciou, mas falhou durante a execução. Investigue acesso inválido, divisão por zero e casos em que a entrada está vazia.',
+  'Wrong Answer': 'O programa terminou, mas produziu uma resposta diferente da esperada. Compare a lógica com casos pequenos e limites.',
+  'Time Limit Exceeded': 'O programa não terminou dentro do tempo. Estime quantas operações crescem com a entrada e procure trabalho repetido.',
+  'Compilation Error': 'O compilador não conseguiu montar o programa. Leia a primeira mensagem do compilador e confira sintaxe, nomes e tipos.',
+  'Memory Limit': 'O programa excedeu o limite de memória. Verifique estruturas dimensionadas pela entrada e cópias que poderiam ser evitadas.'
 };
 
 const VARIATION_TEMPLATES = {
   'busca-binaria': {
-    title: 'Busca binária em faixa crescente',
-    variant: 'Agora o vetor está ordenado e você deve retornar a posição do valor alvo em O(log n), mas com uma contagem de comparações.',
-    difficulty: 'médio'
+    title: 'Busca em dados ordenados',
+    technique: 'Busca binária',
+    variant: 'Uma sequência ordenada contém identificadores. Encontre a primeira posição em que o valor é maior ou igual ao alvo e conte as comparações.',
+    difficulty: 'médio',
+    restrictions: ['A sequência pode ter até 1.000.000 de itens.', 'A sequência pode estar vazia.', 'O alvo pode estar fora do intervalo.'],
+    contexts: ['catálogo de livros', 'placar de uma olimpíada', 'sensores ordenados']
   },
   'dp': {
-    title: 'DP com mochila leve',
-    variant: 'Dado um conjunto de itens com peso e valor, escolha o melhor conjunto sem exceder a capacidade. Exiba o maior valor possível.',
-    difficulty: 'difícil'
+    title: 'Planejamento com capacidade limitada',
+    technique: 'Programação dinâmica',
+    variant: 'Escolha tarefas com custos e benefícios para maximizar o benefício total sem ultrapassar o orçamento disponível.',
+    difficulty: 'difícil',
+    restrictions: ['O orçamento pode ser zero.', 'Há tarefas com o mesmo custo.', 'Cada tarefa só pode ser escolhida uma vez.'],
+    contexts: ['organização de uma feira', 'seleção de atividades', 'carregamento de equipamentos']
   },
   'grafos': {
-    title: 'Menor caminho em grafo de rotas',
-    variant: 'Encontre o menor caminho de um ponto para o outro, considerando custos distintos por aresta.',
-    difficulty: 'difícil'
+    title: 'Rotas entre pontos conectados',
+    technique: 'Grafos',
+    variant: 'Dado um mapa de conexões, descubra o menor custo para sair de uma origem e chegar a um destino.',
+    difficulty: 'difícil',
+    restrictions: ['Pode não existir caminho.', 'Há conexões de custo zero.', 'O mapa pode ter até 100.000 conexões.'],
+    contexts: ['rede de computadores', 'linhas de transporte', 'salas conectadas']
   },
   'stl': {
-    title: 'Ordenação e contagem de repetidos',
-    variant: 'Receba uma sequência de números e apresente a quantidade de valores repetidos após a ordenação.',
-    difficulty: 'fácil'
+    title: 'Frequência de elementos',
+    technique: 'Ordenação e estruturas de dados',
+    variant: 'Receba uma sequência de códigos e determine quais aparecem mais de uma vez e quantas ocorrências têm.',
+    difficulty: 'fácil',
+    restrictions: ['A sequência pode estar vazia.', 'Os valores podem ser negativos.', 'A sequência pode conter muitos valores repetidos.'],
+    contexts: ['inventário de peças', 'votos de uma enquete', 'registros de acesso']
   }
 };
 
@@ -417,6 +433,65 @@ const RESPONSIBLE_CHECKLIST = [
   'Eu revisei as partes do código que ainda não entendo.',
   'Eu usei a IA como ferramenta de reflexão, não como atalho.'
 ];
+
+const PRE_AI_CHECKLIST = [
+  'Tentei identificar entradas, saídas e restrições antes de pedir ajuda.',
+  'Quero uma pista ou explicação, não uma solução pronta.'
+];
+
+const COMPARISON_PAIRS = {
+  'busca-binaria': [
+    { title: 'Catálogo ordenado', statement: 'No vetor [2, 4, 7, 10, 13], qual é o índice (começando em zero) do valor 10?', answer: '3' },
+    { title: 'Placar ordenado', statement: 'No vetor [1, 5, 8, 12, 17], qual é o índice (começando em zero) do valor 8?', answer: '2' }
+  ],
+  dp: [
+    { title: 'Escolha de tarefas', statement: 'Tarefas (custo, benefício): (1, 2), (2, 4), (3, 4). Com capacidade 3 e uso único, qual benefício máximo?', answer: '6' },
+    { title: 'Mochila de equipamentos', statement: 'Itens (peso, valor): (1, 3), (2, 5), (3, 6). Com capacidade 3 e uso único, qual valor máximo?', answer: '8' }
+  ],
+  grafos: [
+    { title: 'Rotas de salas', statement: 'A→B custa 2, B→D custa 3, A→C custa 1 e C→D custa 7. Qual o custo mínimo de A até D?', answer: '5' },
+    { title: 'Rede de estações', statement: 'P→Q custa 4, Q→S custa 2, P→R custa 3 e R→S custa 6. Qual o custo mínimo de P até S?', answer: '6' }
+  ],
+  stl: [
+    { title: 'Contagem de códigos', statement: 'Na sequência [4, 2, 4, 1, 2, 4], quantos valores distintos aparecem repetidos?', answer: '2' },
+    { title: 'Contagem de votos', statement: 'Na sequência [7, 7, 3, 5, 3, 9], quantos valores distintos aparecem repetidos?', answer: '2' }
+  ]
+};
+
+const TRAINING_STEPS = [
+  'Entender o conceito',
+  'Resolver sem IA',
+  'Consultar uma pista',
+  'Comparar estratégias',
+  'Refazer sem ajuda'
+];
+
+const DEBUG_CHECKLIST = [
+  'Índice fora dos limites do vetor',
+  'Estouro de inteiro ou tipo inadequado',
+  'Variável usada antes de ser inicializada',
+  'Complexidade alta para o tamanho da entrada'
+];
+
+const INITIAL_PEDAGOGY_DATA = {
+  mentorHistory: [],
+  hintCounts: {},
+  mentorSessionHints: 0,
+  sessions: [],
+  savedVariants: [],
+  favoritePrompts: [],
+  diary: [],
+  weeklyGoal: 5,
+  trainingStep: 0,
+  completedTrainingSteps: [],
+  interviewHistory: [],
+  externalSubmissions: [],
+  usageChecklist: [false, false, false, false],
+  importedProblem: null,
+  classroomCode: '',
+  classroomAlias: '',
+  classroomData: null
+};
 
 const BinaryBackdrop = () => {
   const columns = 28;
@@ -673,26 +748,81 @@ export default function App() {
     programacao: false,
     regulamento: false
   });
-  const [mentorLevel, setMentorLevel] = useState(1);
-  const [mentorQuery, setMentorQuery] = useState('Explique o conceito de busca binária.');
-  const [mentorHistory, setMentorHistory] = useState([
-    {
-      id: 1,
-      query: 'Explique o conceito de busca binária.',
-      level: 2,
-      answer: 'A busca binária só funciona em dados ordenados. Você reduz o intervalo pela metade a cada passo, comparando o alvo com o ponto médio. Isso transforma uma busca linear em uma busca logarítmica.'
+  const [pedagogy, setPedagogy] = useState(() => {
+    try {
+      return { ...INITIAL_PEDAGOGY_DATA, ...JSON.parse(window.localStorage.getItem('obi-quest-pedagogy') || '{}') };
+    } catch {
+      return INITIAL_PEDAGOGY_DATA;
     }
-  ]);
-  const [mentorStats, setMentorStats] = useState({ totalQueries: 1, hintsUsed: 1 });
+  });
+  const [mentorLevel, setMentorLevel] = useState(1);
+  const [mentorQuery, setMentorQuery] = useState('Explique o conceito de busca binária sem resolver o exercício.');
+  const [mentorTopic, setMentorTopic] = useState('busca-binaria');
+  const [mentorHistorySearch, setMentorHistorySearch] = useState('');
+  const [mentorSection, setMentorSection] = useState('mentoria');
+  const [mentorConsent, setMentorConsent] = useState(false);
+  const [beforeAiChecklist, setBeforeAiChecklist] = useState([false, false]);
+  const [mentorNotice, setMentorNotice] = useState('');
+  const [mentorStats, setMentorStats] = useState({ totalQueries: 0, hintsUsed: pedagogy.mentorSessionHints || 0 });
   const [judgeVerdict, setJudgeVerdict] = useState('Wrong Answer');
   const [variantTopic, setVariantTopic] = useState('busca-binaria');
-  const [generatedVariant, setGeneratedVariant] = useState(VARIATION_TEMPLATES['busca-binaria']);
-  const [responsibleUsage, setResponsibleUsage] = useState([false, false, false, false]);
-  const [teacherSession] = useState({
-    students: 22,
-    averageHints: 3.4,
-    autonomy: 74
-  });
+  const [generatedVariant, setGeneratedVariant] = useState(null);
+  const [variantSource, setVariantSource] = useState('');
+  const [variantAxis, setVariantAxis] = useState('restriction');
+  const [patternGuess, setPatternGuess] = useState('');
+  const [patternFeedback, setPatternFeedback] = useState('');
+  const [debugCode, setDebugCode] = useState('');
+  const [debugFeedback, setDebugFeedback] = useState(null);
+  const [debugCases, setDebugCases] = useState([]);
+  const [interviewAnswer, setInterviewAnswer] = useState('');
+  const [interviewFeedback, setInterviewFeedback] = useState('');
+  const [diaryDraft, setDiaryDraft] = useState('');
+  const [comparison, setComparison] = useState({ status: 'idle', topic: 'busca-binaria', phase: 'solo', startedAt: null, attempts: 0, solved: false, hints: 0, rounds: {} });
+  const [comparisonAnswer, setComparisonAnswer] = useState('');
+  const [comparisonFeedback, setComparisonFeedback] = useState('');
+  const [comparisonNow, setComparisonNow] = useState(Date.now());
+  const [comparisonReflection, setComparisonReflection] = useState({ helped: '', alone: '' });
+  const [teacherTitle, setTeacherTitle] = useState('Minicurso de resolução estratégica');
+  const [teacherTopic, setTeacherTopic] = useState('busca-binaria');
+  const [teacherJoinCode, setTeacherJoinCode] = useState('');
+  const [teacherAlias, setTeacherAlias] = useState('');
+  const [teacherMessage, setTeacherMessage] = useState('');
+  const [externalProvider, setExternalProvider] = useState('Codeforces');
+  const [externalUrl, setExternalUrl] = useState('');
+  const [externalTitle, setExternalTitle] = useState('');
+  const [externalHandle, setExternalHandle] = useState('');
+  const [externalMessage, setExternalMessage] = useState('');
+  const [externalLoading, setExternalLoading] = useState(false);
+
+  const updatePedagogy = (updater) => setPedagogy((previous) => ({
+    ...previous,
+    ...(typeof updater === 'function' ? updater(previous) : updater)
+  }));
+
+  useEffect(() => {
+    window.localStorage.setItem('obi-quest-pedagogy', JSON.stringify(pedagogy));
+  }, [pedagogy]);
+
+  useEffect(() => {
+    if (comparison.status !== 'running') return undefined;
+    const interval = setInterval(() => setComparisonNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, [comparison.status]);
+
+  useEffect(() => {
+    if (!comparison.status || comparison.status === 'idle') return;
+    const timer = window.setTimeout(() => {
+      if (comparison.phase === 'ai') setMentorConsent(false);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [comparison.phase, comparison.status]);
+
+  const activeComparisonPair = COMPARISON_PAIRS[comparison.topic] || COMPARISON_PAIRS['busca-binaria'];
+  const activeComparisonProblem = activeComparisonPair[comparison.phase === 'ai' ? 1 : 0];
+  const comparisonElapsed = comparison.status === 'running' && comparison.startedAt
+    ? Math.max(0, Math.floor((comparisonNow - comparison.startedAt) / 1000))
+    : 0;
+  const teacherSession = pedagogy.classroomData || { title: '', topic: '', participants: {} };
 
   const seededShuffle = (items, seed) => {
     const copy = [...items];
@@ -974,84 +1104,467 @@ export default function App() {
     return `${minutes}:${seconds}`;
   };
 
-  const buildMentorReply = (query, level) => {
-    const normalized = query.toLowerCase();
-
-    if (normalized.includes('busca bin') || normalized.includes('busca-bin')) {
-      const base = 'A busca binária exige dados ordenados. Em vez de percorrer todo o vetor, você compara o alvo com o ponto médio e descarta metade do espaço de busca. Isso reduz a complexidade de O(n) para O(log n).';
-      if (level === 1) return `${base} Qual seria o critério para decidir se o alvo está à esquerda ou à direita do meio?`;
-      if (level === 2) return `${base} Dica: pense em um intervalo e reduza o espaço de busca a cada comparação.`;
-      if (level === 3) return `${base} Exemplo análogo: ao procurar uma palavra em um dicionário, você não lê página por página; você abre no meio e decide em qual metade procurar.`;
-      if (level === 4) return `${base} Pseudocódigo parcial: while (esq <= dir) { meio = ...; if (v[meio] == alvo) return meio; if (v[meio] < alvo) esq = ...; else dir = ...; }`;
+  const buildMentorReply = (query, level, topic) => {
+    const normalized = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (/\b(resolva|resolucao completa|solucao (?:completa|final|pronta)|resposta final|codigo completo|codigo final|implemente para mim|faca para mim|me de a solucao|escreva o codigo)\b/.test(normalized)) {
+      return 'Não vou fornecer a solução final nem código completo. Posso ajudar com uma pergunta, uma pista conceitual, um exemplo diferente ou um roteiro parcial. Qual parte você já tentou?';
     }
+    if (normalized.includes('varia')) return 'Uma variação deve preservar a técnica central e alterar apenas um eixo por vez. Gere uma versão na seção Variações e tente identificar a invariante que continua igual.';
+    if (normalized.includes('codigo') || normalized.includes('debug') || normalized.includes('errado')) return 'Posso ajudar a investigar sem corrigir por você. Abra Depuração guiada, informe o veredito e examine a linha suspeita. Que valor essa variável tem na primeira iteração?';
 
-    if (normalized.includes('varia') || normalized.includes('variação')) {
-      return 'Para gerar variações, mantenha o núcleo da ideia e altere apenas um eixo: a restrição, o contexto, a entrada ou a saída. O objetivo é treinar reconhecimento de padrão, não repetir a solução literalmente.';
-    }
-
-    if (normalized.includes('código') || normalized.includes('errado') || normalized.includes('debug')) {
-      return 'Antes de corrigir, trace o fluxo do seu código. Pergunte: qual valor entra no loop, quando a condição muda, e o que acontece no primeiro caso limite? Isso ajuda a localizar a falha sem cair em correção automática.';
-    }
-
-    if (normalized.includes('complexidade') || normalized.includes('log') || normalized.includes('linear')) {
-      return 'Complexidade linear significa que a quantidade de trabalho cresce proporcionalmente ao tamanho da entrada. Já a logarítmica aparece quando o problema é reduzido pela metade a cada etapa, como em busca binária ou recorrências de divisão.';
-    }
-
-    if (normalized.includes('grafos') || normalized.includes('grafo')) {
-      return 'Em grafos, a primeira pergunta é: o problema exige apenas presença de caminho, ou também exige o menor custo? Isso define se a estratégia é busca, DFS, BFS ou algoritmo de menor caminho.';
-    }
-
-    if (normalized.includes('stl') || normalized.includes('estrutura')) {
-      return 'Estruturas de dados são ferramentas de organização. O mais importante é saber o custo de cada operação: acesso, inserção, busca e ordenação. Isso ajuda a escolher entre vetor, conjunto, mapa e fila.';
-    }
-
-    return 'A melhor forma de aprender é quebrar o problema em partes: objetivo, entradas, restrições e padrão de decisão. Tente responder essas quatro perguntas antes de pedir a próxima dica.';
+    const explanations = {
+      'busca-binaria': {
+        concept: 'Busca binária mantém um intervalo candidato em dados ordenados. Cada comparação com o meio permite descartar uma das metades; por isso, o número de passos cresce aproximadamente com o logaritmo do tamanho da entrada.',
+        question: 'O que precisa ser verdade sobre os dados para que descartar metade do intervalo não elimine uma resposta válida?',
+        analogy: 'Imagine encontrar uma palavra em um dicionário: você abre perto do meio e escolhe a metade que ainda pode conter a palavra. O exercício não é um dicionário; apenas compartilha essa ideia de descarte.',
+        steps: 'Roteiro parcial: definir os limites do intervalo; escolher um ponto central; comparar com o alvo; descartar a metade impossível; repetir enquanto ainda houver candidatos.'
+      },
+      dp: {
+        concept: 'Programação dinâmica organiza subproblemas que se repetem. Uma relação de recorrência descreve como combinar resultados menores, e uma ordem de cálculo garante que os resultados necessários já existam.',
+        question: 'Qual é o menor estado do problema que você consegue responder sem resolver o problema inteiro?',
+        analogy: 'Ao planejar etapas de uma viagem, você registra o melhor custo para chegar a cada parada e reaproveita esses resultados, sem recalcular todos os caminhos desde o início.',
+        steps: 'Roteiro parcial: definir o significado do estado; identificar escolhas possíveis; expressar a transição; definir casos-base; calcular estados em uma ordem válida.'
+      },
+      grafos: {
+        concept: 'Um grafo representa entidades e conexões. A escolha do algoritmo depende do que as arestas significam: conectividade, menor número de passos ou menor custo com pesos.',
+        question: 'As conexões têm custos diferentes? O objetivo minimiza passos, custo total ou apenas verifica se existe caminho?',
+        analogy: 'Uma rede de estações pode ser desenhada como pontos ligados por rotas. Contar baldeações e minimizar preço são objetivos diferentes, mesmo usando o mesmo mapa.',
+        steps: 'Roteiro parcial: modelar vértices e arestas; decidir a métrica; escolher a busca compatível; registrar o estado de cada vértice; verificar o destino.'
+      },
+      stl: {
+        concept: 'Estruturas de dados organizam valores para favorecer operações específicas. Compare custo de acesso, busca, inserção e remoção com o tamanho e a frequência de cada operação.',
+        question: 'Qual operação acontece mais vezes no seu problema e qual estrutura a torna mais barata?',
+        analogy: 'Uma lista de chamada ordenada facilita procurar nomes; um índice por nome pode acelerar buscas repetidas, mas exige trabalho para ser mantido.',
+        steps: 'Roteiro parcial: listar as operações necessárias; estimar quantas vezes ocorrem; escolher uma estrutura; medir o custo total; validar com entradas-limite.'
+      },
+      python: {
+        concept: 'Em Python, listas, conjuntos e dicionários oferecem operações diferentes. A escolha deve refletir se você precisa preservar ordem, evitar repetição ou associar chaves a valores.',
+        question: 'Você precisa manter a ordem original, garantir unicidade ou consultar um valor associado a uma chave?',
+        analogy: 'Uma lista é como uma fila numerada, um conjunto como uma coleção sem duplicatas e um dicionário como um índice de chave para informação.',
+        steps: 'Roteiro parcial: identificar a operação dominante; escolher a estrutura adequada; definir como percorrer os dados; testar vazio, repetido e valor ausente.'
+      }
+    };
+    const resolvedTopic = explanations[topic] ? topic : 'busca-binaria';
+    const explanation = explanations[resolvedTopic];
+    if (level === 1) return explanation.question;
+    if (level === 2) return explanation.concept;
+    if (level === 3) return explanation.analogy;
+    return `${explanation.steps} Não transforme essas etapas em uma implementação sem antes justificar cada uma.`;
   };
 
   const askMentor = () => {
-    const reply = buildMentorReply(mentorQuery, mentorLevel);
-    setMentorHistory((prev) => [{
-      id: Date.now(),
-      query: mentorQuery,
-      level: mentorLevel,
-      answer: reply
-    }, ...prev].slice(0, 6));
-    setMentorStats((prev) => ({
-      totalQueries: prev.totalQueries + 1,
-      hintsUsed: prev.hintsUsed + (mentorLevel > 1 ? 1 : 0)
+    if (comparison.status === 'running' && comparison.phase === 'solo') {
+      setMentorNotice('A primeira rodada é sem IA. Termine-a para habilitar as pistas na rodada equivalente.');
+      return;
+    }
+    if (!mentorConsent) {
+      setMentorNotice('Leia o aviso e marque as duas confirmações antes de abrir a sessão com orientação.');
+      return;
+    }
+    if (!mentorQuery.trim()) return;
+    if (mentorStats.hintsUsed >= 5) {
+      setMentorNotice('Limite de cinco consultas atingido. Revise a teoria e tente explicar a abordagem com suas palavras.');
+      return;
+    }
+    if (comparison.status === 'running' && comparison.phase === 'ai' && comparison.hints >= 3) {
+      setMentorNotice('Você já pediu três pistas nesta rodada. Tente explicar a abordagem com suas palavras antes de continuar.');
+      return;
+    }
+    const reply = buildMentorReply(mentorQuery, mentorLevel, mentorTopic);
+    const activeProblemName = comparison.status === 'running' ? activeComparisonProblem.title : '';
+    const hintKey = activeProblemName ? `${mentorTopic}: ${activeProblemName}` : mentorTopic;
+    const entry = { id: Date.now(), query: mentorQuery.trim(), level: mentorLevel, topic: mentorTopic, problem: activeProblemName, answer: reply, createdAt: new Date().toISOString() };
+    updatePedagogy((previous) => ({
+      mentorHistory: [entry, ...previous.mentorHistory].slice(0, 100),
+      hintCounts: { ...previous.hintCounts, [hintKey]: (previous.hintCounts[hintKey] || 0) + 1 },
+      mentorSessionHints: previous.mentorSessionHints + 1
     }));
+    setMentorStats((previous) => ({ ...previous, totalQueries: previous.totalQueries + 1, hintsUsed: previous.hintsUsed + 1 }));
+    if (comparison.status === 'running' && comparison.phase === 'ai') {
+      setComparison((previous) => ({ ...previous, hints: previous.hints + 1 }));
+    }
+    updatePedagogy((previous) => ({ completedTrainingSteps: [...new Set([...previous.completedTrainingSteps, 'consult'])] }));
+    publishStudentMetrics();
+    setMentorNotice('Orientação local registrada. A resposta é guiada por regras pedagógicas e não envia seu código a um serviço externo.');
   };
 
   const generateProblemVariant = () => {
     const template = VARIATION_TEMPLATES[variantTopic] || VARIATION_TEMPLATES['busca-binaria'];
-    const difficultyShift = mentorStats.hintsUsed > 4 ? 'difícil' : template.difficulty;
+    const topicSessions = pedagogy.sessions.filter((session) => session.topic === variantTopic);
+    const recentSuccess = topicSessions.slice(0, 3).filter((session) => session.rounds?.solo?.solved).length;
+    const recentHints = topicSessions.slice(0, 3).reduce((total, session) => total + (session.rounds?.ai?.hints || 0), 0);
+    const difficulty = recentSuccess >= 2 && recentHints <= 3 ? 'desafio' : recentSuccess === 0 ? 'prática guiada' : template.difficulty;
+    const choice = (items, offset = 0) => items[(topicSessions.length + offset) % items.length];
+    const axisChange = variantAxis === 'restriction'
+      ? `Nova restrição: ${choice(template.restrictions, 2)}`
+      : variantAxis === 'input-output'
+        ? 'Formato alterado: a entrada contém vários casos de teste e a saída registra um resultado por linha.'
+        : `Novo contexto: ${choice(template.contexts, 1)}`;
     const variant = {
-      ...template,
-      difficulty: difficultyShift,
-      nextStep: 'Tente escrever a ideia geral antes do código. Identifique a estrutura de dados, a operação chave e o critério de parada.'
+      id: `variant-${Date.now()}`,
+      title: `${variantSource.trim() || template.title}: ${variantAxis === 'context' ? choice(template.contexts, 1) : choice(template.contexts)}`,
+      technique: template.technique,
+      variant: `${variantSource.trim() ? `Partindo do problema “${variantSource.trim()}”, preserve a técnica central. ` : ''}${template.variant} ${axisChange}`,
+      changedAxis: variantAxis,
+      difficulty,
+      createdAt: new Date().toISOString(),
+      nextStep: 'Explique por que a técnica combina com o problema e identifique uma entrada-limite antes de codificar.'
     };
     setGeneratedVariant(variant);
+    return variant;
+  };
+
+  const saveGeneratedVariant = () => {
+    if (!generatedVariant) return;
+    updatePedagogy((previous) => ({ savedVariants: [generatedVariant, ...previous.savedVariants.filter((item) => item.id !== generatedVariant.id)].slice(0, 50) }));
   };
 
   const debugExplanation = DEBUG_GUIDE[judgeVerdict] || DEBUG_GUIDE['Wrong Answer'];
+  const debugCasesByTopic = {
+    'busca-binaria': ['Vetor vazio', 'Um único elemento', 'Alvo menor que todos', 'Alvo maior que todos', 'Valores repetidos'],
+    dp: ['Capacidade zero', 'Nenhum item disponível', 'Um item que excede a capacidade', 'Itens com valores iguais'],
+    grafos: ['Origem igual ao destino', 'Destino desconectado', 'Aresta de custo zero', 'Grafo com um vértice'],
+    stl: ['Sequência vazia', 'Todos os valores iguais', 'Todos os valores distintos', 'Valores negativos']
+  };
+
+  const analyzeDebugCode = () => {
+    const lines = debugCode.split('\n');
+    const findings = [];
+    lines.forEach((line, index) => {
+      if (/\b(?:arr|vetor|v|nums)\s*\[\s*(?:i|n|size|length)\s*\]/i.test(line)) findings.push({ line: index + 1, text: 'Este acesso usa um índice que pode coincidir com o tamanho do vetor. Qual é o maior índice válido?' });
+      if (/for\s*\([^;]*;[^;]*(?:<=\s*(?:n|.*\.size\(\)|.*\.length))/i.test(line)) findings.push({ line: index + 1, text: 'Confira se a condição do laço visita uma posição além do último índice válido.' });
+      if (/\b(?:int|long|float|double)\s+\w+\s*;/.test(line)) findings.push({ line: index + 1, text: 'Esta variável parece ser declarada sem valor inicial. Em qual caminho ela recebe um valor antes do uso?' });
+    });
+    const verdictQuestions = judgeVerdict === 'Accepted'
+      ? ['Você consegue justificar por que a abordagem funciona?', 'Qual variação poderia mudar a escolha da estrutura?']
+      : judgeVerdict === 'Runtime Error'
+      ? ['Qual entrada mínima reproduz a falha?', 'Há divisão por zero ou acesso sem elemento?']
+      : judgeVerdict === 'Wrong Answer'
+        ? ['Qual caso pequeno diferencia sua hipótese do resultado esperado?', 'O enunciado inclui igualdade ou valores repetidos?']
+        : judgeVerdict === 'Time Limit Exceeded'
+          ? ['Quantas vezes cada laço executa?', 'Há uma busca linear dentro de outra repetição?']
+          : ['Qual é a primeira mensagem do compilador?', 'Os tipos e nomes usados foram declarados?'];
+    setDebugFeedback({ findings, questions: verdictQuestions });
+  };
+
+  const generateDebugCases = () => setDebugCases(debugCasesByTopic[variantTopic] || debugCasesByTopic['busca-binaria']);
+
+  const submitPatternGuess = () => {
+    const expected = VARIATION_TEMPLATES[variantTopic]?.technique || '';
+    const correct = patternGuess.trim().toLowerCase() === expected.toLowerCase();
+    setPatternFeedback(correct
+      ? `Isso: os dois problemas praticam ${expected}. A superfície mudou, mas a ideia central permaneceu.`
+      : 'Ainda não. Compare as operações necessárias e as restrições; procure a técnica que resolve o núcleo dos dois problemas.');
+    if (correct) updatePedagogy((previous) => ({ completedTrainingSteps: [...new Set([...previous.completedTrainingSteps, 'pattern'])] }));
+  };
+
+  const submitInterviewAnswer = () => {
+    const answer = interviewAnswer.trim();
+    if (!answer) return;
+    const hasApproach = /\b(passos?|estrat[eé]gia|abordagem|primeiro|depois)\b/i.test(answer);
+    const hasComplexity = /\b(o\(|complexidade|linear|logar[ií]tmica|quadr[aá]tica)\b/i.test(answer);
+    const hasEdgeCase = /\b(limite|borda|vazio|zero|caso)\b/i.test(answer);
+    const feedback = [
+      hasApproach ? 'Você descreveu etapas da abordagem.' : 'Explicite a sequência de decisões da sua abordagem.',
+      hasComplexity ? 'Você mencionou custo ou complexidade.' : 'Estime o custo em tempo e espaço para a entrada máxima.',
+      hasEdgeCase ? 'Você considerou pelo menos um caso-limite.' : 'Teste mentalmente o caso vazio, mínimo ou sem resposta.'
+    ].join(' ');
+    const entry = { id: Date.now(), answer, feedback, topic: mentorTopic, createdAt: new Date().toISOString() };
+    updatePedagogy((previous) => ({ interviewHistory: [entry, ...previous.interviewHistory].slice(0, 50) }));
+    setInterviewFeedback(feedback);
+  };
+
+  const saveComparisonReflection = () => {
+    const latestId = pedagogy.sessions[0]?.id;
+    if (!latestId || (!comparisonReflection.helped.trim() && !comparisonReflection.alone.trim())) return;
+    updatePedagogy((previous) => ({
+      sessions: previous.sessions.map((session) => session.id === latestId
+        ? { ...session, reflection: { ...comparisonReflection, savedAt: new Date().toISOString() } }
+        : session),
+      completedTrainingSteps: [...new Set([...previous.completedTrainingSteps, 'reflect', 'retry'])]
+    }));
+    setComparisonFeedback('Reflexão salva no relatório. A etapa de refazer sem ajuda foi registrada como compromisso de treino.');
+  };
+
+  const saveDiaryEntry = () => {
+    const text = diaryDraft.trim();
+    if (!text) return;
+    updatePedagogy((previous) => ({ diary: [{ id: `diary-${Date.now()}`, text, topic: mentorTopic, createdAt: new Date().toISOString() }, ...previous.diary].slice(0, 200) }));
+    setDiaryDraft('');
+  };
+
+  const saveUsageChecklist = (index) => updatePedagogy((previous) => {
+    const checklist = previous.usageChecklist.map((checked, checkedIndex) => checkedIndex === index ? !checked : checked);
+    return {
+      usageChecklist: checklist,
+      sessions: previous.sessions.map((session, sessionIndex) => sessionIndex === 0 ? { ...session, responsibleChecklist: checklist } : session)
+    };
+  });
+
+  const exportTextFile = (filename, content, type = 'text/plain;charset=utf-8') => {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportTrainingReport = () => {
+    const rows = [
+      ['data', 'topico', 'tempo_sem_ia_s', 'tentativas_sem_ia', 'acerto_sem_ia', 'tempo_com_ia_s', 'tentativas_com_ia', 'acerto_com_ia', 'dicas', 'reflexao_ia', 'reflexao_independente'],
+      ...pedagogy.sessions.map((session) => [
+        session.date,
+        session.topic,
+        session.rounds?.solo?.seconds || 0,
+        session.rounds?.solo?.attempts || 0,
+        session.rounds?.solo?.solved ? 1 : 0,
+        session.rounds?.ai?.seconds || 0,
+        session.rounds?.ai?.attempts || 0,
+        session.rounds?.ai?.solved ? 1 : 0,
+        session.rounds?.ai?.hints || 0,
+        session.reflection?.helped || '',
+        session.reflection?.alone || ''
+      ])
+    ];
+    const csv = rows.map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(',')).join('\r\n');
+    exportTextFile('obi-quest-relatorio.csv', `\ufeff${csv}`, 'text/csv;charset=utf-8');
+  };
+
+  const exportClassroomReport = () => {
+    const participants = Object.values(teacherSession.participants || {});
+    const rows = [
+      ['apelido_anonimo', 'dicas_solicitadas', 'sessoes_pareadas', 'topicos'],
+      ...participants.map((participant) => [participant.alias, participant.hints || 0, participant.sessions || 0, (participant.topics || []).join('; ')])
+    ];
+    const csv = rows.map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(',')).join('\r\n');
+    exportTextFile('obi-quest-turma-anonimizado.csv', `\ufeff${csv}`, 'text/csv;charset=utf-8');
+  };
+
+  const exportFavoritePrompts = () => {
+    const prompts = IA_PROMPT_LIBRARY.filter((prompt) => pedagogy.favoritePrompts.includes(prompt.id));
+    exportTextFile('obi-quest-prompts.txt', prompts.map((prompt) => `[${prompt.category}] ${prompt.text}`).join('\n'));
+  };
+
+  const createClassroom = async () => {
+    const code = Math.random().toString(36).slice(2, 8).toUpperCase();
+    const classroom = { code, title: teacherTitle.trim() || 'Minicurso OBI Quest', topic: teacherTopic, createdAt: new Date().toISOString(), participants: {} };
+    updatePedagogy({ classroomCode: code, classroomAlias: 'Professor', classroomData: classroom });
+    setTeacherMessage(`Sessão criada. Código de entrada: ${code}`);
+    if (db && user) {
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'classrooms', code), classroom);
+      } catch {
+        setTeacherMessage(`Sessão criada neste dispositivo com o código ${code}. O Firebase recusou a sincronização.`);
+      }
+    } else {
+      setTeacherMessage(`Sessão criada neste dispositivo com o código ${code}. Para participação em outros dispositivos, configure o Firebase.`);
+    }
+  };
+
+  const joinClassroom = async () => {
+    const code = teacherJoinCode.trim().toUpperCase();
+    if (!code) return;
+    if (!db || !user) {
+      setTeacherMessage('A entrada compartilhada da turma precisa de Firebase configurado e autenticação ativa.');
+      return;
+    }
+    try {
+      const reference = doc(db, 'artifacts', appId, 'classrooms', code);
+      const snapshot = await getDoc(reference);
+      if (!snapshot.exists()) {
+        setTeacherMessage('Código de sessão não encontrado. Confira o código com o professor.');
+        return;
+      }
+      const alias = teacherAlias.trim() || `Aluno-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+      const participant = { alias, hints: Object.values(pedagogy.hintCounts).reduce((sum, count) => sum + count, 0), sessions: pedagogy.sessions.length, topics: Object.keys(pedagogy.hintCounts), hintsByTopic: pedagogy.hintCounts, updatedAt: new Date().toISOString() };
+      await setDoc(reference, { participants: { [user.uid]: participant } }, { merge: true });
+      updatePedagogy({ classroomCode: code, classroomAlias: alias, classroomData: { ...snapshot.data(), participants: { ...snapshot.data().participants, [user.uid]: participant } } });
+      setVariantTopic(snapshot.data().topic || 'busca-binaria');
+      setTeacherMessage(`Participação registrada como ${alias}. O professor verá somente este apelido e métricas de treino.`);
+    } catch {
+      setTeacherMessage('Não foi possível entrar na turma. Verifique a conexão e as regras de acesso do Firestore.');
+    }
+  };
+
+  const publishStudentMetrics = async () => {
+    if (!pedagogy.classroomCode || !user || !db || pedagogy.classroomAlias === 'Professor') return;
+    const participant = {
+      alias: pedagogy.classroomAlias || `Aluno-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
+      hints: Object.values(pedagogy.hintCounts).reduce((sum, count) => sum + count, 0),
+      sessions: pedagogy.sessions.length,
+      topics: Object.keys(pedagogy.hintCounts),
+      hintsByTopic: pedagogy.hintCounts,
+      updatedAt: new Date().toISOString()
+    };
+    try {
+      await setDoc(doc(db, 'artifacts', appId, 'classrooms', pedagogy.classroomCode), { participants: { [user.uid]: participant } }, { merge: true });
+    } catch {
+      setTeacherMessage('As métricas continuam salvas neste dispositivo; a sincronização da turma falhou.');
+    }
+  };
+
+  useEffect(() => {
+    if (!pedagogy.classroomCode || !db) return undefined;
+    const reference = doc(db, 'artifacts', appId, 'classrooms', pedagogy.classroomCode);
+    return onSnapshot(reference, (snapshot) => {
+      if (snapshot.exists()) updatePedagogy({ classroomData: { ...snapshot.data(), participants: snapshot.data().participants || {} } });
+    }, () => setTeacherMessage('Sem acesso à sincronização da turma no momento.'));
+  }, [pedagogy.classroomCode]);
+
+  useEffect(() => {
+    publishStudentMetrics();
+  }, [pedagogy.hintCounts, pedagogy.sessions, pedagogy.classroomCode]);
+
+  const importExternalProblem = () => {
+    try {
+      const parsed = new URL(externalUrl);
+      const hosts = {
+        Codeforces: ['codeforces.com', 'www.codeforces.com'],
+        Beecrowd: ['beecrowd.com.br', 'www.beecrowd.com.br', 'judge.beecrowd.com.br'],
+        OBI: ['olimpiada.ic.unicamp.br', 'www.olimpiada.ic.unicamp.br']
+      };
+      if (parsed.protocol !== 'https:' || !hosts[externalProvider].includes(parsed.hostname)) {
+        setExternalMessage('Use uma URL HTTPS válida do juiz selecionado.');
+        return;
+      }
+      const problem = { id: `external-${Date.now()}`, provider: externalProvider, title: externalTitle.trim() || parsed.pathname.split('/').filter(Boolean).at(-1) || 'Problema importado', url: parsed.href, importedAt: new Date().toISOString() };
+      updatePedagogy((previous) => ({ importedProblem: problem, externalSubmissions: [{ ...problem, verdict: 'Pendente', createdAt: new Date().toISOString() }, ...previous.externalSubmissions].slice(0, 200) }));
+      setExternalMessage('Problema adicionado ao histórico. A submissão e a autenticação permanecem no site oficial do juiz.');
+    } catch {
+      setExternalMessage('Informe uma URL completa, por exemplo https://codeforces.com/problemset/problem/1/A.');
+    }
+  };
+
+  const syncCodeforcesHistory = async () => {
+    if (!externalHandle.trim() || !pedagogy.importedProblem || pedagogy.importedProblem.provider !== 'Codeforces') {
+      setExternalMessage('Importe um problema do Codeforces e informe seu handle para buscar o veredito público.');
+      return;
+    }
+    setExternalLoading(true);
+    try {
+      const match = pedagogy.importedProblem.url.match(/(?:contest\/([0-9]+)\/problem\/([A-Za-z0-9]+)|problemset\/problem\/([0-9]+)\/([A-Za-z0-9]+))/);
+      if (!match) throw new Error('Não consegui identificar o concurso e o índice do problema nesta URL.');
+      const contestId = match[1] || match[3];
+      const problemIndex = match[2] || match[4];
+      const response = await fetch(`https://codeforces.com/api/user.status?handle=${encodeURIComponent(externalHandle.trim())}&from=1&count=100`);
+      const data = await response.json();
+      if (!response.ok || data.status !== 'OK') throw new Error(data.comment || 'O Codeforces não retornou o histórico.');
+      const found = data.result.filter((submission) => String(submission.problem?.contestId) === contestId && submission.problem?.index === problemIndex);
+      if (!found.length) throw new Error('Nenhuma submissão recente deste problema foi encontrada para esse handle.');
+      const recordsForProblem = found.map((submission) => ({
+        id: `cf-${submission.id}`,
+        provider: 'Codeforces',
+        title: pedagogy.importedProblem.title,
+        url: pedagogy.importedProblem.url,
+        verdict: ({ OK: 'Accepted', WRONG_ANSWER: 'Wrong Answer', TIME_LIMIT_EXCEEDED: 'Time Limit Exceeded', RUNTIME_ERROR: 'Runtime Error', COMPILATION_ERROR: 'Compilation Error', MEMORY_LIMIT_EXCEEDED: 'Memory Limit', TESTING: 'Em avaliação', IN_QUEUE: 'Em avaliação' })[submission.verdict] || submission.verdict || 'Em avaliação',
+        createdAt: new Date(submission.creationTimeSeconds * 1000).toISOString(),
+        externalId: submission.id
+      }));
+      const known = new Set(pedagogy.externalSubmissions.map((item) => item.id));
+      updatePedagogy((previous) => ({ externalSubmissions: [...recordsForProblem.filter((item) => !known.has(item.id)), ...previous.externalSubmissions].slice(0, 200) }));
+      setExternalMessage(`${recordsForProblem.length} submissão(ões) do problema foram sincronizadas pelo histórico público.`);
+    } catch (error) {
+      setExternalMessage(error.message || 'Falha ao consultar o histórico público do Codeforces.');
+    } finally {
+      setExternalLoading(false);
+    }
+  };
+
+  const updateExternalVerdict = (id, verdict) => updatePedagogy((previous) => ({
+    externalSubmissions: previous.externalSubmissions.map((submission) => submission.id === id ? { ...submission, verdict, updatedAt: new Date().toISOString() } : submission)
+  }));
+
+  const toggleFavoritePrompt = (promptId) => updatePedagogy((previous) => ({
+    favoritePrompts: previous.favoritePrompts.includes(promptId)
+      ? previous.favoritePrompts.filter((id) => id !== promptId)
+      : [...previous.favoritePrompts, promptId]
+  }));
+
+  const startAiGuidance = () => {
+    if (!beforeAiChecklist.every(Boolean)) {
+      setMentorNotice('Marque as duas confirmações antes de ativar a orientação.');
+      return;
+    }
+    setMentorConsent(true);
+    setMentorNotice('Orientação habilitada para esta sessão. O limite é de cinco consultas, com no máximo três pistas na rodada comparativa.');
+  };
+
+  const markTrainingStep = (step) => updatePedagogy((previous) => ({ completedTrainingSteps: [...new Set([...previous.completedTrainingSteps, step])] }));
+
+  const independentWins = pedagogy.sessions.filter((session) => session.rounds?.solo?.solved).length;
+  const unlockedMentorLevel = Math.min(4, 1 + Math.floor(independentWins / 2));
+  const weeklyIndependentCount = pedagogy.sessions.filter((session) => session.rounds?.solo?.solved && Date.now() - new Date(session.date).getTime() < 7 * 24 * 60 * 60 * 1000).length;
+  const classroomParticipants = Object.values(teacherSession.participants || {});
+  const recentSessions = pedagogy.sessions.slice(0, 8).reverse();
+  const filteredMentorHistory = pedagogy.mentorHistory.filter((item) => `${item.query} ${item.answer} ${item.topic}`.toLowerCase().includes(mentorHistorySearch.toLowerCase()));
+  const recommendedPrompt = IA_PROMPT_LIBRARY.find((prompt) => prompt.id === (comparison.status === 'running' && comparison.phase === 'ai' ? 'review' : judgeVerdict === 'Accepted' ? 'variation' : 'debug')) || IA_PROMPT_LIBRARY[0];
 
   const comparisonReport = useMemo(() => {
-    const withoutAi = { time: 26, attempts: 7, correct: 2, hints: 0 };
-    const withAi = { time: 18, attempts: 4, correct: 3, hints: mentorStats.hintsUsed };
-    const deltaTime = withoutAi.time - withAi.time;
-    const deltaAttempts = withoutAi.attempts - withAi.attempts;
+    const latest = pedagogy.sessions[0];
+    const toMinutes = (round) => round ? Math.round(round.seconds / 60 * 10) / 10 : 0;
+    const withoutAi = latest?.rounds?.solo || { seconds: 0, attempts: 0, solved: false, hints: 0 };
+    const withAi = latest?.rounds?.ai || { seconds: 0, attempts: 0, solved: false, hints: 0 };
     return {
-      withoutAi,
-      withAi,
-      deltaTime,
-      deltaAttempts,
-      insight: deltaTime > 0
-        ? 'O uso estratégico de IA ajudou a reduzir tempo e tentativas, mas ainda vale reforçar a etapa de raciocínio solo.'
-        : 'A sessão com IA ainda exige mais autonomia. Revise o conceito antes de consultar a próxima pista.'
+      withoutAi: { ...withoutAi, time: toMinutes(withoutAi), correct: withoutAi.solved ? 1 : 0 },
+      withAi: { ...withAi, time: toMinutes(withAi), correct: withAi.solved ? 1 : 0 },
+      insight: latest
+        ? 'Compare esta sessão com sua linha de base; uma única tentativa não demonstra que a IA causou a diferença.'
+        : 'Conclua uma sessão pareada para gerar a primeira comparação baseada nos seus dados.'
     };
-  }, [mentorStats.hintsUsed]);
+  }, [pedagogy.sessions]);
 
-  const autonomyRate = Math.min(100, Math.max(30, 100 - mentorStats.hintsUsed * 8 + teacherSession.autonomy / 2));
+  const startComparison = () => {
+    setComparison({ status: 'running', topic: variantTopic, phase: 'solo', startedAt: Date.now(), attempts: 0, solved: false, hints: 0, rounds: {} });
+    setComparisonAnswer('');
+    setComparisonFeedback('');
+    setMentorConsent(false);
+    setMentorTopic(variantTopic);
+    setMentorStats((previous) => ({ ...previous, hintsUsed: 0 }));
+    updatePedagogy({ mentorSessionHints: 0 });
+    setBeforeAiChecklist([false, false]);
+    setMentorSection('comparar');
+  };
+
+  const checkComparisonAnswer = () => {
+    if (comparison.status !== 'running' || comparison.solved) return;
+    const correct = comparisonAnswer.trim().toLowerCase() === activeComparisonProblem.answer.toLowerCase();
+    setComparison((previous) => ({ ...previous, attempts: previous.attempts + 1, solved: correct }));
+    setComparisonFeedback(correct ? 'Resposta correta. Registre o raciocínio que levou a ela antes de encerrar a rodada.' : 'Ainda não. Revise a estratégia e tente novamente; a tentativa foi registrada.');
+  };
+
+  const finishComparisonRound = () => {
+    if (comparison.status !== 'running') return;
+    const round = { seconds: Math.floor((Date.now() - comparison.startedAt) / 1000), attempts: comparison.attempts, solved: comparison.solved, hints: comparison.hints };
+    if (comparison.phase === 'solo') {
+      setComparison((previous) => ({ ...previous, phase: 'ai', startedAt: Date.now(), attempts: 0, solved: false, hints: 0, rounds: { ...previous.rounds, solo: round } }));
+      setComparisonAnswer('');
+      setComparisonFeedback('Primeira rodada salva. O problema equivalente da segunda rodada está pronto. Leia e marque o aviso antes de abrir as pistas.');
+      setMentorConsent(false);
+      setBeforeAiChecklist([false, false]);
+      return;
+    }
+    const report = { id: `session-${Date.now()}`, topic: comparison.topic, date: new Date().toISOString(), rounds: { ...comparison.rounds, ai: round } };
+    updatePedagogy((previous) => ({ sessions: [report, ...previous.sessions].slice(0, 200) }));
+    setComparison((previous) => ({ ...previous, status: 'complete', rounds: { ...previous.rounds, ai: round } }));
+    setComparisonAnswer('');
+    setComparisonFeedback('Sessão pareada salva no relatório de evolução. Registre agora o que mudou entre as duas abordagens.');
+    updatePedagogy((previous) => ({ completedTrainingSteps: [...new Set([...previous.completedTrainingSteps, 'compare'])] }));
+  };
+
+  const resetComparison = () => {
+    setComparison({ status: 'idle', topic: variantTopic, phase: 'solo', startedAt: null, attempts: 0, solved: false, hints: 0, rounds: {} });
+    setComparisonAnswer('');
+    setComparisonFeedback('');
+  };
+
+  const autonomyRate = useMemo(() => {
+    const rounds = pedagogy.sessions.flatMap((session) => [session.rounds?.solo, session.rounds?.ai]).filter(Boolean);
+    if (rounds.length === 0) return 100;
+    const independentCorrect = rounds.filter((round) => round.solved && round.hints === 0).length;
+    return Math.round((independentCorrect / rounds.length) * 100);
+  }, [pedagogy.sessions]);
 
   const generateRoomCode = () => Math.random().toString(36).slice(2, 7).toUpperCase();
 
@@ -1783,192 +2296,228 @@ export default function App() {
         )}
 
         {activeTab === 'mentor' && (
-          <div className="max-w-7xl mx-auto px-4 py-12 space-y-6">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+            <header className="flex flex-col gap-4 border-b border-slate-800 pb-5 md:flex-row md:items-end md:justify-between">
               <div>
-                <div className="text-xs font-mono uppercase tracking-[0.25em] text-cyan-300">IA mentora pedagógica</div>
-                <h2 className="text-4xl font-black text-white mt-2">Modo estratégico de aprendizagem</h2>
+                <div className="text-xs font-mono uppercase tracking-[0.2em] text-cyan-300">Oficina de aprendizagem</div>
+                <h2 className="mt-2 text-3xl font-black text-white">Treinar, comparar, refletir</h2>
+                <p className="mt-2 max-w-3xl text-sm text-slate-400">A mentoria é local e guiada por regras pedagógicas. Ela não envia seu código para um modelo externo e nunca entrega uma solução completa.</p>
               </div>
-              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-bold text-emerald-200">
-                Dicas pedidas: {mentorStats.hintsUsed} · Autonomia: {Math.round(autonomyRate)}%
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div><div className="text-xs uppercase text-slate-500">Sessões pareadas</div><div className="mt-1 font-mono text-xl text-white">{pedagogy.sessions.length}</div></div>
+                <div><div className="text-xs uppercase text-slate-500">Dicas pedidas</div><div className="mt-1 font-mono text-xl text-white">{Object.values(pedagogy.hintCounts).reduce((sum, count) => sum + count, 0)}</div></div>
+                <div><div className="text-xs uppercase text-slate-500">Autonomia</div><div className="mt-1 font-mono text-xl text-emerald-300">{autonomyRate}%</div></div>
               </div>
-            </div>
+            </header>
 
-            <div className="grid grid-cols-1 xl:grid-cols-[1.3fr_0.7fr] gap-6">
-              <div className="space-y-6">
-                <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-lg font-black text-white">Chat de IA mentora</div>
-                    <div className="flex gap-2 flex-wrap">
+            <nav className="flex gap-2 overflow-x-auto border-b border-slate-800 pb-3" aria-label="Áreas de aprendizagem">
+              {[
+                ['mentoria', 'Mentoria'], ['comparar', 'Sem IA × com IA'], ['depuracao', 'Depuração'],
+                ['variacoes', 'Variações'], ['banca', 'Banca'], ['trilha', 'Trilha'],
+                ['etica', 'Uso responsável'], ['relatorios', 'Relatórios e diário'],
+                ['professor', 'Professor'], ['juizes', 'Juízes externos']
+              ].map(([id, label]) => (
+                <button key={id} onClick={() => setMentorSection(id)} className={`shrink-0 border-b-2 px-3 py-2 text-sm font-semibold ${mentorSection === id ? 'border-cyan-400 text-cyan-200' : 'border-transparent text-slate-400 hover:text-white'}`}>
+                  {label}
+                </button>
+              ))}
+            </nav>
+
+            {mentorSection === 'mentoria' && (
+              <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(300px,0.6fr)]">
+                <section className="space-y-5">
+                  <div className="border-l-2 border-amber-400 bg-amber-400/5 p-4 text-sm text-amber-100">
+                    <strong>Modo “só explique, não resolva”.</strong> As respostas são construídas por regras locais. Não cole credenciais ou dados pessoais.
+                  </div>
+                  {!mentorConsent && (
+                    <div className="space-y-3 border border-slate-800 bg-slate-900/50 p-4">
+                      <h3 className="font-bold text-white">Antes da sessão com orientação</h3>
+                      {PRE_AI_CHECKLIST.map((item, index) => (
+                        <label key={item} className="flex items-start gap-3 text-sm text-slate-300">
+                          <input type="checkbox" checked={beforeAiChecklist[index]} onChange={() => setBeforeAiChecklist((previous) => previous.map((checked, checkedIndex) => checkedIndex === index ? !checked : checked))} className="mt-1 accent-cyan-400" />
+                          <span>{item}</span>
+                        </label>
+                      ))}
+                      <button onClick={startAiGuidance} className="border border-cyan-500 px-4 py-2 text-sm font-bold text-cyan-200 disabled:opacity-40" disabled={!beforeAiChecklist.every(Boolean)}>Iniciar orientação limitada</button>
+                    </div>
+                  )}
+                  <div className="space-y-4 border border-slate-800 bg-slate-900/40 p-5">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div><h3 className="font-bold text-white">Mentor pedagógico</h3><p className="mt-1 text-xs text-slate-500">Nível máximo liberado: {unlockedMentorLevel} · {mentorStats.hintsUsed}/5 consultas nesta sessão</p></div>
+                      <label className="text-sm text-slate-300">Tópico
+                        <select value={mentorTopic} onChange={(event) => setMentorTopic(event.target.value)} className="ml-2 border border-slate-700 bg-slate-950 px-2 py-1 text-white">
+                          <option value="busca-binaria">Busca binária</option><option value="dp">Programação dinâmica</option><option value="grafos">Grafos</option><option value="stl">Estruturas / STL</option><option value="python">Python</option>
+                        </select>
+                      </label>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
                       {MENTOR_LEVELS.map((level) => (
-                        <button
-                          key={level.id}
-                          onClick={() => setMentorLevel(level.id)}
-                          className={`px-3 py-1.5 rounded-full text-xs font-bold border ${mentorLevel === level.id ? 'border-cyan-500 bg-cyan-500/15 text-cyan-200' : 'border-slate-700 text-slate-300'}`}
-                        >
-                          {level.label}
-                        </button>
+                        <button key={level.id} disabled={level.id > unlockedMentorLevel} title={level.id > unlockedMentorLevel ? 'Resolva problemas sem ajuda para liberar níveis adicionais.' : level.description} onClick={() => setMentorLevel(level.id)} className={`border px-3 py-2 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-30 ${mentorLevel === level.id ? 'border-cyan-400 bg-cyan-400/10 text-cyan-100' : 'border-slate-700 text-slate-300'}`}>{level.id}. {level.label}</button>
                       ))}
                     </div>
-                  </div>
-
-                  <div className="mb-4">
-                    <textarea
-                      value={mentorQuery}
-                      onChange={(e) => setMentorQuery(e.target.value)}
-                      rows={3}
-                      className="w-full rounded-2xl border border-slate-700 bg-slate-950 p-3 text-sm text-slate-100 outline-none focus:border-cyan-500"
-                    />
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 mb-5">
-                    {IA_PROMPT_LIBRARY.map((prompt) => (
-                      <button
-                        key={prompt}
-                        onClick={() => setMentorQuery(prompt)}
-                        className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-slate-300 hover:border-cyan-500"
-                      >
-                        {prompt}
-                      </button>
-                    ))}
-                  </div>
-
-                  <button
-                    onClick={askMentor}
-                    className="w-full rounded-2xl bg-indigo-600 hover:bg-indigo-500 px-4 py-3 font-black text-white shadow-[0_0_30px_rgba(99,102,241,0.22)]"
-                  >
-                    Pedir orientação pedagógica
-                  </button>
-                </div>
-
-                <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-5">
-                  <div className="text-lg font-black text-white mb-4">Histórico de ajudas</div>
-                  <div className="space-y-3">
-                    {mentorHistory.map((item) => (
-                      <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
-                        <div className="text-[11px] font-mono uppercase tracking-[0.2em] text-cyan-300 mb-2">
-                          Nível {item.level} · {MENTOR_LEVELS[item.level - 1]?.label}
+                    <p className="text-xs text-slate-500">{MENTOR_LEVELS[mentorLevel - 1].description}</p>
+                    <div className="border-l border-emerald-500/70 pl-3 text-xs text-emerald-200">Sugestão para agora: {recommendedPrompt.text}</div>
+                    <textarea value={mentorQuery} onChange={(event) => setMentorQuery(event.target.value)} rows={3} aria-label="Pergunta para o mentor" className="w-full border border-slate-700 bg-slate-950 p-3 text-sm text-slate-100 outline-none focus:border-cyan-500" />
+                    <button onClick={askMentor} disabled={!mentorConsent || !mentorQuery.trim()} className="bg-cyan-700 px-4 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Pedir uma pista</button>
+                    {mentorNotice && <p role="status" className="text-sm text-cyan-200">{mentorNotice}</p>}
+                    <div className="flex flex-wrap gap-2 border-t border-slate-800 pt-4">
+                      {IA_PROMPT_LIBRARY.map((prompt) => (
+                        <div key={prompt.id} className="flex items-center border border-slate-800 bg-slate-950">
+                          <button onClick={() => { setMentorTopic(prompt.id === 'python' ? 'python' : prompt.id === 'dp' || prompt.id === 'graphs' ? prompt.id : mentorTopic); setMentorQuery(prompt.text); }} className="px-3 py-2 text-left text-xs text-slate-300 hover:text-white">{prompt.category}</button>
+                          <button aria-label={`${pedagogy.favoritePrompts.includes(prompt.id) ? 'Remover' : 'Salvar'} prompt ${prompt.category}`} title="Salvar prompt" onClick={() => toggleFavoritePrompt(prompt.id)} className="border-l border-slate-800 px-2 py-2 text-amber-300">{pedagogy.favoritePrompts.includes(prompt.id) ? '★' : '☆'}</button>
                         </div>
-                        <p className="text-sm text-slate-300 mb-1"><span className="font-bold text-white">Pergunta:</span> {item.query}</p>
-                        <p className="text-sm text-slate-200"><span className="font-bold text-emerald-300">Resposta:</span> {item.answer}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
-                  <div className="text-lg font-black text-white mb-4">Modo comparativo</div>
-                  <div className="space-y-3 text-sm text-slate-300">
-                    <div className="rounded-2xl border border-slate-700 bg-slate-950 p-3">
-                      <div className="text-xs font-mono uppercase text-rose-300 mb-2">Sem IA</div>
-                      <div className="flex justify-between"><span>Tempo</span><span>{comparisonReport.withoutAi.time} min</span></div>
-                      <div className="flex justify-between"><span>Tentativas</span><span>{comparisonReport.withoutAi.attempts}</span></div>
-                      <div className="flex justify-between"><span>Acertos</span><span>{comparisonReport.withoutAi.correct}</span></div>
-                    </div>
-                    <div className="rounded-2xl border border-slate-700 bg-slate-950 p-3">
-                      <div className="text-xs font-mono uppercase text-emerald-300 mb-2">Com IA</div>
-                      <div className="flex justify-between"><span>Tempo</span><span>{comparisonReport.withAi.time} min</span></div>
-                      <div className="flex justify-between"><span>Tentativas</span><span>{comparisonReport.withAi.attempts}</span></div>
-                      <div className="flex justify-between"><span>Acertos</span><span>{comparisonReport.withAi.correct}</span></div>
+                      ))}
+                      <button onClick={exportFavoritePrompts} className="border border-slate-700 px-3 py-2 text-xs text-slate-300"><Download className="mr-1 inline h-3 w-3" />Exportar favoritos</button>
                     </div>
                   </div>
-                  <div className="mt-4 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-3 text-sm text-cyan-100">
-                    {comparisonReport.insight}
+                </section>
+                <section className="space-y-4 border-l border-slate-800 pl-5">
+                  <div className="flex items-center justify-between gap-3"><h3 className="font-bold text-white">Histórico por tópico</h3><span className="text-xs text-slate-500">{pedagogy.mentorHistory.length} registros</span></div>
+                  <input value={mentorHistorySearch} onChange={(event) => setMentorHistorySearch(event.target.value)} placeholder="Filtrar histórico" className="w-full border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" />
+                  <div className="max-h-[640px] space-y-4 overflow-y-auto">
+                    {filteredMentorHistory.length === 0 && <p className="text-sm text-slate-500">As orientações desta conta aparecerão aqui.</p>}
+                    {filteredMentorHistory.map((item) => <article key={item.id} className="border-b border-slate-800 pb-4">
+                      <div className="text-xs uppercase text-cyan-300">{item.topic} · nível {item.level} · {new Date(item.createdAt || Date.now()).toLocaleString()}</div>
+                      <p className="mt-2 text-sm text-slate-300"><strong className="text-white">Pergunta:</strong> {item.query}</p>
+                      <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-200">{item.answer}</p>
+                    </article>)}
                   </div>
-                </div>
-
-                <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
-                  <div className="text-lg font-black text-white mb-4">Depuração guiada pelo juiz</div>
-                  <select
-                    value={judgeVerdict}
-                    onChange={(e) => setJudgeVerdict(e.target.value)}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none"
-                  >
-                    <option value="Runtime Error">Runtime Error</option>
-                    <option value="Wrong Answer">Wrong Answer</option>
-                    <option value="Time Limit Exceeded">Time Limit Exceeded</option>
-                    <option value="Compilation Error">Compilation Error</option>
-                    <option value="Memory Limit">Memory Limit</option>
-                  </select>
-                  <div className="mt-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-100">
-                    {debugExplanation}
-                  </div>
-                  <ul className="mt-4 space-y-2 text-sm text-slate-300 list-disc pl-5">
-                    <li>Qual é o intervalo do seu loop?</li>
-                    <li>O que acontece quando n = 0?</li>
-                    <li>Você inicializou a variável antes de usá-la?</li>
-                    <li>A sua estrutura está na complexidade correta?</li>
-                  </ul>
-                </div>
-
-                <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
-                  <div className="text-lg font-black text-white mb-4">Geração de variações</div>
-                  <select
-                    value={variantTopic}
-                    onChange={(e) => setVariantTopic(e.target.value)}
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none"
-                  >
-                    <option value="busca-binaria">Busca binária</option>
-                    <option value="dp">DP</option>
-                    <option value="grafos">Grafos</option>
-                    <option value="stl">STL</option>
-                  </select>
-                  <button
-                    onClick={generateProblemVariant}
-                    className="mt-3 w-full rounded-xl border border-emerald-500 text-emerald-300 font-bold py-2 hover:bg-emerald-500/10"
-                  >
-                    Gerar variação
-                  </button>
-                  <div className="mt-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-100">
-                    <div className="font-bold">{generatedVariant.title}</div>
-                    <div className="mt-2">{generatedVariant.variant}</div>
-                    <div className="mt-2 text-xs uppercase tracking-[0.2em] text-emerald-300">Dificuldade: {generatedVariant.difficulty}</div>
-                  </div>
-                </div>
+                </section>
               </div>
-            </div>
+            )}
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
-                <div className="text-lg font-black text-white mb-4">Checklist de uso responsável</div>
-                <div className="space-y-3">
-                  {RESPONSIBLE_CHECKLIST.map((item, index) => (
-                    <label key={item} className="flex items-start gap-3 rounded-xl border border-slate-800 bg-slate-950 p-3 text-sm text-slate-300">
-                      <input
-                        type="checkbox"
-                        checked={responsibleUsage[index]}
-                        onChange={() => setResponsibleUsage((prev) => prev.map((value, valueIndex) => valueIndex === index ? !value : value))}
-                        className="mt-1 h-4 w-4 accent-cyan-500"
-                      />
-                      <span>{item}</span>
+            {mentorSection === 'comparar' && (
+              <div className="grid gap-8 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+                <section className="space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div><h3 className="text-xl font-bold text-white">Sessão dupla cronometrada</h3><p className="mt-1 text-sm text-slate-400">Problemas gêmeos, mesma técnica e ordem sem IA → com apoio limitado.</p></div>
+                    <div className="font-mono text-2xl text-cyan-200">{comparison.status === 'running' ? formatTime(comparisonElapsed) : '00:00'}</div>
+                  </div>
+                  {comparison.status === 'idle' && <div className="space-y-4 border border-slate-800 bg-slate-900/40 p-5">
+                    <label className="block text-sm text-slate-300">Técnica pareada
+                      <select value={variantTopic} onChange={(event) => setVariantTopic(event.target.value)} className="mt-2 block w-full border border-slate-700 bg-slate-950 p-3 text-white"><option value="busca-binaria">Busca binária</option><option value="dp">Programação dinâmica</option><option value="grafos">Grafos</option><option value="stl">Estruturas e STL</option></select>
                     </label>
-                  ))}
-                </div>
+                    <button onClick={startComparison} className="bg-cyan-700 px-4 py-3 font-bold text-white">Começar sem IA</button>
+                  </div>}
+                  {comparison.status === 'running' && <div className="space-y-4 border border-slate-800 bg-slate-900/40 p-5">
+                    <div className="flex items-center justify-between"><span className="text-xs uppercase tracking-wider text-cyan-300">{comparison.phase === 'solo' ? 'Rodada 1 · sem IA' : 'Rodada 2 · apoio limitado'}</span><span className="text-xs text-slate-500">{comparison.attempts} tentativa(s) · {comparison.hints} dica(s)</span></div>
+                    <h4 className="font-bold text-white">{activeComparisonProblem.title}</h4><p className="text-sm leading-relaxed text-slate-300">{activeComparisonProblem.statement}</p>
+                    <form onSubmit={(event) => { event.preventDefault(); checkComparisonAnswer(); }} className="flex flex-wrap gap-2">
+                      <input value={comparisonAnswer} onChange={(event) => setComparisonAnswer(event.target.value)} disabled={comparison.solved} aria-label="Sua resposta" placeholder="Digite sua resposta" className="min-w-0 flex-1 border border-slate-700 bg-slate-950 px-3 py-2 text-white" />
+                      <button disabled={comparison.solved || !comparisonAnswer.trim()} className="border border-cyan-500 px-4 py-2 font-bold text-cyan-100 disabled:opacity-40">Verificar</button>
+                    </form>
+                    {comparisonFeedback && <p role="status" className="text-sm text-cyan-200">{comparisonFeedback}</p>}
+                    {comparison.phase === 'ai' && <div className="space-y-3 border-t border-slate-800 pt-4">
+                      {!mentorConsent && <div className="space-y-2 text-sm text-slate-300">{PRE_AI_CHECKLIST.map((item, index) => <label key={item} className="flex gap-2"><input type="checkbox" checked={beforeAiChecklist[index]} onChange={() => setBeforeAiChecklist((previous) => previous.map((checked, checkedIndex) => checkedIndex === index ? !checked : checked))} className="mt-1 accent-cyan-400" />{item}</label>)}<button onClick={startAiGuidance} disabled={!beforeAiChecklist.every(Boolean)} className="border border-cyan-500 px-3 py-2 text-xs font-bold text-cyan-100 disabled:opacity-40">Ativar até 3 pistas</button></div>}
+                      <div className="flex flex-wrap gap-2"><select value={mentorLevel} onChange={(event) => setMentorLevel(Number(event.target.value))} className="border border-slate-700 bg-slate-950 px-2 py-2 text-sm text-white">{MENTOR_LEVELS.filter((level) => level.id <= unlockedMentorLevel).map((level) => <option key={level.id} value={level.id}>{level.id} · {level.label}</option>)}</select><button onClick={() => { setMentorTopic(comparison.topic); setMentorQuery(`Ajude-me a pensar neste problema de ${VARIATION_TEMPLATES[comparison.topic].technique}.`); askMentor(); }} disabled={!mentorConsent || comparison.hints >= 3} className="border border-emerald-500 px-3 py-2 text-sm font-bold text-emerald-200 disabled:opacity-40">Pedir pista ({comparison.hints}/3)</button></div>
+                    </div>}
+                    <div className="flex flex-wrap gap-2 border-t border-slate-800 pt-4"><button onClick={finishComparisonRound} className="bg-emerald-700 px-4 py-2 font-bold text-white">{comparison.phase === 'solo' ? 'Encerrar rodada e abrir gêmeo' : 'Concluir sessão'}</button><button onClick={resetComparison} className="border border-slate-700 px-4 py-2 text-slate-300">Descartar</button></div>
+                  </div>}
+                  {comparison.status === 'complete' && <div className="border-l-2 border-emerald-400 bg-emerald-400/5 p-4 text-sm text-emerald-100">Sessão concluída. Os tempos e tentativas estão salvos em Relatórios e diário.</div>}
+                  {comparisonFeedback && comparison.status !== 'running' && <p role="status" className="text-sm text-cyan-200">{comparisonFeedback}</p>}
+                  <div className="space-y-4 border-t border-slate-800 pt-5">
+                    <h4 className="font-bold text-white">Reflexão pós-sessão</h4>
+                    <label className="block text-sm text-slate-400">O que a pista ajudou a perceber?<textarea value={comparisonReflection.helped} onChange={(event) => setComparisonReflection((previous) => ({ ...previous, helped: event.target.value }))} rows={2} className="mt-1 w-full border border-slate-700 bg-slate-950 p-3 text-white" /></label>
+                    <label className="block text-sm text-slate-400">O que você teria feito sozinho?<textarea value={comparisonReflection.alone} onChange={(event) => setComparisonReflection((previous) => ({ ...previous, alone: event.target.value }))} rows={2} className="mt-1 w-full border border-slate-700 bg-slate-950 p-3 text-white" /></label>
+                    <button onClick={saveComparisonReflection} disabled={!pedagogy.sessions.length} className="border border-slate-600 px-3 py-2 text-sm text-slate-200 disabled:opacity-40">Salvar reflexão</button>
+                  </div>
+                </section>
+                <section className="space-y-5 border-l border-slate-800 pl-6">
+                  <h3 className="text-xl font-bold text-white">Comparação mais recente</h3>
+                  <p className="text-sm text-slate-400">{comparisonReport.insight}</p>
+                  {[['Sem IA', comparisonReport.withoutAi, 'bg-rose-400'], ['Com apoio', comparisonReport.withAi, 'bg-emerald-400']].map(([label, round, color]) => <div key={label} className="space-y-2 border-b border-slate-800 pb-4">
+                    <div className="flex justify-between text-sm"><span className="text-slate-300">{label}</span><span className="font-mono text-white">{formatTime(round.seconds || 0)}</span></div>
+                    <div className="h-2 bg-slate-800"><div className={`h-full ${color}`} style={{ width: `${Math.max(4, Math.min(100, (round.seconds / Math.max(1, comparisonReport.withoutAi.seconds, comparisonReport.withAi.seconds)) * 100))}%` }} /></div>
+                    <div className="flex gap-4 text-xs text-slate-500"><span>{round.attempts} tentativas</span><span>{round.correct} acertos</span><span>{round.hints} dicas</span></div>
+                  </div>)}
+                  {pedagogy.sessions.length > 0 && <p className="text-sm text-slate-300">Diferença observada: {formatTime(Math.abs(comparisonReport.withoutAi.seconds - comparisonReport.withAi.seconds))} em tempo e {Math.abs(comparisonReport.withoutAi.attempts - comparisonReport.withAi.attempts)} tentativa(s). Isso descreve esta sessão, não prova causalidade.</p>}
+                  <div className="space-y-2 text-sm text-slate-400"><div>Problema gêmeo: {VARIATION_TEMPLATES[pedagogy.sessions[0]?.topic || variantTopic]?.technique}</div><div>Rodadas concluídas: {pedagogy.sessions.length}</div></div>
+                </section>
               </div>
+            )}
 
-              <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
-                <div className="text-lg font-black text-white mb-4">Painel de autonomia</div>
-                <div className="space-y-3 text-sm text-slate-300">
-                  <div className="flex justify-between"><span>Questões resolvidas sem IA</span><span>{Math.max(2, 7 - mentorStats.hintsUsed)} / 7</span></div>
-                  <div className="h-2 rounded-full bg-slate-800 overflow-hidden"><div className="h-full bg-emerald-500" style={{ width: `${Math.min(100, autonomyRate)}%` }} /></div>
-                  <div className="flex justify-between"><span>Uso de IA em treino</span><span>{mentorStats.hintsUsed} dicas</span></div>
-                </div>
+            {mentorSection === 'depuracao' && (
+              <div className="grid gap-8 lg:grid-cols-2">
+                <section className="space-y-4">
+                  <h3 className="text-xl font-bold text-white">Tradutor de vereditos e assistente de depuração</h3>
+                  <label className="block text-sm text-slate-300">Tópico para perguntas e casos de borda
+                    <select value={variantTopic} onChange={(event) => { setVariantTopic(event.target.value); setDebugCases([]); setDebugFeedback(null); }} className="mt-2 block w-full border border-slate-700 bg-slate-950 p-3 text-white"><option value="busca-binaria">Busca binária</option><option value="dp">Programação dinâmica</option><option value="grafos">Grafos</option><option value="stl">Estruturas / STL</option></select>
+                  </label>
+                  <label className="block text-sm text-slate-300">Veredito
+                    <select value={judgeVerdict} onChange={(event) => { setJudgeVerdict(event.target.value); setDebugFeedback(null); }} className="mt-2 block w-full border border-slate-700 bg-slate-950 p-3 text-white"><option>Accepted</option><option>Wrong Answer</option><option>Runtime Error</option><option>Time Limit Exceeded</option><option>Compilation Error</option><option>Memory Limit</option></select>
+                  </label>
+                  <p className="border-l-2 border-amber-400 pl-3 text-sm text-amber-100">{debugExplanation}</p>
+                  <label className="block text-sm text-slate-300">Cole o trecho que quer investigar<textarea value={debugCode} onChange={(event) => setDebugCode(event.target.value)} rows={10} spellCheck="false" className="mt-2 w-full border border-slate-700 bg-slate-950 p-3 font-mono text-sm text-emerald-200" placeholder="Seu código fica apenas neste navegador." /></label>
+                  <div className="flex flex-wrap gap-2"><button onClick={analyzeDebugCode} className="bg-cyan-700 px-4 py-2 font-bold text-white">Analisar pontos suspeitos</button><button onClick={generateDebugCases} className="border border-slate-600 px-4 py-2 text-slate-200">Gerar casos de borda</button></div>
+                  <p className="text-xs text-slate-500">Análise heurística local: indica possíveis trechos para revisão, não altera nem corrige seu programa automaticamente.</p>
+                </section>
+                <section className="space-y-5 border-l border-slate-800 pl-6">
+                  <h3 className="font-bold text-white">Checklist de erros comuns</h3>
+                  <ul className="space-y-2">{DEBUG_CHECKLIST.map((item) => <li key={item} className="border-b border-slate-800 py-2 text-sm text-slate-300">□ {item}</li>)}</ul>
+                  {debugFeedback && <div className="space-y-3 border-t border-slate-800 pt-4"><h4 className="font-bold text-cyan-200">Pontos para investigar</h4>{debugFeedback.findings.length ? debugFeedback.findings.map((finding, index) => <p key={`${finding.line}-${index}`} className="text-sm text-slate-300"><strong>Linha {finding.line}:</strong> {finding.text}</p>) : <p className="text-sm text-slate-400">Nenhum padrão simples foi reconhecido. Isso não prova que o código esteja correto.</p>}{debugFeedback.questions.map((question) => <p key={question} className="text-sm text-amber-200">{question}</p>)}</div>}
+                  <div className="border-t border-slate-800 pt-4"><h4 className="font-bold text-white">Casos de teste extras</h4><ul className="mt-2 space-y-2 text-sm text-slate-300">{debugCases.map((item) => <li key={item}>• {item}</li>)}</ul></div>
+                </section>
               </div>
+            )}
 
-              <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
-                <div className="text-lg font-black text-white mb-4">Modo professor / minicurso</div>
-                <div className="space-y-3 text-sm text-slate-300">
-                  <div className="flex justify-between"><span>Alunos</span><span>{teacherSession.students}</span></div>
-                  <div className="flex justify-between"><span>Média de dicas</span><span>{teacherSession.averageHints}</span></div>
-                  <div className="flex justify-between"><span>Autonomia</span><span>{teacherSession.autonomy}%</span></div>
-                </div>
-                <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-950 p-3 text-sm text-slate-200">
-                  Sugestão: peça que os alunos resolvam primeiro sem IA e só depois comparem com a explicação orientada.
-                </div>
+            {mentorSection === 'variacoes' && (
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(300px,0.8fr)]">
+                <section className="space-y-4">
+                  <h3 className="text-xl font-bold text-white">Gerador de variações e reconhecimento de padrões</h3>
+                  <div className="grid gap-3 sm:grid-cols-2"><label className="text-sm text-slate-300">Problema resolvido de origem<input value={variantSource} onChange={(event) => setVariantSource(event.target.value)} placeholder="Título ou ideia central" className="mt-2 block w-full border border-slate-700 bg-slate-950 p-3 text-white" /></label><label className="text-sm text-slate-300">Eixo da transformação<select value={variantAxis} onChange={(event) => setVariantAxis(event.target.value)} className="mt-2 block w-full border border-slate-700 bg-slate-950 p-3 text-white"><option value="restriction">Restrições</option><option value="input-output">Entrada e saída</option><option value="context">Tema e contexto</option></select></label><label className="text-sm text-slate-300 sm:col-span-2">Técnica<select value={variantTopic} onChange={(event) => setVariantTopic(event.target.value)} className="mt-2 block w-full border border-slate-700 bg-slate-950 p-3 text-white"><option value="busca-binaria">Busca binária</option><option value="dp">Programação dinâmica</option><option value="grafos">Grafos</option><option value="stl">Estruturas / STL</option></select></label></div>
+                  <button onClick={generateProblemVariant} className="bg-emerald-700 px-4 py-3 font-bold text-white">Gerar variação adaptativa</button>
+                  {generatedVariant && <article className="space-y-3 border-l-2 border-emerald-400 bg-emerald-400/5 p-5"><div className="flex items-start justify-between gap-3"><div><h4 className="font-bold text-white">{generatedVariant.title}</h4><div className="mt-1 text-xs uppercase text-emerald-300">{generatedVariant.technique} · {generatedVariant.difficulty} · eixo: {generatedVariant.changedAxis}</div></div><button onClick={saveGeneratedVariant} className="border border-emerald-500 px-3 py-2 text-xs font-bold text-emerald-100">Salvar</button></div><p className="text-sm leading-relaxed text-slate-200">{generatedVariant.variant}</p><p className="text-xs text-slate-400">{generatedVariant.nextStep}</p></article>}
+                  <div className="space-y-3 border-t border-slate-800 pt-5"><h4 className="font-bold text-white">Qual padrão se repete?</h4><p className="text-sm text-slate-400">A técnica da variação atual é {VARIATION_TEMPLATES[variantTopic].technique}. Selecione o padrão que conecta os dois enunciados.</p><div className="flex flex-wrap gap-2"><select value={patternGuess} onChange={(event) => setPatternGuess(event.target.value)} className="border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"><option value="">Escolher padrão</option>{Object.values(VARIATION_TEMPLATES).map((item) => <option key={item.technique}>{item.technique}</option>)}</select><button onClick={submitPatternGuess} disabled={!patternGuess} className="border border-cyan-500 px-3 py-2 text-sm text-cyan-100 disabled:opacity-40">Conferir raciocínio</button></div>{patternFeedback && <p role="status" className="text-sm text-cyan-200">{patternFeedback}</p>}</div>
+                </section>
+                <section className="space-y-4 border-l border-slate-800 pl-6"><h3 className="font-bold text-white">Banco salvo</h3>{pedagogy.savedVariants.length === 0 && <p className="text-sm text-slate-500">Salve uma variação para reutilizá-la em outro treino.</p>}{pedagogy.savedVariants.map((variant) => <article key={variant.id} className="border-b border-slate-800 pb-4"><div className="text-xs text-emerald-300">{variant.technique} · {variant.difficulty}</div><h4 className="mt-1 font-bold text-white">{variant.title}</h4><p className="mt-2 text-sm text-slate-400">{variant.variant}</p><button onClick={() => { setGeneratedVariant(variant); setVariantTopic(Object.keys(VARIATION_TEMPLATES).find((key) => VARIATION_TEMPLATES[key].technique === variant.technique) || 'busca-binaria'); }} className="mt-2 text-xs text-cyan-200">Reutilizar variação</button></article>)}</section>
               </div>
-            </div>
+            )}
+
+            {mentorSection === 'banca' && (
+              <div className="grid gap-8 lg:grid-cols-2">
+                <section className="space-y-4"><h3 className="text-xl font-bold text-white">Entrevista de solução</h3><p className="text-sm text-slate-400">Explique o raciocínio em texto. O feedback verifica se você descreveu abordagem, complexidade e casos-limite; não avalia a correção formal da solução.</p><div className="border-l-2 border-cyan-500 pl-3 text-sm text-cyan-100">Por que você escolheu essa estrutura de dados? Qual é a complexidade da sua solução?</div><textarea value={interviewAnswer} onChange={(event) => setInterviewAnswer(event.target.value)} rows={8} placeholder="Descreva a estratégia, o custo e um caso-limite..." className="w-full border border-slate-700 bg-slate-950 p-3 text-sm text-white" /><button onClick={submitInterviewAnswer} disabled={!interviewAnswer.trim()} className="bg-cyan-700 px-4 py-2 font-bold text-white disabled:opacity-40">Receber perguntas de banca</button>{interviewFeedback && <p role="status" className="border-l-2 border-emerald-500 pl-3 text-sm text-emerald-100">{interviewFeedback}</p>}</section>
+                <section className="space-y-4 border-l border-slate-800 pl-6"><h3 className="font-bold text-white">Histórico de explicações</h3>{pedagogy.interviewHistory.map((item) => <article key={item.id} className="border-b border-slate-800 pb-4"><div className="text-xs text-slate-500">{new Date(item.createdAt).toLocaleString()} · {item.topic}</div><p className="mt-2 text-sm text-slate-300">{item.answer}</p><p className="mt-2 text-sm text-emerald-200">{item.feedback}</p></article>)}</section>
+              </div>
+            )}
+
+            {mentorSection === 'trilha' && (
+              <div className="space-y-6"><div><h3 className="text-xl font-bold text-white">Trilha: uso estratégico de IA</h3><p className="mt-1 text-sm text-slate-400">Os níveis de ajuda são liberados depois de duas resoluções independentes por nível.</p></div><ol className="grid gap-3 md:grid-cols-5">{TRAINING_STEPS.map((step, index) => { const ids = ['concept', 'solo', 'consult', 'compare', 'retry']; const done = pedagogy.completedTrainingSteps.includes(ids[index]); return <li key={step} className={`border-t-2 p-4 ${done ? 'border-emerald-400 bg-emerald-400/5' : 'border-slate-700 bg-slate-900/30'}`}><div className="font-mono text-xs text-slate-500">ETAPA 0{index + 1}</div><div className="mt-2 font-bold text-white">{step}</div><div className="mt-2 text-xs text-slate-400">{done ? 'Concluída' : 'Pendente'}</div>{index === 0 && !done && <button onClick={() => markTrainingStep('concept')} className="mt-3 text-xs text-cyan-200">Marcar conceito estudado</button>}{index === 4 && !done && pedagogy.sessions.length > 0 && <button onClick={() => markTrainingStep('retry')} className="mt-3 text-xs text-cyan-200">Marcar refação independente</button>}</li>; })}</ol><div className="border-l-2 border-amber-400 pl-4 text-sm text-amber-100">{mentorStats.hintsUsed >= 4 ? 'Você pediu várias pistas nesta sessão. Faça uma pausa para revisar a teoria e escrever sua própria hipótese antes de continuar.' : `Seu nível de ajuda liberado é ${unlockedMentorLevel}. Resolva duas rodadas sem ajuda para liberar o próximo nível.`}</div><div className="flex flex-wrap gap-3"><button onClick={() => setMentorSection('comparar')} className="border border-cyan-500 px-4 py-2 text-sm text-cyan-100">Iniciar etapa sem IA</button><button onClick={() => setMentorSection('relatorios')} className="border border-slate-600 px-4 py-2 text-sm text-slate-300">Ver evolução</button></div></div>
+            )}
+
+            {mentorSection === 'etica' && (
+              <div className="grid gap-8 lg:grid-cols-2"><section className="space-y-4"><h3 className="text-xl font-bold text-white">Checklist depois da sessão</h3>{RESPONSIBLE_CHECKLIST.map((item, index) => <label key={item} className="flex items-start gap-3 border-b border-slate-800 py-3 text-sm text-slate-300"><input type="checkbox" checked={(pedagogy.usageChecklist || [false, false, false, false])[index]} onChange={() => saveUsageChecklist(index)} className="mt-1 accent-cyan-400" />{item}</label>)}<p className="text-xs text-slate-500">As respostas ficam neste navegador. Métricas compartilhadas com uma turma usam apelido e não incluem seu código.</p></section><section className="space-y-5 border-l border-slate-800 pl-6"><h3 className="font-bold text-white">Meta de autonomia</h3><label className="block text-sm text-slate-300">Problemas sem IA nesta semana<input type="number" min="1" max="50" value={pedagogy.weeklyGoal} onChange={(event) => updatePedagogy({ weeklyGoal: Math.max(1, Number(event.target.value) || 1) })} className="mt-2 block w-28 border border-slate-700 bg-slate-950 p-2 text-white" /></label><div className="flex justify-between text-sm text-slate-400"><span>Resolvidos sem IA</span><span>{weeklyIndependentCount} / {pedagogy.weeklyGoal}</span></div><div className="h-2 bg-slate-800"><div className="h-full bg-emerald-400" style={{ width: `${Math.min(100, weeklyIndependentCount / Math.max(1, pedagogy.weeklyGoal) * 100)}%` }} /></div><p className="text-sm text-slate-400">Transparência: nesta versão a mentoria usa regras locais; nenhum trecho de código é enviado para um serviço externo.</p></section></div>
+            )}
+
+            {mentorSection === 'relatorios' && (
+              <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(300px,0.8fr)]"><section className="space-y-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><h3 className="text-xl font-bold text-white">Relatório de evolução</h3><p className="mt-1 text-sm text-slate-400">Tempos, tentativas, acertos, dicas e tópicos das sessões concluídas.</p></div><button onClick={exportTrainingReport} className="border border-slate-600 px-3 py-2 text-sm text-slate-200"><Download className="mr-2 inline h-4 w-4" />Exportar CSV</button></div><div className="grid grid-cols-2 gap-4 border-b border-slate-800 pb-4 text-sm"><div><span className="text-slate-500">Resolvido sem IA</span><div className="mt-1 text-xl font-mono text-white">{pedagogy.sessions.filter((session) => session.rounds?.solo?.solved).length}</div></div><div><span className="text-slate-500">Resolvido com apoio</span><div className="mt-1 text-xl font-mono text-white">{pedagogy.sessions.filter((session) => session.rounds?.ai?.solved).length}</div></div></div><div className="space-y-4">{recentSessions.length === 0 && <p className="text-sm text-slate-500">Conclua uma sessão comparativa para começar seu histórico.</p>}{recentSessions.map((session) => <article key={session.id} className="border-b border-slate-800 pb-4"><div className="flex justify-between gap-3 text-sm"><strong className="text-white">{VARIATION_TEMPLATES[session.topic]?.technique || session.topic}</strong><time className="text-xs text-slate-500">{new Date(session.date).toLocaleDateString()}</time></div><div className="mt-2 grid grid-cols-2 gap-3 text-xs text-slate-400"><span>Sem IA: {formatTime(session.rounds?.solo?.seconds || 0)} · {session.rounds?.solo?.attempts || 0} tent.</span><span>Com IA: {formatTime(session.rounds?.ai?.seconds || 0)} · {session.rounds?.ai?.attempts || 0} tent.</span><span>Acertos: {(session.rounds?.solo?.solved ? 1 : 0) + (session.rounds?.ai?.solved ? 1 : 0)}/2</span><span>Dicas: {session.rounds?.ai?.hints || 0}</span></div>{session.reflection && <p className="mt-2 text-xs text-emerald-200">Reflexão: {session.reflection.helped}</p>}</article>)}</div></section><section className="space-y-5 border-l border-slate-800 pl-6"><h3 className="text-xl font-bold text-white">Diário de treino</h3><label className="block text-sm text-slate-400">O que aprendeu? O que errou e quer tentar diferente?<textarea value={diaryDraft} onChange={(event) => setDiaryDraft(event.target.value)} rows={4} className="mt-2 w-full border border-slate-700 bg-slate-950 p-3 text-white" /></label><button onClick={saveDiaryEntry} disabled={!diaryDraft.trim()} className="border border-cyan-500 px-4 py-2 text-sm text-cyan-100 disabled:opacity-40">Registrar no diário</button><div className="space-y-3">{pedagogy.diary.map((entry) => <article key={entry.id} className="border-l border-slate-700 pl-3"><div className="text-xs text-slate-500">{new Date(entry.createdAt).toLocaleString()} · {entry.topic}</div><p className="mt-1 whitespace-pre-wrap text-sm text-slate-300">{entry.text}</p></article>)}</div><div className="border-t border-slate-800 pt-4"><h4 className="font-bold text-white">Recomendação</h4><p className="mt-2 text-sm text-slate-400">{Object.values(pedagogy.hintCounts).length ? `Você pediu mais apoio em ${Object.entries(pedagogy.hintCounts).sort((a, b) => b[1] - a[1])[0][0]}. Experimente começar a próxima sessão resolvendo sem ajuda.` : 'Registre uma sessão para receber recomendações com base no seu próprio histórico.'}</p></div></section></div>
+            )}
+
+            {mentorSection === 'relatorios' && (
+              <section className="space-y-4 border-t border-slate-800 pt-6">
+                <div><h3 className="text-lg font-bold text-white">Dependência de dicas ao longo do tempo</h3><p className="mt-1 text-sm text-slate-400">Cada barra representa as dicas usadas na rodada assistida de uma sessão concluída.</p></div>
+                {recentSessions.length === 0 && <p className="text-sm text-slate-500">O gráfico aparecerá depois da primeira sessão comparativa.</p>}
+                <div className="space-y-3">{recentSessions.map((session) => {
+                  const hints = session.rounds?.ai?.hints || 0;
+                  const maxHints = Math.max(1, ...recentSessions.map((item) => item.rounds?.ai?.hints || 0));
+                  return <div key={session.id} className="grid grid-cols-[110px_1fr_40px] items-center gap-3 text-xs"><span className="truncate text-slate-400">{new Date(session.date).toLocaleDateString()}</span><div className="h-3 bg-slate-800"><div className="h-full bg-amber-400" style={{ width: `${Math.max(3, hints / maxHints * 100)}%` }} /></div><span className="text-right font-mono text-white">{hints}</span></div>;
+                })}</div>
+              </section>
+            )}
+
+            {mentorSection === 'juizes' && (
+              <section className="grid gap-4 border-t border-slate-800 pt-6 sm:grid-cols-2">
+                <div><div className="text-xs uppercase text-slate-500">Concluídos no OBI Quest</div><div className="mt-1 font-mono text-2xl text-white">{userData?.completedLevels?.length || 0}</div></div>
+                <div><div className="text-xs uppercase text-slate-500">Accepted nos juízes externos</div><div className="mt-1 font-mono text-2xl text-emerald-300">{pedagogy.externalSubmissions.filter((submission) => submission.verdict === 'Accepted').length}</div></div>
+              </section>
+            )}
+
+            {mentorSection === 'professor' && (
+              <div className="grid gap-8 xl:grid-cols-[minmax(320px,0.8fr)_minmax(0,1.2fr)]"><section className="space-y-5"><h3 className="text-xl font-bold text-white">Minicurso e sala de prática</h3><div className="space-y-3 border-b border-slate-800 pb-5"><label className="block text-sm text-slate-300">Nome da sessão<input value={teacherTitle} onChange={(event) => setTeacherTitle(event.target.value)} className="mt-2 block w-full border border-slate-700 bg-slate-950 p-3 text-white" /></label><label className="block text-sm text-slate-300">Tópico<select value={teacherTopic} onChange={(event) => setTeacherTopic(event.target.value)} className="mt-2 block w-full border border-slate-700 bg-slate-950 p-3 text-white"><option value="busca-binaria">Busca binária</option><option value="dp">Programação dinâmica</option><option value="grafos">Grafos</option><option value="stl">Estruturas / STL</option></select></label><button onClick={createClassroom} className="bg-cyan-700 px-4 py-2 font-bold text-white">Criar sessão docente</button></div><div className="space-y-3"><h4 className="font-bold text-white">Entrar como estudante</h4><input value={teacherJoinCode} onChange={(event) => setTeacherJoinCode(event.target.value)} placeholder="Código da sessão" className="w-full border border-slate-700 bg-slate-950 p-3 uppercase text-white" /><input value={teacherAlias} onChange={(event) => setTeacherAlias(event.target.value)} placeholder="Apelido opcional; pode ficar vazio" className="w-full border border-slate-700 bg-slate-950 p-3 text-white" /><button onClick={joinClassroom} className="border border-slate-600 px-4 py-2 text-sm text-slate-200">Entrar na turma</button></div>{teacherMessage && <p role="status" className="text-sm text-cyan-200">{teacherMessage}</p>}{pedagogy.classroomCode && <div className="border-l-2 border-emerald-400 pl-3 text-sm text-emerald-100">Código ativo: <strong>{pedagogy.classroomCode}</strong><br />Papel nesta sessão: {pedagogy.classroomAlias}</div>}<p className="text-xs text-slate-500">Participação entre dispositivos requer Firebase e regras de Firestore que autorizem a sessão. Sem configuração, o treino individual continua disponível.</p></section><section className="space-y-5 border-l border-slate-800 pl-6"><div className="flex flex-wrap items-center justify-between gap-3"><div><h3 className="text-xl font-bold text-white">{teacherSession.title || 'Painel de acompanhamento'}</h3><p className="mt-1 text-sm text-slate-400">Dados agregados por apelido, sem publicar código do aluno.</p></div><button onClick={exportClassroomReport} disabled={!classroomParticipants.length} className="border border-slate-600 px-3 py-2 text-sm text-slate-200 disabled:opacity-40"><Download className="mr-2 inline h-4 w-4" />Exportar turma</button></div><div className="grid grid-cols-2 gap-4 border-b border-slate-800 pb-4 text-sm"><div><span className="text-slate-500">Participantes</span><div className="mt-1 text-xl font-mono text-white">{classroomParticipants.length}</div></div><div><span className="text-slate-500">Média de dicas</span><div className="mt-1 text-xl font-mono text-white">{classroomParticipants.length ? (classroomParticipants.reduce((sum, participant) => sum + (participant.hints || 0), 0) / classroomParticipants.length).toFixed(1) : '0.0'}</div></div></div>{classroomParticipants.map((participant) => <article key={participant.alias} className="flex flex-wrap justify-between gap-3 border-b border-slate-800 py-3 text-sm"><div><strong className="text-white">{participant.alias}</strong><div className="mt-1 text-xs text-slate-500">Tópicos: {Object.entries(participant.hintsByTopic || {}).map(([topic, count]) => `${topic} (${count})`).join(', ') || 'sem dicas registradas'}</div></div><div className="text-right text-slate-300">{participant.hints || 0} dicas · {participant.sessions || 0} sessões</div></article>)}<div className="border-t border-slate-800 pt-4"><h4 className="font-bold text-white">Perguntas para debate</h4><ul className="mt-2 space-y-2 text-sm text-slate-300"><li>• O que mudou entre tentar sozinho e receber uma pista?</li><li>• Qual pista ajudou a formular uma hipótese, sem entregar o caminho?</li><li>• Que caso de teste você criaria para verificar a abordagem?</li></ul></div></section></div>
+            )}
+
+            {mentorSection === 'juizes' && (
+              <div className="grid gap-8 lg:grid-cols-2"><section className="space-y-4"><h3 className="text-xl font-bold text-white">Importar problema e acompanhar juiz externo</h3><p className="text-sm text-slate-400">Adicione um link de Beecrowd, Codeforces ou OBI ao histórico unificado. A autenticação e o envio continuam no site oficial.</p><label className="block text-sm text-slate-300">Juiz<select value={externalProvider} onChange={(event) => setExternalProvider(event.target.value)} className="mt-2 block w-full border border-slate-700 bg-slate-950 p-3 text-white"><option>Codeforces</option><option>Beecrowd</option><option>OBI</option></select></label><label className="block text-sm text-slate-300">Título<input value={externalTitle} onChange={(event) => setExternalTitle(event.target.value)} className="mt-2 block w-full border border-slate-700 bg-slate-950 p-3 text-white" /></label><label className="block text-sm text-slate-300">URL do problema<input type="url" value={externalUrl} onChange={(event) => setExternalUrl(event.target.value)} placeholder="https://..." className="mt-2 block w-full border border-slate-700 bg-slate-950 p-3 text-white" /></label><button onClick={importExternalProblem} className="bg-cyan-700 px-4 py-2 font-bold text-white">Importar para o histórico</button>{pedagogy.importedProblem?.provider === 'Codeforces' && <div className="space-y-2 border-t border-slate-800 pt-4"><label className="block text-sm text-slate-300">Handle público do Codeforces<input value={externalHandle} onChange={(event) => setExternalHandle(event.target.value)} className="mt-2 block w-full border border-slate-700 bg-slate-950 p-3 text-white" /></label><button onClick={syncCodeforcesHistory} disabled={externalLoading} className="border border-cyan-500 px-4 py-2 text-sm text-cyan-100 disabled:opacity-40">{externalLoading ? 'Consultando...' : 'Sincronizar vereditos públicos'}</button></div>}{externalMessage && <p role="status" className="text-sm text-cyan-200">{externalMessage}</p>}</section><section className="space-y-4 border-l border-slate-800 pl-6"><h3 className="font-bold text-white">Histórico unificado</h3>{pedagogy.externalSubmissions.length === 0 && <p className="text-sm text-slate-500">Problemas importados e submissões sincronizadas aparecerão aqui.</p>}{pedagogy.externalSubmissions.map((submission) => <article key={submission.id} className="space-y-2 border-b border-slate-800 pb-4"><div className="flex justify-between gap-3"><strong className="text-sm text-white">{submission.title}</strong><span className="text-xs text-slate-500">{submission.provider}</span></div><div className="flex flex-wrap items-center gap-3"><select value={submission.verdict} onChange={(event) => updateExternalVerdict(submission.id, event.target.value)} aria-label={`Veredito para ${submission.title}`} className="border border-slate-700 bg-slate-950 px-2 py-1 text-xs text-white"><option>Pendente</option><option>Accepted</option><option>Wrong Answer</option><option>Time Limit Exceeded</option><option>Runtime Error</option><option>Em avaliação</option></select><a href={submission.url} target="_blank" rel="noreferrer" className="text-xs text-cyan-200 underline">Abrir juiz oficial</a><time className="text-xs text-slate-500">{new Date(submission.createdAt).toLocaleString()}</time></div></article>)}</section></div>
+            )}
           </div>
         )}
 
