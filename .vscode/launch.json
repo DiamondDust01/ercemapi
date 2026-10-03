@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Vite via Node",
+      "type": "pwa-node",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.cjs",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
