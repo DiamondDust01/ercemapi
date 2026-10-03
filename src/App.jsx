@@ -364,6 +364,60 @@ const INICIACAO_QUESTIONS = [
   }
 ];
 
+const MENTOR_LEVELS = [
+  { id: 1, label: 'Pergunta socrática', description: 'Faça o aluno refletir sobre o problema sem entregar a resposta.' },
+  { id: 2, label: 'Dica conceitual', description: 'Explique a ideia central e a estratégia de solução.' },
+  { id: 3, label: 'Exemplo análogo', description: 'Use um caso parecido para ilustrar o conceito.' },
+  { id: 4, label: 'Pseudocódigo parcial', description: 'Mostre a estrutura sem entregar a solução final.' }
+];
+
+const IA_PROMPT_LIBRARY = [
+  'Explique o conceito de busca binária.',
+  'Gere uma variação deste problema.',
+  'O que meu código está fazendo de errado?',
+  'Qual é a diferença entre complexidade linear e logarítmica?',
+  'Como posso testar casos de borda em um problema de grafos?',
+  'Explique por que esta estrutura de dados é adequada para este caso.'
+];
+
+const DEBUG_GUIDE = {
+  'Runtime Error': 'O erro aconteceu durante a execução. Verifique se há divisão por zero, acesso a índice fora do vetor ou uso de memória inválida.',
+  'Wrong Answer': 'A saída está diferente do esperado. Revise a lógica, os casos de borda e a ordem dos cálculos.',
+  'Time Limit Exceeded': 'A solução está correta em princípio, mas é lenta demais. Avalie a complexidade e reduza a quantidade de operações.',
+  'Compilation Error': 'O programa não compila. Observe erros de sintaxe, tipos e chaves ou ponto e vírgula faltando.',
+  'Memory Limit': 'O programa usa mais memória do que o permitido. Reavalie estruturas gigantes ou cópias desnecessárias.'
+};
+
+const VARIATION_TEMPLATES = {
+  'busca-binaria': {
+    title: 'Busca binária em faixa crescente',
+    variant: 'Agora o vetor está ordenado e você deve retornar a posição do valor alvo em O(log n), mas com uma contagem de comparações.',
+    difficulty: 'médio'
+  },
+  'dp': {
+    title: 'DP com mochila leve',
+    variant: 'Dado um conjunto de itens com peso e valor, escolha o melhor conjunto sem exceder a capacidade. Exiba o maior valor possível.',
+    difficulty: 'difícil'
+  },
+  'grafos': {
+    title: 'Menor caminho em grafo de rotas',
+    variant: 'Encontre o menor caminho de um ponto para o outro, considerando custos distintos por aresta.',
+    difficulty: 'difícil'
+  },
+  'stl': {
+    title: 'Ordenação e contagem de repetidos',
+    variant: 'Receba uma sequência de números e apresente a quantidade de valores repetidos após a ordenação.',
+    difficulty: 'fácil'
+  }
+};
+
+const RESPONSIBLE_CHECKLIST = [
+  'Eu tentei resolver sozinho antes de pedir ajuda.',
+  'Eu entendi a explicação e não apenas copiei a solução.',
+  'Eu revisei as partes do código que ainda não entendo.',
+  'Eu usei a IA como ferramenta de reflexão, não como atalho.'
+];
+
 const BinaryBackdrop = () => {
   const columns = 28;
   const rows = 16;
@@ -618,6 +672,26 @@ export default function App() {
     iniciacao: false,
     programacao: false,
     regulamento: false
+  });
+  const [mentorLevel, setMentorLevel] = useState(1);
+  const [mentorQuery, setMentorQuery] = useState('Explique o conceito de busca binária.');
+  const [mentorHistory, setMentorHistory] = useState([
+    {
+      id: 1,
+      query: 'Explique o conceito de busca binária.',
+      level: 2,
+      answer: 'A busca binária só funciona em dados ordenados. Você reduz o intervalo pela metade a cada passo, comparando o alvo com o ponto médio. Isso transforma uma busca linear em uma busca logarítmica.'
+    }
+  ]);
+  const [mentorStats, setMentorStats] = useState({ totalQueries: 1, hintsUsed: 1 });
+  const [judgeVerdict, setJudgeVerdict] = useState('Wrong Answer');
+  const [variantTopic, setVariantTopic] = useState('busca-binaria');
+  const [generatedVariant, setGeneratedVariant] = useState(VARIATION_TEMPLATES['busca-binaria']);
+  const [responsibleUsage, setResponsibleUsage] = useState([false, false, false, false]);
+  const [teacherSession] = useState({
+    students: 22,
+    averageHints: 3.4,
+    autonomy: 74
   });
 
   const seededShuffle = (items, seed) => {
@@ -899,6 +973,85 @@ export default function App() {
     const seconds = (value % 60).toString().padStart(2, '0');
     return `${minutes}:${seconds}`;
   };
+
+  const buildMentorReply = (query, level) => {
+    const normalized = query.toLowerCase();
+
+    if (normalized.includes('busca bin') || normalized.includes('busca-bin')) {
+      const base = 'A busca binária exige dados ordenados. Em vez de percorrer todo o vetor, você compara o alvo com o ponto médio e descarta metade do espaço de busca. Isso reduz a complexidade de O(n) para O(log n).';
+      if (level === 1) return `${base} Qual seria o critério para decidir se o alvo está à esquerda ou à direita do meio?`;
+      if (level === 2) return `${base} Dica: pense em um intervalo e reduza o espaço de busca a cada comparação.`;
+      if (level === 3) return `${base} Exemplo análogo: ao procurar uma palavra em um dicionário, você não lê página por página; você abre no meio e decide em qual metade procurar.`;
+      if (level === 4) return `${base} Pseudocódigo parcial: while (esq <= dir) { meio = ...; if (v[meio] == alvo) return meio; if (v[meio] < alvo) esq = ...; else dir = ...; }`;
+    }
+
+    if (normalized.includes('varia') || normalized.includes('variação')) {
+      return 'Para gerar variações, mantenha o núcleo da ideia e altere apenas um eixo: a restrição, o contexto, a entrada ou a saída. O objetivo é treinar reconhecimento de padrão, não repetir a solução literalmente.';
+    }
+
+    if (normalized.includes('código') || normalized.includes('errado') || normalized.includes('debug')) {
+      return 'Antes de corrigir, trace o fluxo do seu código. Pergunte: qual valor entra no loop, quando a condição muda, e o que acontece no primeiro caso limite? Isso ajuda a localizar a falha sem cair em correção automática.';
+    }
+
+    if (normalized.includes('complexidade') || normalized.includes('log') || normalized.includes('linear')) {
+      return 'Complexidade linear significa que a quantidade de trabalho cresce proporcionalmente ao tamanho da entrada. Já a logarítmica aparece quando o problema é reduzido pela metade a cada etapa, como em busca binária ou recorrências de divisão.';
+    }
+
+    if (normalized.includes('grafos') || normalized.includes('grafo')) {
+      return 'Em grafos, a primeira pergunta é: o problema exige apenas presença de caminho, ou também exige o menor custo? Isso define se a estratégia é busca, DFS, BFS ou algoritmo de menor caminho.';
+    }
+
+    if (normalized.includes('stl') || normalized.includes('estrutura')) {
+      return 'Estruturas de dados são ferramentas de organização. O mais importante é saber o custo de cada operação: acesso, inserção, busca e ordenação. Isso ajuda a escolher entre vetor, conjunto, mapa e fila.';
+    }
+
+    return 'A melhor forma de aprender é quebrar o problema em partes: objetivo, entradas, restrições e padrão de decisão. Tente responder essas quatro perguntas antes de pedir a próxima dica.';
+  };
+
+  const askMentor = () => {
+    const reply = buildMentorReply(mentorQuery, mentorLevel);
+    setMentorHistory((prev) => [{
+      id: Date.now(),
+      query: mentorQuery,
+      level: mentorLevel,
+      answer: reply
+    }, ...prev].slice(0, 6));
+    setMentorStats((prev) => ({
+      totalQueries: prev.totalQueries + 1,
+      hintsUsed: prev.hintsUsed + (mentorLevel > 1 ? 1 : 0)
+    }));
+  };
+
+  const generateProblemVariant = () => {
+    const template = VARIATION_TEMPLATES[variantTopic] || VARIATION_TEMPLATES['busca-binaria'];
+    const difficultyShift = mentorStats.hintsUsed > 4 ? 'difícil' : template.difficulty;
+    const variant = {
+      ...template,
+      difficulty: difficultyShift,
+      nextStep: 'Tente escrever a ideia geral antes do código. Identifique a estrutura de dados, a operação chave e o critério de parada.'
+    };
+    setGeneratedVariant(variant);
+  };
+
+  const debugExplanation = DEBUG_GUIDE[judgeVerdict] || DEBUG_GUIDE['Wrong Answer'];
+
+  const comparisonReport = useMemo(() => {
+    const withoutAi = { time: 26, attempts: 7, correct: 2, hints: 0 };
+    const withAi = { time: 18, attempts: 4, correct: 3, hints: mentorStats.hintsUsed };
+    const deltaTime = withoutAi.time - withAi.time;
+    const deltaAttempts = withoutAi.attempts - withAi.attempts;
+    return {
+      withoutAi,
+      withAi,
+      deltaTime,
+      deltaAttempts,
+      insight: deltaTime > 0
+        ? 'O uso estratégico de IA ajudou a reduzir tempo e tentativas, mas ainda vale reforçar a etapa de raciocínio solo.'
+        : 'A sessão com IA ainda exige mais autonomia. Revise o conceito antes de consultar a próxima pista.'
+    };
+  }, [mentorStats.hintsUsed]);
+
+  const autonomyRate = Math.min(100, Math.max(30, 100 - mentorStats.hintsUsed * 8 + teacherSession.autonomy / 2));
 
   const generateRoomCode = () => Math.random().toString(36).slice(2, 7).toUpperCase();
 
@@ -1254,6 +1407,7 @@ export default function App() {
               <button onClick={() => setActiveTab('menu')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'menu' ? 'text-indigo-400' : 'text-slate-400'}`}><Home className="w-4 h-4" /> Início</button>
               <button onClick={() => setActiveTab('iniciacao')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'iniciacao' ? 'text-indigo-400' : 'text-slate-400'}`}><BookOpen className="w-4 h-4" /> Iniciação (Papel)</button>
               <button onClick={() => setActiveTab('programacao')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'programacao' ? 'text-indigo-400' : 'text-slate-400'}`}><Code className="w-4 h-4" /> Programação (PC)</button>
+              <button onClick={() => setActiveTab('mentor')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'mentor' ? 'text-indigo-400' : 'text-slate-400'}`}><Bot className="w-4 h-4" /> IA Mentora</button>
               <button onClick={() => setActiveTab('academy')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'academy' ? 'text-indigo-400' : 'text-slate-400'}`}><GraduationCap className="w-4 h-4" /> Regulamento</button>
             </div>
 
@@ -1624,6 +1778,196 @@ export default function App() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'mentor' && (
+          <div className="max-w-7xl mx-auto px-4 py-12 space-y-6">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+              <div>
+                <div className="text-xs font-mono uppercase tracking-[0.25em] text-cyan-300">IA mentora pedagógica</div>
+                <h2 className="text-4xl font-black text-white mt-2">Modo estratégico de aprendizagem</h2>
+              </div>
+              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-bold text-emerald-200">
+                Dicas pedidas: {mentorStats.hintsUsed} · Autonomia: {Math.round(autonomyRate)}%
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-[1.3fr_0.7fr] gap-6">
+              <div className="space-y-6">
+                <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="text-lg font-black text-white">Chat de IA mentora</div>
+                    <div className="flex gap-2 flex-wrap">
+                      {MENTOR_LEVELS.map((level) => (
+                        <button
+                          key={level.id}
+                          onClick={() => setMentorLevel(level.id)}
+                          className={`px-3 py-1.5 rounded-full text-xs font-bold border ${mentorLevel === level.id ? 'border-cyan-500 bg-cyan-500/15 text-cyan-200' : 'border-slate-700 text-slate-300'}`}
+                        >
+                          {level.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <textarea
+                      value={mentorQuery}
+                      onChange={(e) => setMentorQuery(e.target.value)}
+                      rows={3}
+                      className="w-full rounded-2xl border border-slate-700 bg-slate-950 p-3 text-sm text-slate-100 outline-none focus:border-cyan-500"
+                    />
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mb-5">
+                    {IA_PROMPT_LIBRARY.map((prompt) => (
+                      <button
+                        key={prompt}
+                        onClick={() => setMentorQuery(prompt)}
+                        className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-slate-300 hover:border-cyan-500"
+                      >
+                        {prompt}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={askMentor}
+                    className="w-full rounded-2xl bg-indigo-600 hover:bg-indigo-500 px-4 py-3 font-black text-white shadow-[0_0_30px_rgba(99,102,241,0.22)]"
+                  >
+                    Pedir orientação pedagógica
+                  </button>
+                </div>
+
+                <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-5">
+                  <div className="text-lg font-black text-white mb-4">Histórico de ajudas</div>
+                  <div className="space-y-3">
+                    {mentorHistory.map((item) => (
+                      <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-900 p-4">
+                        <div className="text-[11px] font-mono uppercase tracking-[0.2em] text-cyan-300 mb-2">
+                          Nível {item.level} · {MENTOR_LEVELS[item.level - 1]?.label}
+                        </div>
+                        <p className="text-sm text-slate-300 mb-1"><span className="font-bold text-white">Pergunta:</span> {item.query}</p>
+                        <p className="text-sm text-slate-200"><span className="font-bold text-emerald-300">Resposta:</span> {item.answer}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
+                  <div className="text-lg font-black text-white mb-4">Modo comparativo</div>
+                  <div className="space-y-3 text-sm text-slate-300">
+                    <div className="rounded-2xl border border-slate-700 bg-slate-950 p-3">
+                      <div className="text-xs font-mono uppercase text-rose-300 mb-2">Sem IA</div>
+                      <div className="flex justify-between"><span>Tempo</span><span>{comparisonReport.withoutAi.time} min</span></div>
+                      <div className="flex justify-between"><span>Tentativas</span><span>{comparisonReport.withoutAi.attempts}</span></div>
+                      <div className="flex justify-between"><span>Acertos</span><span>{comparisonReport.withoutAi.correct}</span></div>
+                    </div>
+                    <div className="rounded-2xl border border-slate-700 bg-slate-950 p-3">
+                      <div className="text-xs font-mono uppercase text-emerald-300 mb-2">Com IA</div>
+                      <div className="flex justify-between"><span>Tempo</span><span>{comparisonReport.withAi.time} min</span></div>
+                      <div className="flex justify-between"><span>Tentativas</span><span>{comparisonReport.withAi.attempts}</span></div>
+                      <div className="flex justify-between"><span>Acertos</span><span>{comparisonReport.withAi.correct}</span></div>
+                    </div>
+                  </div>
+                  <div className="mt-4 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-3 text-sm text-cyan-100">
+                    {comparisonReport.insight}
+                  </div>
+                </div>
+
+                <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
+                  <div className="text-lg font-black text-white mb-4">Depuração guiada pelo juiz</div>
+                  <select
+                    value={judgeVerdict}
+                    onChange={(e) => setJudgeVerdict(e.target.value)}
+                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none"
+                  >
+                    <option value="Runtime Error">Runtime Error</option>
+                    <option value="Wrong Answer">Wrong Answer</option>
+                    <option value="Time Limit Exceeded">Time Limit Exceeded</option>
+                    <option value="Compilation Error">Compilation Error</option>
+                    <option value="Memory Limit">Memory Limit</option>
+                  </select>
+                  <div className="mt-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-100">
+                    {debugExplanation}
+                  </div>
+                  <ul className="mt-4 space-y-2 text-sm text-slate-300 list-disc pl-5">
+                    <li>Qual é o intervalo do seu loop?</li>
+                    <li>O que acontece quando n = 0?</li>
+                    <li>Você inicializou a variável antes de usá-la?</li>
+                    <li>A sua estrutura está na complexidade correta?</li>
+                  </ul>
+                </div>
+
+                <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
+                  <div className="text-lg font-black text-white mb-4">Geração de variações</div>
+                  <select
+                    value={variantTopic}
+                    onChange={(e) => setVariantTopic(e.target.value)}
+                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none"
+                  >
+                    <option value="busca-binaria">Busca binária</option>
+                    <option value="dp">DP</option>
+                    <option value="grafos">Grafos</option>
+                    <option value="stl">STL</option>
+                  </select>
+                  <button
+                    onClick={generateProblemVariant}
+                    className="mt-3 w-full rounded-xl border border-emerald-500 text-emerald-300 font-bold py-2 hover:bg-emerald-500/10"
+                  >
+                    Gerar variação
+                  </button>
+                  <div className="mt-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-100">
+                    <div className="font-bold">{generatedVariant.title}</div>
+                    <div className="mt-2">{generatedVariant.variant}</div>
+                    <div className="mt-2 text-xs uppercase tracking-[0.2em] text-emerald-300">Dificuldade: {generatedVariant.difficulty}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
+                <div className="text-lg font-black text-white mb-4">Checklist de uso responsável</div>
+                <div className="space-y-3">
+                  {RESPONSIBLE_CHECKLIST.map((item, index) => (
+                    <label key={item} className="flex items-start gap-3 rounded-xl border border-slate-800 bg-slate-950 p-3 text-sm text-slate-300">
+                      <input
+                        type="checkbox"
+                        checked={responsibleUsage[index]}
+                        onChange={() => setResponsibleUsage((prev) => prev.map((value, valueIndex) => valueIndex === index ? !value : value))}
+                        className="mt-1 h-4 w-4 accent-cyan-500"
+                      />
+                      <span>{item}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
+                <div className="text-lg font-black text-white mb-4">Painel de autonomia</div>
+                <div className="space-y-3 text-sm text-slate-300">
+                  <div className="flex justify-between"><span>Questões resolvidas sem IA</span><span>{Math.max(2, 7 - mentorStats.hintsUsed)} / 7</span></div>
+                  <div className="h-2 rounded-full bg-slate-800 overflow-hidden"><div className="h-full bg-emerald-500" style={{ width: `${Math.min(100, autonomyRate)}%` }} /></div>
+                  <div className="flex justify-between"><span>Uso de IA em treino</span><span>{mentorStats.hintsUsed} dicas</span></div>
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5">
+                <div className="text-lg font-black text-white mb-4">Modo professor / minicurso</div>
+                <div className="space-y-3 text-sm text-slate-300">
+                  <div className="flex justify-between"><span>Alunos</span><span>{teacherSession.students}</span></div>
+                  <div className="flex justify-between"><span>Média de dicas</span><span>{teacherSession.averageHints}</span></div>
+                  <div className="flex justify-between"><span>Autonomia</span><span>{teacherSession.autonomy}%</span></div>
+                </div>
+                <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-950 p-3 text-sm text-slate-200">
+                  Sugestão: peça que os alunos resolvam primeiro sem IA e só depois comparem com a explicação orientada.
+                </div>
+              </div>
             </div>
           </div>
         )}
