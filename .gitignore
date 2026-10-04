@@ -4,3 +4,12 @@ dist
 .DS_Store
 npm-debug.log*
 docs
+release
+android/.gradle
+android/.idea
+android/build
+android/captures
+android/local.properties
+android/app/build
+android/app/release
+android/*.iml

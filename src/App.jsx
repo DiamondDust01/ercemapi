@@ -703,6 +703,7 @@ const CodeEditor = memo(({ initialValueCpp, initialValuePython, language, onRun,
 });
 
 export default function App() {
+  const mainScrollRef = useRef(null);
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
   const [activeTab, setActiveTab] = useState('menu');
@@ -1609,6 +1610,10 @@ export default function App() {
   }, [selectedIniciacaoAnswers]);
 
   useEffect(() => {
+    if (mainScrollRef.current) mainScrollRef.current.scrollTop = 0;
+  }, [activeTab]);
+
+  useEffect(() => {
     setHomeChecklist((prev) => ({
       ...prev,
       programacao: isVictory || prev.programacao
@@ -1904,18 +1909,18 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#020408] text-slate-300 font-sans selection:bg-indigo-500/30 overflow-hidden flex flex-col relative">
+    <div className="min-h-screen min-h-[100dvh] bg-[#020408] text-slate-300 font-sans selection:bg-indigo-500/30 overflow-hidden flex flex-col relative">
       <BinaryBackdrop />
       <header className="fixed top-0 left-0 right-0 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-md z-50">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setActiveTab('menu')}>
-            <Trophy className="w-6 h-6 text-indigo-400" />
-            <span className="font-black text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
-              OBI Quest (Modalidades)
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 h-14 md:h-16 flex items-center justify-between gap-2">
+          <button type="button" className="flex min-w-0 items-center gap-2 text-left" onClick={() => setActiveTab('menu')} aria-label="Ir para o início">
+            <Trophy className="h-5 w-5 shrink-0 text-indigo-400 sm:h-6 sm:w-6" />
+            <span className="truncate font-black text-base tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400 sm:text-xl">
+              OBI Quest<span className="hidden sm:inline"> (Modalidades)</span>
             </span>
-          </div>
+          </button>
 
-          <div className="flex items-center gap-6">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-4 md:gap-6">
             <div className="hidden md:flex items-center gap-4 text-sm font-bold">
               <button onClick={() => setActiveTab('menu')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'menu' ? 'text-indigo-400' : 'text-slate-400'}`}><Home className="w-4 h-4" /> Início</button>
               <button onClick={() => setActiveTab('iniciacao')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'iniciacao' ? 'text-indigo-400' : 'text-slate-400'}`}><BookOpen className="w-4 h-4" /> Iniciação (Papel)</button>
@@ -1924,11 +1929,11 @@ export default function App() {
               <button onClick={() => setActiveTab('academy')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'academy' ? 'text-indigo-400' : 'text-slate-400'}`}><GraduationCap className="w-4 h-4" /> Regulamento</button>
             </div>
 
-            <div className="flex items-center gap-4 border-l border-slate-800 pl-6">
-              <div className="flex items-center gap-2 text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full text-sm font-bold">
-                <Activity className="w-4 h-4" /> {userData?.score || 0} pts
+            <div className="flex shrink-0 items-center gap-1 border-l border-slate-800 pl-2 sm:gap-3 sm:pl-4 md:gap-4 md:pl-6">
+              <div className="flex min-h-9 items-center gap-1 rounded-full bg-emerald-400/10 px-2 py-1 text-xs font-bold text-emerald-400 sm:gap-2 sm:px-3 sm:text-sm">
+                <Activity className="h-4 w-4" /> <span>{userData?.score || 0}<span className="hidden sm:inline"> pts</span></span>
               </div>
-              <button onClick={toggleAudio} className="p-2 rounded-full hover:bg-slate-800 text-slate-400 transition-colors">
+              <button type="button" onClick={toggleAudio} aria-label={audioEnabled ? 'Desativar áudio' : 'Ativar áudio'} className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-800">
                 {audioEnabled ? <Volume2 className="w-5 h-5 text-indigo-400" /> : <VolumeX className="w-5 h-5" />}
               </button>
             </div>
@@ -1936,7 +1941,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto relative z-10 pt-16">
+      <main ref={mainScrollRef} className="flex-1 overflow-y-auto relative z-10 pt-14 pb-20 md:pt-16 md:pb-0">
         {activeTab === 'menu' && (
           <div className="max-w-6xl mx-auto px-4 py-16 md:py-20">
             <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_0.9fr] gap-6 items-stretch">
@@ -2112,17 +2117,38 @@ export default function App() {
               </div>
             </div>
 
-            <div className="mb-6 rounded-2xl border border-slate-800 bg-slate-950/60 p-4 space-y-4">
-              <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4">
-                <div>
-                  <div className="text-xs font-mono uppercase text-cyan-300 mb-2">Tempo para responder as perguntas</div>
-                  <div className="text-3xl font-black text-white">{formatTime(iniciacaoTimeLeft)}</div>
-                  <div className="text-xs uppercase tracking-[0.15em] mt-1 text-slate-400">{iniciacaoTimerStateLabel}</div>
+            <div className={`mb-6 rounded-2xl border p-4 transition-colors ${iniciacaoTimerTone}`}>
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+                <div className="min-w-0">
+                  <div className="mb-1 flex items-center gap-2 text-xs font-mono uppercase text-slate-400">
+                    <Clock3 className={`h-4 w-4 ${iniciacaoTimerAccent}`} />
+                    <span>Tempo para responder</span>
+                    <span className="ml-auto rounded-full border border-current/20 px-2 py-1 text-[10px] tracking-normal text-slate-300">{iniciacaoTimerRunning ? 'EM ANDAMENTO' : iniciacaoTimeLeft === 0 ? 'ENCERRADO' : 'PAUSADO'}</span>
+                  </div>
+                  <div className={`font-mono text-4xl font-black tabular-nums ${iniciacaoTimerAccent}`} aria-label={`Tempo restante ${formatTime(iniciacaoTimeLeft)}`}>{formatTime(iniciacaoTimeLeft)}</div>
+                  <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-800" role="progressbar" aria-label="Tempo restante da prova" aria-valuemin={0} aria-valuemax={iniciacaoMinutes * 60} aria-valuenow={iniciacaoTimeLeft}>
+                    <div className={`h-full transition-[width] duration-500 ${iniciacaoTimeLeft <= 60 ? 'bg-rose-400' : 'bg-cyan-400'}`} style={{ width: `${Math.max(0, Math.min(100, (iniciacaoTimeLeft / Math.max(1, iniciacaoMinutes * 60)) * 100))}%` }} />
+                  </div>
+                  <div className="mt-2 text-xs text-slate-400">{iniciacaoTimerStateLabel}</div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full md:w-auto">
-                  <button onClick={startIniciacao} className="w-full py-2 rounded-xl border border-emerald-500 text-emerald-500 font-bold text-xs bg-transparent hover:bg-emerald-500/10">Iniciar</button>
-                  <button onClick={pauseIniciacao} className="w-full py-2 rounded-xl border border-amber-500 text-amber-500 font-bold text-xs bg-transparent hover:bg-amber-500/10">Pausar</button>
-                  <button onClick={resetIniciacao} className="w-full py-2 rounded-xl border border-rose-500 text-rose-500 font-bold text-xs bg-transparent hover:bg-rose-500/10">Reset</button>
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 md:min-w-[280px]" role="group" aria-label="Controles do cronômetro de iniciação">
+                  <button
+                    onClick={iniciacaoTimerRunning ? pauseIniciacao : startIniciacao}
+                    aria-label={iniciacaoTimerRunning ? 'Pausar cronômetro' : 'Iniciar cronômetro'}
+                    className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-5 text-sm font-bold text-slate-950 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${iniciacaoTimerRunning ? 'bg-amber-400 hover:bg-amber-300' : 'bg-emerald-400 hover:bg-emerald-300'}`}
+                  >
+                    {iniciacaoTimerRunning ? <Pause className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current" />}
+                    {iniciacaoTimerRunning ? 'Pausar' : 'Iniciar'}
+                  </button>
+                  <button
+                    onClick={resetIniciacao}
+                    aria-label="Reiniciar cronômetro"
+                    title="Reiniciar cronômetro"
+                    className="inline-flex min-h-12 min-w-12 items-center justify-center gap-2 rounded-xl border border-slate-600 bg-slate-900 px-3 text-sm font-semibold text-slate-200 transition-colors hover:border-rose-400 hover:bg-rose-400/10 hover:text-rose-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-4"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                    <span className="hidden sm:inline">Reiniciar</span>
+                  </button>
                 </div>
               </div>
 
@@ -2805,6 +2831,23 @@ export default function App() {
           </div>
         )}
       </main>
+
+      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-800 bg-slate-950/95 px-1 pt-1 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden" aria-label="Navegação principal">
+        <div className="mx-auto grid max-w-xl grid-cols-5">
+          {[
+            { id: 'menu', label: 'Início', Icon: Home },
+            { id: 'iniciacao', label: 'Iniciação', Icon: BookOpen },
+            { id: 'programacao', label: 'Código', Icon: Code },
+            { id: 'mentor', label: 'Mentoria', Icon: Bot },
+            { id: 'academy', label: 'Regras', Icon: GraduationCap }
+          ].map(({ id, label, Icon }) => (
+            <button key={id} type="button" onClick={() => setActiveTab(id)} aria-current={activeTab === id ? 'page' : undefined} className={`flex min-h-14 flex-col items-center justify-center gap-1 px-1 text-[10px] font-semibold leading-none transition-colors ${activeTab === id ? 'text-cyan-300' : 'text-slate-500 hover:text-slate-200'}`}>
+              <Icon className="h-5 w-5" strokeWidth={activeTab === id ? 2.5 : 1.8} />
+              <span>{label}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
     </div>
   );
 }

@@ -1,0 +1,6 @@
+{
+  "appId": "com.obique.quest",
+  "appName": "OBI Quest",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
