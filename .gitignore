@@ -4,6 +4,11 @@ dist
 .DS_Store
 npm-debug.log*
 docs
+!docs/
+docs/*
+!docs/README.md
+!docs/guia_de_estudo_e_apresentacao.md
+!docs/*.ignore
 release
 android/.gradle
 android/.idea
@@ -13,3 +18,11 @@ android/local.properties
 android/app/build
 android/app/release
 android/*.iml
+
+# Temporary debugging artifacts; retain local copies but keep them out of Git.
+appjsx-debug.ipynb
+diff_app.txt
+diff_ignore.txt
+tmp-brace-*.mjs
+tmp-jsx-balance-check.*
+tmp-print-lines.mjs
