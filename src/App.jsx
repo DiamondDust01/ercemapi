@@ -2810,11 +2810,49 @@ export default function App() {
                             </div>
                             <div>Principal (menor ping médio): {peerStatus.primaryUid ? roomInfo.players?.[peerStatus.primaryUid]?.name || peerStatus.primaryUid : 'elegendo...'}</div>
                             <div>Reserva: {peerStatus.backupUid ? roomInfo.players?.[peerStatus.backupUid]?.name || peerStatus.backupUid : 'aguardando outro dispositivo'}</div>
-                            {peerStatus.peers.map((peer) => (
-                              <div key={peer.uid} className="text-slate-500">
-                                {roomInfo.players?.[peer.uid]?.name || peer.uid}: {peer.state}{peer.pingMs === null ? '' : ` · ${peer.pingMs} ms`}
+                            {peerStatus.peers.length > 0 ? (
+                              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                                {peerStatus.peers.map((peer) => {
+                                  const pingTone = peer.average === null
+                                    ? 'text-slate-400'
+                                    : peer.average <= 50 ? 'text-emerald-300' : peer.average <= 100 ? 'text-cyan-300' : peer.average <= 200 ? 'text-amber-300' : 'text-rose-300';
+                                  const barTone = peer.average === null
+                                    ? 'bg-slate-700'
+                                    : peer.average <= 50 ? 'bg-emerald-400' : peer.average <= 100 ? 'bg-cyan-400' : peer.average <= 200 ? 'bg-amber-400' : 'bg-rose-400';
+                                  const serverRole = peer.uid === peerStatus.primaryUid
+                                    ? 'Principal'
+                                    : peer.uid === peerStatus.backupUid ? 'Reserva' : '';
+                                  const barWidth = peer.average === null ? 0 : Math.max(4, Math.min(100, peer.average / 200 * 100));
+                                  return (
+                                    <article key={peer.uid} className="rounded-lg border border-slate-800 bg-slate-950/70 p-3" aria-label={`Ping de ${roomInfo.players?.[peer.uid]?.name || peer.uid}`}>
+                                      <div className="flex items-start justify-between gap-2">
+                                        <span className="min-w-0 truncate font-semibold text-slate-200">{roomInfo.players?.[peer.uid]?.name || peer.uid}</span>
+                                        <span className={`shrink-0 text-[10px] font-bold uppercase ${peer.state === 'connected' ? 'text-emerald-300' : 'text-amber-300'}`}>
+                                          {serverRole || peer.state}
+                                        </span>
+                                      </div>
+                                      <div className={`mt-2 font-mono text-xl font-bold ${pingTone}`} aria-live="polite">
+                                        {peer.average === null ? '—' : `${peer.average} ms`}
+                                        <span className="ml-2 text-[10px] font-sans font-normal text-slate-500">
+                                          {peer.average === null ? peer.state : 'média'}
+                                        </span>
+                                      </div>
+                                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-800" role="meter" aria-label={`Latência média para ${roomInfo.players?.[peer.uid]?.name || peer.uid}`} aria-valuemin={0} aria-valuemax={200} aria-valuenow={peer.average ?? 0}>
+                                        <div className={`h-full rounded-full transition-[width] duration-300 ${barTone}`} style={{ width: `${barWidth}%` }} />
+                                      </div>
+                                      <div className="mt-2 flex justify-between gap-2 text-[10px] text-slate-500">
+                                        <span>{peer.sampleCount} medições</span>
+                                        <span>{peer.minimum === null ? 'Sem amostras' : `${peer.minimum}–${peer.maximum} ms · var. ${peer.jitter} ms`}</span>
+                                      </div>
+                                    </article>
+                                  );
+                                })}
                               </div>
-                            ))}
+                            ) : (
+                              <div className="rounded-lg border border-dashed border-slate-800 px-3 py-3 text-center text-[11px] text-slate-500">
+                                Entre com outro dispositivo para medir o ping P2P.
+                              </div>
+                            )}
                             {peerStatus.error && <div className="text-amber-200">{peerStatus.error}</div>}
                             <div className="pt-1 text-[10px] text-slate-500">A conexão direta exige Firebase para sinalização e uma rede compatível com WebRTC. A sala continua usando Firestore para persistir a partida.</div>
                           </div>
