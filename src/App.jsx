@@ -1818,6 +1818,16 @@ export default function App() {
   const isTimerActive = timerRunning && timeLeft > 0;
   const canControlCompetition = !db || !user || !roomInfo
     || (peerStatus.primaryUid || roomInfo.hostUid) === user.uid;
+  const peerPingSummary = summarizePeerConnection(peerStatus.peers);
+  const peerConnectionLabel = peerPingSummary.averagePing !== null
+    ? `ativa · ${peerPingSummary.averagePing} ms`
+    : ({
+      measuring: 'canal aberto · medindo latência',
+      connecting: 'conectando',
+      unresponsive: 'sem resposta recente',
+      disconnected: 'desconectada',
+      waiting: 'aguardando aparelhos'
+    })[peerPingSummary.state];
   const timerStateLabel = timeLeft === 0
     ? 'Tempo esgotado — você não pode responder enquanto o cronômetro estiver parado.'
     : timerRunning
@@ -2963,43 +2973,48 @@ export default function App() {
                         {roomInfo?.code && roomInfo.signal !== 'local' && (
                           <div className="space-y-1 rounded-lg border border-cyan-900/60 bg-cyan-950/20 px-3 py-2 text-xs text-slate-300" role="status" aria-live="polite">
                             <div className="font-bold text-cyan-200">
-                              Conexão direta entre aparelhos: {peerStatus.state === 'connected' ? 'conectada' : peerStatus.state === 'connecting' ? 'conectando' : 'aguardando aparelhos'}
+                              Conexão direta entre aparelhos: {peerConnectionLabel}
                             </div>
                             <div>Principal (menor ping médio): {peerStatus.primaryUid ? roomInfo.players?.[peerStatus.primaryUid]?.name || peerStatus.primaryUid : 'elegendo...'}</div>
                             <div>Reserva: {peerStatus.backupUid ? roomInfo.players?.[peerStatus.backupUid]?.name || peerStatus.backupUid : 'aguardando outro dispositivo'}</div>
                             {peerStatus.peers.length > 0 ? (
                               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                                 {peerStatus.peers.map((peer) => {
-                                  const pingTone = peer.average === null
+                                  const hasRecentPing = peerPingSummary.measuredPeers.includes(peer);
+                                  const currentAverage = hasRecentPing ? peer.average : null;
+                                  const pingStateLabel = hasRecentPing
+                                    ? 'média atual'
+                                    : peer.channelState !== 'open' ? peer.state : peer.lastPingAt ? 'sem resposta' : 'medindo';
+                                  const pingTone = currentAverage === null
                                     ? 'text-slate-400'
-                                    : peer.average <= 50 ? 'text-emerald-300' : peer.average <= 100 ? 'text-cyan-300' : peer.average <= 200 ? 'text-amber-300' : 'text-rose-300';
-                                  const barTone = peer.average === null
+                                    : currentAverage <= 50 ? 'text-emerald-300' : currentAverage <= 100 ? 'text-cyan-300' : currentAverage <= 200 ? 'text-amber-300' : 'text-rose-300';
+                                  const barTone = currentAverage === null
                                     ? 'bg-slate-700'
-                                    : peer.average <= 50 ? 'bg-emerald-400' : peer.average <= 100 ? 'bg-cyan-400' : peer.average <= 200 ? 'bg-amber-400' : 'bg-rose-400';
+                                    : currentAverage <= 50 ? 'bg-emerald-400' : currentAverage <= 100 ? 'bg-cyan-400' : currentAverage <= 200 ? 'bg-amber-400' : 'bg-rose-400';
                                   const serverRole = peer.uid === peerStatus.primaryUid
                                     ? 'Principal'
                                     : peer.uid === peerStatus.backupUid ? 'Reserva' : '';
-                                  const barWidth = peer.average === null ? 0 : Math.max(4, Math.min(100, peer.average / 200 * 100));
+                                  const barWidth = currentAverage === null ? 0 : Math.max(4, Math.min(100, currentAverage / 200 * 100));
                                   return (
                                     <article key={peer.uid} className="rounded-lg border border-slate-800 bg-slate-950/70 p-3" aria-label={`Ping de ${roomInfo.players?.[peer.uid]?.name || peer.uid}`}>
                                       <div className="flex items-start justify-between gap-2">
                                         <span className="min-w-0 truncate font-semibold text-slate-200">{roomInfo.players?.[peer.uid]?.name || peer.uid}</span>
-                                        <span className={`shrink-0 text-[10px] font-bold uppercase ${peer.state === 'connected' ? 'text-emerald-300' : 'text-amber-300'}`}>
-                                          {serverRole || peer.state}
+                                        <span className={`shrink-0 text-[10px] font-bold uppercase ${peer.state === 'connected' && peer.channelState === 'open' ? 'text-emerald-300' : 'text-amber-300'}`}>
+                                          {[serverRole, peer.state === 'connected' ? peer.channelState : peer.state].filter(Boolean).join(' · ')}
                                         </span>
                                       </div>
                                       <div className={`mt-2 font-mono text-xl font-bold ${pingTone}`} aria-live="polite">
-                                        {peer.average === null ? '—' : `${peer.average} ms`}
+                                        {currentAverage === null ? '—' : `${currentAverage} ms`}
                                         <span className="ml-2 text-[10px] font-sans font-normal text-slate-500">
-                                          {peer.average === null ? peer.state : 'média'}
+                                          {pingStateLabel}
                                         </span>
                                       </div>
-                                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-800" role="meter" aria-label={`Latência média para ${roomInfo.players?.[peer.uid]?.name || peer.uid}`} aria-valuemin={0} aria-valuemax={200} aria-valuenow={peer.average ?? 0}>
+                                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-800" role="meter" aria-label={`Latência média para ${roomInfo.players?.[peer.uid]?.name || peer.uid}`} aria-valuemin={0} aria-valuemax={200} aria-valuenow={currentAverage ?? 0}>
                                         <div className={`h-full rounded-full transition-[width] duration-300 ${barTone}`} style={{ width: `${barWidth}%` }} />
                                       </div>
                                       <div className="mt-2 flex justify-between gap-2 text-[10px] text-slate-500">
                                         <span>{peer.sampleCount} medições</span>
-                                        <span>{peer.minimum === null ? 'Sem amostras' : `${peer.minimum}–${peer.maximum} ms · var. ${peer.jitter} ms`}</span>
+                                        <span>{hasRecentPing ? `${peer.minimum}–${peer.maximum} ms · var. ${peer.jitter} ms` : 'Sem medição recente'}</span>
                                       </div>
                                     </article>
                                   );

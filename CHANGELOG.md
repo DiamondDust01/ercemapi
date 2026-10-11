@@ -30,9 +30,9 @@ a numeração das versões consistente entre o código e os próximos lançament
 ### Corrigido
 
 - Rótulo do indicador local de rede e texto de ajuda revisados para português.
-- Indicador de ping P2P no canto da tela durante uma sala, separado da conexão
-  local. Exibe medições recentes de ida e volta entre aparelhos e sinaliza quando
-  não há pareamento ou quando as respostas deixam de chegar.
+- Indicador de ping P2P no canto da tela e no painel da sala, separado da
+  conexão local. Exibe medições recentes de ida e volta entre aparelhos e
+  sinaliza quando não há pareamento ou quando as respostas deixam de chegar.
 
 ### Organização
 
