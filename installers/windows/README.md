@@ -42,11 +42,26 @@ distribuí-lo.
 O instalador não tem assinatura digital. A compilação ou execução ainda pode ser
 bloqueada pela política de Controle de Aplicativos do Windows. Não desative
 proteções do sistema nem tente contornar esses bloqueios; use um ambiente de
-build aprovado pela organização. A compilação local concluída nesta rodada gerou
-um arquivo de aproximadamente 110 MB, acima do limite de 100 MiB por arquivo no
-GitHub, por isso o Setup não foi adicionado à branch. O instalador também não
-foi executado neste ambiente; valide-o em uma máquina de teste autorizada e
-publique-o como ativo de Release ou em outro armazenamento apropriado.
+build aprovado pela organização.
+
+O Setup 1.4.2 gerado nesta rodada foi instalado em uma pasta temporária isolada,
+o aplicativo foi aberto e sua janela respondeu, e a instalação foi removida com
+o desinstalador. Isso valida o fluxo básico nesta máquina Windows, mas não
+substitui testes em outras versões do Windows. O arquivo não é assinado.
+
+O instalador tem aproximadamente 110 MB. O ZIP testado não reduziu o tamanho,
+pois o conteúdo do instalador já usa compressão LZMA. Para disponibilizá-lo no
+GitHub sem dividir nem alterar o executável, o arquivo é armazenado nesta branch
+com Git LFS. Instale Git LFS antes de clonar/atualizar e baixe os objetos:
+
+```bash
+git lfs install
+git lfs pull
+```
+
+Também é possível baixar o
+[Setup OBI Quest 1.4.2 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-Setup-1.4.2.exe)
+diretamente. A versão portátil continua disponível no arquivo `.7z` acima.
 
 Para mais detalhes, consulte o
 [README principal](../../README.md) e o [`CHANGELOG.md`](../../CHANGELOG.md).

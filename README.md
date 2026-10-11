@@ -113,28 +113,27 @@ um instalador auxiliar temporário. Ele permite escolher a pasta de instalação
 cria atalhos no menu Iniciar e na área de trabalho, e inclui um desinstalador.
 O instalador não tem assinatura digital; políticas de segurança ainda podem
 bloquear sua compilação ou execução. Não desative proteções do Windows para
-contornar esses bloqueios. O Setup gerado localmente não foi executado neste
-ambiente e, com cerca de 110 MB, não foi incluído na branch porque ultrapassa
-o limite de 100 MiB por arquivo do GitHub; use um ambiente de teste autorizado
-e publique-o como ativo de Release ou em outro armazenamento apropriado.
+contornar esses bloqueios. O Setup 1.4.2 foi instalado e aberto com sucesso em
+um teste local isolado, e depois desinstalado. Não tem assinatura digital.
 
 O pacote portátil 1.4.2 está na branch `app-pc`:
 [baixar OBI Quest 1.4.2 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.4.2-Windows-x64.7z).
 Extraia com 7-Zip ou NanaZip e execute `OBI Quest.exe` na pasta extraída. O
 arquivo comprimido tem cerca de 98,8 MB (94,25 MiB); o GitHub recomenda manter
-arquivos abaixo de 50 MB. A aplicação e o pacote não têm assinatura digital, e
-políticas de segurança do Windows podem bloquear a execução. O assistente
-Setup.exe ainda não foi publicado. A compilação local gera um arquivo de cerca
-de 110 MB, acima do limite de 100 MiB por arquivo no GitHub; além disso, ele
-não foi executado neste ambiente e precisa ser validado em um ambiente de teste
-autorizado antes da distribuição.
+arquivos abaixo de 50 MB. O instalador assistido 1.4.2, com aproximadamente
+110 MB, está em [`installers/windows/`](installers/windows/) e é armazenado com
+Git LFS por exceder 100 MiB. Para clonar e obter esse arquivo, instale Git LFS
+e execute `git lfs install` e `git lfs pull`. Também é possível baixar o
+[Setup para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-Setup-1.4.2.exe).
+O instalador e o app portátil não têm assinatura digital; políticas de
+segurança do Windows podem bloquear a execução.
 
 ## Branches e distribuição
 
 - `main`: versão integrada e fontes completos.
 - `test`: validação antes da integração em `main`.
 - `app-mobile`: árvore completa do projeto e APK Android de teste.
-- `app-pc`: árvore completa do projeto e pacote portátil Windows.
+- `app-pc`: árvore completa do projeto e pacotes Windows portátil e Setup.
 
 As branches de plataforma mantêm os fontes compartilhados e acrescentam os
 artefatos daquela plataforma; não são versões com os fontes removidos. Os

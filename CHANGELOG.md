@@ -24,7 +24,8 @@ a numeração das versões consistente entre o código e os próximos lançament
 
 - O empacotamento Windows agora compila o assistente NSIS diretamente a partir
   dos arquivos preparados pelo Electron, sem iniciar um Setup auxiliar
-  temporário para gerar o desinstalador.
+  temporário para gerar o desinstalador; instalação, abertura e desinstalação
+  foram verificadas localmente e o Setup está disponível via Git LFS em `app-pc`.
 
 ### Corrigido
 
