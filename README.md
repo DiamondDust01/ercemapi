@@ -7,6 +7,12 @@ Projeto React/Vite inspirado na Olimpíada Brasileira de Informática com duas m
 
 ## Pareamento direto entre dispositivos
 
+Um indicador de conectividade local permanece disponível em todas as telas.
+Quando o navegador ou sistema expõe estimativas de tipo de rede, taxa e RTT, ele
+mostra uma qualidade aproximada; caso contrário, informa apenas se o sistema
+indica rede conectada. Esse indicador não faz requisições nem testes de ping a
+servidores e não representa uma medição do acesso à Internet.
+
 As salas de competição tentam criar conexões WebRTC diretas entre os participantes.
 O dispositivo conectado com menor ping médio é eleito principal; o seguinte
 torna-se a reserva. O painel da sala mostra a latência média por dispositivo,
