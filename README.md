@@ -42,6 +42,12 @@ ficam separadas: o criador compartilha o código gerado e os demais o digitam pa
 entrar. Sem Firebase, a interface identifica a criação como demonstração local;
 não há pareamento ou entrada online.
 
+Para uma partida online, **Configurar e criar sala** abre a configuração da
+duração, do mínimo de participantes necessário para iniciar e do máximo permitido
+(até 16). Antes da criação, um resumo pede confirmação. A sala mostra quantos
+jogadores já entraram e quantos ainda faltam; o início só é liberado ao alcançar
+o mínimo. Salas cheias e partidas em andamento não aceitam novas entradas.
+
 ## Tecnologias
 
 - React
