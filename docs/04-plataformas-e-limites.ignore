@@ -1,0 +1,84 @@
+FONTE DE ESTUDO: PLATAFORMAS, PACOTES E LIMITES DE DISTRIBUICAO
+Atualizada para a versao 1.4.2 em 11/10/2026.
+
+VERSAO E FONTES DE VERDADE
+
+A versao da aplicacao documentada aqui e 1.4.2. package.json e package-lock.json
+controlam a versao do cliente; android/app/build.gradle tambem registra
+versionName 1.4.2 e versionCode 8 para o Android. CHANGELOG.md registra as
+alteracoes. Se uma branch ou futura release divergir, confirme os arquivos e
+commits dessa branch; este documento descreve o estado de 11/10/2026.
+
+WEB
+
+Para desenvolvimento: npm install, npm run dev. Para build: npm run build. O
+resultado de producao fica em dist/; npm run preview serve esse resultado para
+revisao. A aplicacao web e a base comum usada pelas embalagens nativas.
+
+ANDROID
+
+Capacitor empacota dist/ em uma WebView. npm run android:sync compila web e
+sincroniza o projeto nativo; npm run android:open abre o projeto no Android
+Studio; npm run android:apk gera APK debug quando JDK e SDK estao configurados.
+
+Foi preparado o APK 1.4.2, versionCode 8, na branch app-mobile:
+installers/android/OBI-Quest-1.4.2-android.apk. O arquivo e assinado com chave
+de depuracao, apropriado para teste, nao e assinatura de release para Play
+Store. A assinatura debug nao deve ser tratada como identidade confiavel do
+publicador. A compilacao foi validada; nao havia aparelho fisico conectado para
+teste de instalacao/execucao.
+
+WINDOWS
+
+O Electron carrega o build web. npm run app:windows abre a aplicacao localmente;
+npm run app:windows:package cria um diretorio portatil completo; npm run
+app:windows:installer esta configurado para gerar um instalador NSIS assistido
+x64 em release/windows/.
+
+O pacote Windows 1.4.2 preparado para distribuicao esta na branch app-pc:
+installers/windows/OBI-Quest-1.4.2-Windows-x64.7z. Para usar, baixe o arquivo,
+extraia com 7-Zip ou NanaZip e inicie OBI Quest.exe na pasta extraida. O
+executavel precisa permanecer com os outros recursos; nao distribua apenas esse
+arquivo isolado.
+
+O pacote foi verificado como arquivo 7z integro e contem o executavel, app.asar
+e recursos Electron para ingles dos EUA e portugues do Brasil. Tem cerca de
+94,25 MiB, abaixo do limite tecnico usual de 100 MiB por arquivo no GitHub, mas
+acima da recomendacao de 50 MB; o GitHub mostrou aviso de arquivo grande no push.
+Uma futura distribuicao maior deve considerar Git LFS ou GitHub Releases.
+
+O build do Setup NSIS nao foi finalizado neste ambiente: a politica de Controle
+de Aplicativos bloqueou um auxiliar sem assinatura iniciado pelo empacotador.
+Essa restricao nao deve ser contornada. O pacote portatil foi publicado, mas
+nao ha um Setup.exe pronto para download nesta versao.
+
+ASSINATURAS E AVISOS DO SISTEMA
+
+O APK usa chave de depuracao. Os arquivos Windows nao tem assinatura digital
+verificada. O Windows pode mostrar avisos ou uma politica local pode impedir a
+execucao. Isso nao e evidencia suficiente para desativar protecoes do sistema;
+distribuicoes publicas devem receber assinatura confiavel e ser verificadas no
+processo oficial de release.
+
+BRANCHES
+
+- main: codigo e documentacao integrados, sem os artefatos de plataforma.
+- test: validacao antes de integrar mudancas em main.
+- app-mobile: codigo comum e artefato Android.
+- app-pc: codigo comum e artefato Windows.
+
+As branches de app conservam os fontes completos para que o pacote possa ser
+reproduzido. Os artefatos grandes nao pertencem a main ou test. Os links de
+download podem mudar quando um novo pacote for preparado.
+
+LIMITES QUE DEVEM SER EXPLICADOS
+
+- "APK pronto" nesta versao significa APK debug para instalacao de teste, nao
+  release Play Store.
+- "App para Windows" significa pacote portatil 7z; nao e Setup.exe.
+- npm run app:windows:installer prepara um build NSIS, mas nao garante que todo
+  ambiente consiga executar o auxiliar exigido para concluir a embalagem.
+- Testes de build nao equivalem a instalacao em aparelho Android fisico nem a
+  validacao em todos os computadores Windows.
+- Uma compilacao do aplicativo sem VITE_FIREBASE_CONFIG e VITE_APP_ID nao ganha
+  automaticamente acesso ao backend multiplayer.
