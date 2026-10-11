@@ -30,6 +30,13 @@ a numeração das versões consistente entre o código e os próximos lançament
 - Validações transacionais de entrada e início para manter os limites de
   participantes mesmo quando vários aparelhos tentam entrar ao mesmo tempo.
 
+## 1.4.1 - 2026-10-11
+
+### Corrigido
+
+- Ajustado o tamanho e o peso do texto do botão “Cancelar” na configuração de
+  sala na versão web, sem alterar os outros botões.
+
 ## 1.3.1 - 2026-10-11
 
 ### Melhorado
