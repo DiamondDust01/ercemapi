@@ -18,6 +18,15 @@ a numeração das versões consistente entre o código e os próximos lançament
 - Escreva notas curtas, em português, agrupadas por funcionalidades, correções e
   mudanças incompatíveis, quando aplicável.
 
+## 1.2.0 - 2026-10-11
+
+### Adicionado
+
+- Mostrador de ping dos dispositivos pareados, com latência média, faixa,
+  variação das amostras, estado da conexão e identificação do principal/reserva.
+- Atualização periódica das medições de ping P2P usadas na eleição do dispositivo
+  principal e de reserva.
+
 ## 1.1.0 - 2026-10-11
 
 ### Adicionado

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { selectPeerServers } from './peerPairing.js';
+import { selectPeerServers, summarizePing } from './peerPairing.js';
 
 test('elects the device with the lowest measured ping and next-lowest as reserve', () => {
   assert.deepEqual(selectPeerServers({
@@ -38,5 +38,32 @@ test('returns no elected devices when no valid measurements exist', () => {
   assert.deepEqual(selectPeerServers({}), {
     primaryUid: null,
     backupUid: null
+  });
+});
+
+test('summarizes average, range, jitter and latest ping sample', () => {
+  assert.deepEqual(summarizePing([20, 30, 25, 25]), {
+    average: 25,
+    minimum: 20,
+    maximum: 30,
+    jitter: 5,
+    latest: 25
+  });
+});
+
+test('ignores invalid samples and represents an empty measurement as unavailable', () => {
+  assert.deepEqual(summarizePing([Number.NaN, -1, 41]), {
+    average: 41,
+    minimum: 41,
+    maximum: 41,
+    jitter: 0,
+    latest: 41
+  });
+  assert.deepEqual(summarizePing([]), {
+    average: null,
+    minimum: null,
+    maximum: null,
+    jitter: null,
+    latest: null
   });
 });

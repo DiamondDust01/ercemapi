@@ -9,9 +9,11 @@ Projeto React/Vite inspirado na Olimpíada Brasileira de Informática com duas m
 
 As salas de competição tentam criar conexões WebRTC diretas entre os participantes.
 O dispositivo conectado com menor ping médio é eleito principal; o seguinte
-torna-se a reserva. Pedidos de pontuação usam o principal quando o canal direto
-está disponível. O estado oficial da partida continua persistido no Firestore,
-que também transporta a sinalização necessária para estabelecer as conexões.
+torna-se a reserva. O painel da sala mostra a latência média por dispositivo,
+faixa de ping, variação recente das amostras e estado da conexão. Pedidos de
+pontuação usam o principal quando o canal direto está disponível. O estado
+oficial da partida continua persistido no Firestore, que também transporta a
+sinalização necessária para estabelecer as conexões.
 
 Esse recurso exige configuração do Firebase no ambiente (`__firebase_config`
 ou `VITE_FIREBASE_CONFIG` como JSON e, opcionalmente, `VITE_APP_ID`), autenticação

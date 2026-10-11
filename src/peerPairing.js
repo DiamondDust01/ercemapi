@@ -22,6 +22,24 @@ export function selectPeerServers(candidates) {
   };
 }
 
+export function summarizePing(samples) {
+  const validSamples = samples.filter((sample) => Number.isFinite(sample) && sample >= 0);
+  if (validSamples.length === 0) {
+    return { average: null, minimum: null, maximum: null, jitter: null, latest: null };
+  }
+
+  const average = validSamples.reduce((total, sample) => total + sample, 0) / validSamples.length;
+  const changes = validSamples.slice(1).map((sample, index) => Math.abs(sample - validSamples[index]));
+
+  return {
+    average: Math.round(average),
+    minimum: Math.round(Math.min(...validSamples)),
+    maximum: Math.round(Math.max(...validSamples)),
+    jitter: changes.length ? Math.round(changes.reduce((total, change) => total + change, 0) / changes.length) : 0,
+    latest: Math.round(validSamples[validSamples.length - 1])
+  };
+}
+
 function createSessionId() {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -288,11 +306,10 @@ export class PeerPairing {
   _sendScoreReport() {
     const openPeers = [...this.peers.values()].filter((peer) => peer.channel?.readyState === 'open');
     const measured = openPeers.flatMap((peer) => peer.samples);
-    const candidates = openPeers.length === 0
-      ? [0]
-      : measured.length > 0 ? measured : [];
-    if (candidates.length === 0) return;
-    const pingMs = candidates.reduce((total, sample) => total + sample, 0) / candidates.length;
+    if (openPeers.length > 0 && measured.length === 0) return;
+    const pingMs = measured.length
+      ? measured.reduce((total, sample) => total + sample, 0) / measured.length
+      : 0;
     const report = JSON.stringify({ type: 'server-score', pingMs });
     for (const peer of openPeers) {
       try {
@@ -350,7 +367,8 @@ export class PeerPairing {
     const peers = [...this.peers.values()].map((peer) => ({
       uid: peer.uid,
       state: peer.connection.connectionState,
-      pingMs: peer.samples.length ? Math.round(peer.samples[peer.samples.length - 1]) : null
+      ...summarizePing(peer.samples),
+      sampleCount: peer.samples.length
     }));
     if (peers.some((peer) => peer.state === 'connected')) this.lastError = '';
     this.onStatus({
