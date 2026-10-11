@@ -23,8 +23,8 @@ não desative proteções do sistema para contornar esses bloqueios.
 
 ## Gerar um assistente NSIS
 
-O projeto oferece o comando abaixo, que deve ser executado em um ambiente que
-permita ao empacotador iniciar seus auxiliares:
+O comando prepara o aplicativo Electron e compila o Setup diretamente com o
+NSIS, sem executar um instalador auxiliar temporário:
 
 ```bash
 npm install
@@ -33,11 +33,20 @@ npm run app:windows:installer
 
 O resultado esperado é
 `release/windows/OBI-Quest-Setup-1.4.2.exe`. Ele permite selecionar uma pasta de
-instalação e cria atalhos. Este assistente não foi publicado junto do pacote:
-neste ambiente, a política de Controle de Aplicativos bloqueou um auxiliar sem
-assinatura antes de o NSIS concluir a compilação. O comando e a configuração
-estão prontos para uso em um ambiente compatível; não se deve afirmar que um
-Setup.exe está disponível para download.
+instalação, cria atalhos no menu Iniciar e na área de trabalho, e grava um
+desinstalador no diretório escolhido. Se um instalador com esse nome já existir,
+o script interrompe a operação em vez de sobrescrevê-lo. O build não executa o
+Setup produzido; teste-o em uma máquina ou ambiente autorizado antes de
+distribuí-lo.
+
+O instalador não tem assinatura digital. A compilação ou execução ainda pode ser
+bloqueada pela política de Controle de Aplicativos do Windows. Não desative
+proteções do sistema nem tente contornar esses bloqueios; use um ambiente de
+build aprovado pela organização. A compilação local concluída nesta rodada gerou
+um arquivo de aproximadamente 110 MB, acima do limite de 100 MiB por arquivo no
+GitHub, por isso o Setup não foi adicionado à branch. O instalador também não
+foi executado neste ambiente; valide-o em uma máquina de teste autorizada e
+publique-o como ativo de Release ou em outro armazenamento apropriado.
 
 Para mais detalhes, consulte o
 [README principal](../../README.md) e o [`CHANGELOG.md`](../../CHANGELOG.md).

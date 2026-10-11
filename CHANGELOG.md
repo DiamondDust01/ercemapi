@@ -20,6 +20,12 @@ a numeração das versões consistente entre o código e os próximos lançament
 
 ## Não lançado
 
+### Melhorado
+
+- O empacotamento Windows agora compila o assistente NSIS diretamente a partir
+  dos arquivos preparados pelo Electron, sem iniciar um Setup auxiliar
+  temporário para gerar o desinstalador.
+
 ### Corrigido
 
 - Ao trocar de aba, o conteúdo volta ao início em web, Android e desktop; a

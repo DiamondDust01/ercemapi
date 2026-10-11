@@ -16,7 +16,7 @@
     "android:apk": "npm run android:sync && cd android && .\\gradlew.bat assembleDebug",
     "app:windows": "npm run build && electron .",
     "app:windows:package": "npm run build && node scripts/package-windows.cjs",
-    "app:windows:installer": "npm run build && electron-builder --win nsis --x64 --publish never"
+    "app:windows:installer": "npm run build && node scripts/package-windows-installer.cjs"
   },
   "dependencies": {
     "firebase": "^12.19.0",

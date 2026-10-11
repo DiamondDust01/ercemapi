@@ -107,11 +107,16 @@ npm run app:windows:installer
 
 `app:windows:package` gera a aplicação portátil completa em
 `%LOCALAPPDATA%\OBI-Quest\portable`; distribua a pasta completa, não apenas o
-executável. `app:windows:installer` gera um instalador assistido NSIS x64 em
-`release/windows/`, que permite escolher a pasta de instalação e cria atalhos
-no menu Iniciar e na área de trabalho. O instalador não tem assinatura digital;
-sua geração depende de o ambiente permitir a execução dos auxiliares do
-empacotador.
+executável. `app:windows:installer` primeiro prepara os arquivos do aplicativo e compila um
+instalador assistido NSIS x64 diretamente em `release/windows/`, sem executar
+um instalador auxiliar temporário. Ele permite escolher a pasta de instalação,
+cria atalhos no menu Iniciar e na área de trabalho, e inclui um desinstalador.
+O instalador não tem assinatura digital; políticas de segurança ainda podem
+bloquear sua compilação ou execução. Não desative proteções do Windows para
+contornar esses bloqueios. O Setup gerado localmente não foi executado neste
+ambiente e, com cerca de 110 MB, não foi incluído na branch porque ultrapassa
+o limite de 100 MiB por arquivo do GitHub; use um ambiente de teste autorizado
+e publique-o como ativo de Release ou em outro armazenamento apropriado.
 
 O pacote portátil 1.4.2 está na branch `app-pc`:
 [baixar OBI Quest 1.4.2 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.4.2-Windows-x64.7z).
@@ -119,7 +124,10 @@ Extraia com 7-Zip ou NanaZip e execute `OBI Quest.exe` na pasta extraída. O
 arquivo comprimido tem cerca de 98,8 MB (94,25 MiB); o GitHub recomenda manter
 arquivos abaixo de 50 MB. A aplicação e o pacote não têm assinatura digital, e
 políticas de segurança do Windows podem bloquear a execução. O assistente
-Setup.exe ainda não foi publicado.
+Setup.exe ainda não foi publicado. A compilação local gera um arquivo de cerca
+de 110 MB, acima do limite de 100 MiB por arquivo no GitHub; além disso, ele
+não foi executado neste ambiente e precisa ser validado em um ambiente de teste
+autorizado antes da distribuição.
 
 ## Branches e distribuição
 
