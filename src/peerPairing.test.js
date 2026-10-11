@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { selectPeerServers, summarizePing } from './peerPairing.js';
+import { selectPeerServers, summarizePeerConnection, summarizePing } from './peerPairing.js';
 
 test('elects the device with the lowest measured ping and next-lowest as reserve', () => {
   assert.deepEqual(selectPeerServers({
@@ -66,4 +66,31 @@ test('ignores invalid samples and represents an empty measurement as unavailable
     jitter: null,
     latest: null
   });
+});
+
+test('summarizes only recent real round-trip measurements from open peer channels', () => {
+  assert.deepEqual(summarizePeerConnection([
+    { uid: 'device-a', state: 'connected', channelState: 'open', average: 40, lastPingAt: 9500 },
+    { uid: 'device-b', state: 'connected', channelState: 'open', average: 80, lastPingAt: 10000 },
+    { uid: 'device-c', state: 'connecting', channelState: 'connecting', average: 10, lastPingAt: 10000 }
+  ], 10000), {
+    state: 'measured',
+    averagePing: 60,
+    measuredPeers: [
+      { uid: 'device-a', state: 'connected', channelState: 'open', average: 40, lastPingAt: 9500 },
+      { uid: 'device-b', state: 'connected', channelState: 'open', average: 80, lastPingAt: 10000 }
+    ]
+  });
+});
+
+test('does not display stale or non-peer measurements as current latency', () => {
+  assert.equal(summarizePeerConnection([
+    { state: 'connected', channelState: 'open', average: 40, lastPingAt: 4000 }
+  ], 10000).state, 'unresponsive');
+  assert.equal(summarizePeerConnection([
+    { state: 'connected', channelState: 'closed', average: 40, lastPingAt: 10000 }
+  ], 10000).state, 'disconnected');
+  assert.equal(summarizePeerConnection([
+    { state: 'connecting', channelState: 'connecting', average: null, lastPingAt: null }
+  ], 10000).state, 'connecting');
 });

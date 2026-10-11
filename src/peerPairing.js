@@ -40,6 +40,24 @@ export function summarizePing(samples) {
   };
 }
 
+export function summarizePeerConnection(peers, now = Date.now()) {
+  const connectedPeers = peers.filter((peer) => peer.state === 'connected' && peer.channelState === 'open');
+  const measuredPeers = connectedPeers.filter(
+    (peer) => Number.isFinite(peer.average) && peer.lastPingAt && now - peer.lastPingAt <= 5000
+  );
+  const averagePing = measuredPeers.length
+    ? Math.round(measuredPeers.reduce((total, peer) => total + peer.average, 0) / measuredPeers.length)
+    : null;
+  const state = averagePing !== null
+    ? 'measured'
+    : connectedPeers.some((peer) => peer.lastPingAt) ? 'unresponsive'
+      : connectedPeers.length ? 'measuring'
+        : peers.some((peer) => ['new', 'connecting'].includes(peer.state) || peer.channelState === 'connecting') ? 'connecting'
+          : peers.length ? 'disconnected' : 'waiting';
+
+  return { state, averagePing, measuredPeers };
+}
+
 function createSessionId() {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -163,7 +181,8 @@ export class PeerPairing {
       answerStarted: false,
       answerApplied: false,
       processing: Promise.resolve(),
-      samples: []
+      samples: [],
+      lastPingAt: null
     };
     this.peers.set(peerUid, peer);
 
@@ -270,6 +289,7 @@ export class PeerPairing {
         } else if (message.type === 'pong') {
           peer.samples.push(Math.max(0, Date.now() - message.sentAt));
           peer.samples = peer.samples.slice(-5);
+          peer.lastPingAt = Date.now();
           this._sendScoreReport();
           this._electServers();
         } else if (message.type === 'server-score' && Number.isFinite(message.pingMs)) {
@@ -367,6 +387,8 @@ export class PeerPairing {
     const peers = [...this.peers.values()].map((peer) => ({
       uid: peer.uid,
       state: peer.connection.connectionState,
+      channelState: peer.channel?.readyState || 'connecting',
+      lastPingAt: peer.lastPingAt,
       ...summarizePing(peer.samples),
       sampleCount: peer.samples.length
     }));

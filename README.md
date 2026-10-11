@@ -13,6 +13,11 @@ mostra uma qualidade aproximada; caso contrário, informa apenas se o sistema
 indica rede conectada. Esse indicador não faz requisições nem testes de ping a
 servidores e não representa uma medição do acesso à Internet.
 
+Durante uma sala multiplayer, um segundo indicador mostra o ping P2P: a medição
+de ida e volta entre os aparelhos pelo canal WebRTC. Ele só apresenta latência
+quando há uma resposta recente; sem pareamento, mostra o estado correspondente.
+Esse valor é diferente da estimativa local de rede e não é o ping de um servidor.
+
 As salas de competição tentam criar conexões WebRTC diretas entre os participantes.
 O dispositivo conectado com menor ping médio é eleito principal; o seguinte
 torna-se a reserva. O painel da sala mostra a latência média por dispositivo,
@@ -31,6 +36,11 @@ continuam disponíveis. O pareamento usa STUN para descoberta de rota; redes que
 exigem TURN podem impedir a conexão direta, e nesse caso a sala recorre à
 sincronização normal do Firestore. O código funciona no navegador, no WebView
 Android e no Electron para Windows.
+
+Na tela de competição, as ações **Criar uma partida** e **Entrar em uma partida**
+ficam separadas: o criador compartilha o código gerado e os demais o digitam para
+entrar. Sem Firebase, a interface identifica a criação como demonstração local;
+não há pareamento ou entrada online.
 
 ## Tecnologias
 
@@ -89,6 +99,15 @@ npm run app:windows:package
 O segundo comando gera `%LOCALAPPDATA%\OBI-Quest\portable\OBI Quest.exe`. Distribua a pasta `portable` completa; o executável não está assinado digitalmente e não é um instalador.
 
 Os comandos web `npm run dev`, `npm run build` e `npm run preview` permanecem disponíveis e não dependem dos wrappers nativos.
+
+## Branches
+
+- `main` contém a versão integrada do projeto, incluindo os fontes e configurações
+  web, Android e Windows.
+- `test` é a branch para validar alterações antes de integrá-las em `main`.
+- `app-mobile` e `app-pc` são pontos de trabalho para empacotamento Android e
+  Windows, respectivamente. Cada uma mantém o projeto completo para permitir a
+  compilação da aplicação.
 
 ## Estrutura principal
 

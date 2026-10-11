@@ -18,6 +18,27 @@ a numeração das versões consistente entre o código e os próximos lançament
 - Escreva notas curtas, em português, agrupadas por funcionalidades, correções e
   mudanças incompatíveis, quando aplicável.
 
+## 1.3.1 - 2026-10-11
+
+### Melhorado
+
+- Interface nativa Android mais compacta, com tipografia e espaçamentos menores e
+  menos elementos decorativos; a escala da versão web e do app Windows não muda.
+- Opções de competição separadas e explicadas: criar sala, compartilhar/copiar o
+  código e entrar com o código recebido. O modo local informa que não é multiplayer.
+
+### Corrigido
+
+- Rótulo do indicador local de rede e texto de ajuda revisados para português.
+- Indicador de ping P2P no canto da tela durante uma sala, separado da conexão
+  local. Exibe medições recentes de ida e volta entre aparelhos e sinaliza quando
+  não há pareamento ou quando as respostas deixam de chegar.
+
+### Organização
+
+- Branches consolidadas em `main`, `test`, `app-mobile` e `app-pc`; cada branch
+  mantém a árvore completa do projeto para poder compilar e testar o aplicativo.
+
 ## 1.3.0 - 2026-10-11
 
 ### Adicionado
