@@ -5,6 +5,25 @@ Projeto React/Vite inspirado na Olimpíada Brasileira de Informática com duas m
 - Iniciação: perguntas objetivas de lógica e raciocínio
 - Programação: ambiente de códigos em C++ e Python com simulação de juiz automático
 
+## Pareamento direto entre dispositivos
+
+As salas de competição tentam criar conexões WebRTC diretas entre os participantes.
+O dispositivo conectado com menor ping médio é eleito principal; o seguinte
+torna-se a reserva. Pedidos de pontuação usam o principal quando o canal direto
+está disponível. O estado oficial da partida continua persistido no Firestore,
+que também transporta a sinalização necessária para estabelecer as conexões.
+
+Esse recurso exige configuração do Firebase no ambiente (`__firebase_config`
+ou `VITE_FIREBASE_CONFIG` como JSON e, opcionalmente, `VITE_APP_ID`), autenticação
+anônima habilitada e regras do Firestore que permitam aos participantes ler e
+atualizar a sala e os documentos da subcoleção `peerSignals`. As variáveis
+`VITE_*` são incorporadas ao build, então precisam estar definidas ao compilar
+para navegador, Android ou Windows. Sem essa configuração, partidas individuais
+continuam disponíveis. O pareamento usa STUN para descoberta de rota; redes que
+exigem TURN podem impedir a conexão direta, e nesse caso a sala recorre à
+sincronização normal do Firestore. O código funciona no navegador, no WebView
+Android e no Electron para Windows.
+
 ## Tecnologias
 
 - React
@@ -25,6 +44,10 @@ Projeto React/Vite inspirado na Olimpíada Brasileira de Informática com duas m
 3. Para gerar o build de produção:
    ```bash
    npm run build
+   ```
+4. Para executar os testes unitários:
+   ```bash
+   npm test
    ```
 
 ## Aplicativo Android (Capacitor)

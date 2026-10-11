@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, memo, useMemo } from 'react';
 import packageJson from '../package.json';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, onSnapshot, getDoc, updateDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, onSnapshot, getDoc, updateDoc, increment } from 'firebase/firestore';
+import { PeerPairing } from './peerPairing.js';
 import {
   Terminal, Shield, Sword, Code, Cpu, Sparkles,
   ArrowRight, BookOpen, Crosshair, Coins, Glasses, Bot, BrainCircuit,
@@ -19,11 +20,14 @@ import {
   Plus, Repeat2
 } from 'lucide-react';
 
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+const firebaseConfigValue = typeof __firebase_config !== 'undefined'
+  ? __firebase_config
+  : import.meta.env.VITE_FIREBASE_CONFIG;
+const firebaseConfig = firebaseConfigValue ? JSON.parse(firebaseConfigValue) : null;
 const app = firebaseConfig ? initializeApp(firebaseConfig) : null;
 const auth = app ? getAuth(app) : null;
 const db = app ? getFirestore(app) : null;
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'obi-quest-v1';
+const appId = typeof __app_id !== 'undefined' ? __app_id : import.meta.env.VITE_APP_ID || 'obi-quest-v1';
 
 function AppVersion() {
   return (
@@ -753,6 +757,11 @@ export default function App() {
   const [playerAvatar, setPlayerAvatar] = useState('🧠');
   const [roomInfo, setRoomInfo] = useState(null);
   const [roomMessage, setRoomMessage] = useState('');
+  const [peerStatus, setPeerStatus] = useState({ state: 'waiting', peers: [], primaryUid: null, backupUid: null });
+  const peerPairingRef = useRef(null);
+  const roomInfoRef = useRef(null);
+  const peerStatusRef = useRef(peerStatus);
+  const pendingScoreRequestsRef = useRef(new Map());
   const [records, setRecords] = useState([]);
   const [bestRoomPlacement, setBestRoomPlacement] = useState(99);
   const [bestRoomScore, setBestRoomScore] = useState(0);
@@ -1067,6 +1076,70 @@ export default function App() {
 
     return () => unsubscribe();
   }, [activeRoomCode]);
+
+  useEffect(() => {
+    roomInfoRef.current = roomInfo;
+  }, [roomInfo]);
+
+  useEffect(() => {
+    peerStatusRef.current = peerStatus;
+  }, [peerStatus]);
+
+  useEffect(() => {
+    if (!activeRoomCode || !db || !user || roomInfo?.code !== activeRoomCode || !roomInfo.players?.[user.uid]) {
+      return undefined;
+    }
+
+    const roomRef = doc(db, 'artifacts', appId, 'rooms', activeRoomCode);
+    const pairing = new PeerPairing({
+      roomRef,
+      uid: user.uid,
+      onStatus: (status) => setPeerStatus(status),
+      onMessage: ({ fromUid, message }) => {
+        if (message.type === 'score-accepted') {
+          const timeout = pendingScoreRequestsRef.current.get(message.requestId);
+          if (timeout) clearTimeout(timeout);
+          pendingScoreRequestsRef.current.delete(message.requestId);
+          return;
+        }
+        const currentRoom = roomInfoRef.current;
+        if (message.type !== 'score-request'
+          || peerStatusRef.current.primaryUid !== user.uid
+          || !currentRoom?.players?.[fromUid]) return;
+
+        updateDoc(roomRef, {
+          [`players.${fromUid}.score`]: increment(100),
+          updatedAt: new Date().toISOString()
+        }).then(() => {
+          peerPairingRef.current?.sendTo(fromUid, { type: 'score-accepted', requestId: message.requestId });
+        }).catch((error) => {
+          setRoomMessage(`Falha ao atualizar a pontuação recebida do dispositivo pareado: ${error.message}`);
+        });
+      }
+    });
+    peerPairingRef.current = pairing;
+    pairing.start();
+
+    return () => {
+      pairing.close();
+      pendingScoreRequestsRef.current.forEach((timeout) => clearTimeout(timeout));
+      pendingScoreRequestsRef.current.clear();
+      if (peerPairingRef.current === pairing) peerPairingRef.current = null;
+      setPeerStatus({ state: 'waiting', peers: [], primaryUid: null, backupUid: null });
+    };
+  }, [activeRoomCode, user?.uid, roomInfo?.code]);
+
+  useEffect(() => {
+    if (!db || !user || !activeRoomCode || roomInfo?.code !== activeRoomCode
+      || peerStatus.primaryUid !== user.uid || roomInfo.hostUid === user.uid) return;
+
+    updateDoc(doc(db, 'artifacts', appId, 'rooms', activeRoomCode), {
+      hostUid: user.uid,
+      backupUid: peerStatus.backupUid || null
+    }).catch((error) => {
+      setRoomMessage(`O pareamento elegeu este dispositivo, mas não foi possível registrar a liderança: ${error.message}`);
+    });
+  }, [activeRoomCode, user?.uid, roomInfo?.code, roomInfo?.hostUid, peerStatus.primaryUid, peerStatus.backupUid]);
 
   useEffect(() => {
     if (!roomInfo || !roomInfo.startedAt || roomInfo.status !== 'running') return undefined;
@@ -1641,6 +1714,8 @@ export default function App() {
   const timerTone = timeLeft === 0 ? 'border-rose-500 bg-rose-500/10 text-rose-200' : timerAlert ? 'border-amber-500 bg-amber-500/10 text-amber-100' : 'border-cyan-500/20 bg-cyan-500/10 text-cyan-100';
   const timerAccent = timeLeft === 0 ? 'text-rose-400' : timerAlert ? 'text-amber-300' : 'text-cyan-300';
   const isTimerActive = timerRunning && timeLeft > 0;
+  const canControlCompetition = !db || !user || !roomInfo
+    || (peerStatus.primaryUid || roomInfo.hostUid) === user.uid;
   const timerStateLabel = timeLeft === 0
     ? 'Tempo esgotado — você não pode responder enquanto o cronômetro estiver parado.'
     : timerRunning
@@ -1742,6 +1817,10 @@ export default function App() {
       setRoomMessage('Crie ou entre em uma sala primeiro.');
       return;
     }
+    if (db && user && (peerStatusRef.current.primaryUid || roomInfo.hostUid) !== user.uid) {
+      setRoomMessage('Somente o dispositivo principal da sala pode controlar a partida.');
+      return;
+    }
 
     const updatedRoom = {
       ...roomInfo,
@@ -1750,7 +1829,7 @@ export default function App() {
       timeLimit: competitionMinutes * 60
     };
 
-    if (db && user && roomInfo.hostUid === user.uid) {
+    if (db && user && roomInfo.code) {
       const roomRef = doc(db, 'artifacts', appId, 'rooms', roomInfo.code);
       await updateDoc(roomRef, {
         status: 'running',
@@ -1767,6 +1846,10 @@ export default function App() {
   };
 
   const pauseCompetition = async () => {
+    if (db && user && roomInfo && (peerStatusRef.current.primaryUid || roomInfo.hostUid) !== user.uid) {
+      setRoomMessage('Somente o dispositivo principal da sala pode controlar a partida.');
+      return;
+    }
     setTimerRunning(false);
     if (roomInfo) {
       const updatedRoom = {
@@ -1777,7 +1860,7 @@ export default function App() {
       };
       setRoomInfo(updatedRoom);
 
-      if (db && user && roomInfo.hostUid === user.uid && roomInfo.code) {
+      if (db && user && roomInfo.code) {
         const roomRef = doc(db, 'artifacts', appId, 'rooms', roomInfo.code);
         await updateDoc(roomRef, {
           status: 'paused',
@@ -1789,6 +1872,10 @@ export default function App() {
   };
 
   const resetCompetition = async () => {
+    if (db && user && roomInfo && (peerStatusRef.current.primaryUid || roomInfo.hostUid) !== user.uid) {
+      setRoomMessage('Somente o dispositivo principal da sala pode controlar a partida.');
+      return;
+    }
     setTimerRunning(false);
     setTimeLeft(competitionMinutes * 60);
     setTimerAlert(false);
@@ -1801,7 +1888,7 @@ export default function App() {
       };
       setRoomInfo(updatedRoom);
 
-      if (db && user && roomInfo.hostUid === user.uid && roomInfo.code) {
+      if (db && user && roomInfo.code) {
         const roomRef = doc(db, 'artifacts', appId, 'rooms', roomInfo.code);
         await updateDoc(roomRef, {
           status: 'lobby',
@@ -1887,15 +1974,41 @@ export default function App() {
             const roomRef = doc(db, 'artifacts', appId, 'rooms', roomInfo.code);
             const playerData = roomInfo.players[user.uid];
             const nextScore = (playerData.score || 0) + 100;
-            const updatedPlayers = {
-              ...roomInfo.players,
-              [user.uid]: {
-                ...playerData,
-                score: nextScore
+            const primaryUid = peerStatusRef.current.primaryUid || roomInfo.hostUid;
+            const requestId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+            const sentToPrimary = primaryUid !== user.uid && peerPairingRef.current?.sendTo(
+              primaryUid,
+              { type: 'score-request', requestId }
+            );
+            if (primaryUid === user.uid || !sentToPrimary) {
+              updateDoc(roomRef, {
+                [`players.${user.uid}.score`]: increment(100),
+                updatedAt: new Date().toISOString()
+              }).catch((error) => {
+                setRoomMessage(`Falha ao sincronizar a pontuação: ${error.message}`);
+              });
+            } else {
+              const timeout = setTimeout(() => {
+                pendingScoreRequestsRef.current.delete(requestId);
+                if ((roomInfoRef.current?.players?.[user.uid]?.score || 0) >= nextScore) return;
+                updateDoc(roomRef, {
+                  [`players.${user.uid}.score`]: increment(100),
+                  updatedAt: new Date().toISOString()
+                }).catch((error) => {
+                  setRoomMessage(`O dispositivo principal não confirmou a pontuação: ${error.message}`);
+                });
+              }, 8000);
+              pendingScoreRequestsRef.current.set(requestId, timeout);
+            }
+            setRoomInfo((previous) => previous?.players?.[user.uid]
+              ? {
+                ...previous,
+                players: {
+                  ...previous.players,
+                  [user.uid]: { ...previous.players[user.uid], score: nextScore }
+                }
               }
-            };
-            setRoomInfo((prev) => prev ? { ...prev, players: updatedPlayers } : prev);
-            updateDoc(roomRef, { players: updatedPlayers });
+              : previous);
             saveRecord(playerData.name || 'Jogador', nextScore, roomInfo.code);
           }
         } else {
@@ -2690,6 +2803,22 @@ export default function App() {
                             {roomInfo.players && <span className="ml-2">• {Object.keys(roomInfo.players).length} jogador(es)</span>}
                           </div>
                         )}
+                        {roomInfo?.code && (
+                          <div className="space-y-1 rounded-lg border border-cyan-900/60 bg-cyan-950/20 px-3 py-2 text-xs text-slate-300" role="status" aria-live="polite">
+                            <div className="font-bold text-cyan-200">
+                              Pareamento P2P: {peerStatus.state === 'connected' ? 'conectado' : peerStatus.state === 'connecting' ? 'conectando' : 'aguardando dispositivos'}
+                            </div>
+                            <div>Principal (menor ping médio): {peerStatus.primaryUid ? roomInfo.players?.[peerStatus.primaryUid]?.name || peerStatus.primaryUid : 'elegendo...'}</div>
+                            <div>Reserva: {peerStatus.backupUid ? roomInfo.players?.[peerStatus.backupUid]?.name || peerStatus.backupUid : 'aguardando outro dispositivo'}</div>
+                            {peerStatus.peers.map((peer) => (
+                              <div key={peer.uid} className="text-slate-500">
+                                {roomInfo.players?.[peer.uid]?.name || peer.uid}: {peer.state}{peer.pingMs === null ? '' : ` · ${peer.pingMs} ms`}
+                              </div>
+                            ))}
+                            {peerStatus.error && <div className="text-amber-200">{peerStatus.error}</div>}
+                            <div className="pt-1 text-[10px] text-slate-500">A conexão direta exige Firebase para sinalização e uma rede compatível com WebRTC. A sala continua usando Firestore para persistir a partida.</div>
+                          </div>
+                        )}
                         {roomMessage && <div className="text-[11px] text-amber-200">{roomMessage}</div>}
                       </div>
                     </div>
@@ -2786,9 +2915,9 @@ export default function App() {
                       )}
                     </div>
                     <div className="grid grid-cols-3 gap-2">
-                      <button onClick={startCompetition} className="py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">Iniciar</button>
-                      <button onClick={pauseCompetition} className="py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">Pausar</button>
-                      <button onClick={resetCompetition} className="py-2 rounded-xl bg-rose-500 text-white font-bold text-xs">Reset</button>
+                      <button onClick={startCompetition} disabled={!canControlCompetition} title={canControlCompetition ? '' : 'Somente o dispositivo principal pode controlar a partida.'} className="py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs disabled:cursor-not-allowed disabled:opacity-40">Iniciar</button>
+                      <button onClick={pauseCompetition} disabled={!canControlCompetition} title={canControlCompetition ? '' : 'Somente o dispositivo principal pode controlar a partida.'} className="py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs disabled:cursor-not-allowed disabled:opacity-40">Pausar</button>
+                      <button onClick={resetCompetition} disabled={!canControlCompetition} title={canControlCompetition ? '' : 'Somente o dispositivo principal pode controlar a partida.'} className="py-2 rounded-xl bg-rose-500 text-white font-bold text-xs disabled:cursor-not-allowed disabled:opacity-40">Reset</button>
                     </div>
                   </div>
 

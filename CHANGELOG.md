@@ -18,11 +18,18 @@ a numeração das versões consistente entre o código e os próximos lançament
 - Escreva notas curtas, em português, agrupadas por funcionalidades, correções e
   mudanças incompatíveis, quando aplicável.
 
-## Não lançado
+## 1.1.0 - 2026-10-11
 
-### Alterado
+### Adicionado
 
 - A interface exibe no canto da tela a versão definida em `package.json`.
+- Pareamento direto entre participantes da sala por WebRTC, com sinalização via
+  Firestore e eleição de dispositivo principal e reserva pelo menor ping médio.
+- Solicitações de pontuação passam pelo dispositivo principal quando a conexão
+  direta está disponível; o Firestore continua persistindo a partida e servindo
+  de fallback quando o canal P2P não estiver conectado.
+- Testes automatizados para a seleção determinística dos dispositivos principal
+  e reserva.
 
 ## 1.0.0 - 2026-10-03
 
