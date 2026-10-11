@@ -1,101 +1,103 @@
 # OBI Quest
 
-Projeto React/Vite inspirado na Olimpíada Brasileira de Informática com duas modalidades:
+O OBI Quest é uma plataforma de treino educacional inspirada nas modalidades da
+Olimpíada Brasileira de Informática (OBI). Reúne Iniciação, desafios introdutórios
+de programação, recursos de reflexão pedagógica e salas demonstrativas de
+competição. **Não é um serviço oficial da OBI, não substitui uma prova oficial e
+não executa um juiz de programação real.**
 
-- Iniciação: perguntas objetivas de lógica e raciocínio
-- Programação: ambiente de códigos em C++ e Python com simulação de juiz automático
+Versão atual do código: **1.4.2**. A fonte da numeração é `package.json`; o
+histórico de mudanças está em `CHANGELOG.md`.
 
-## Pareamento direto entre dispositivos
+## O que o aplicativo oferece
 
-Um indicador de conectividade local permanece disponível em todas as telas.
-Quando o navegador ou sistema expõe estimativas de tipo de rede, taxa e RTT, ele
-mostra uma qualidade aproximada; caso contrário, informa apenas se o sistema
-indica rede conectada. Esse indicador não faz requisições nem testes de ping a
-servidores e não representa uma medição do acesso à Internet.
+- **Início:** perfil local, progresso resumido e atalhos para os módulos.
+- **Iniciação:** questões objetivas de lógica e interpretação, com faixa,
+  dificuldade, pontuação e cronômetro.
+- **Código:** exercícios introdutórios em C++ e Python com editor e verificação
+  didática local.
+- **Mentoria:** pistas e ferramentas locais para comparar tentativas, revisar
+  erros, criar variações, registrar reflexões e apoiar atividades de professor.
+- **Regras:** material educativo sobre as modalidades e preparação.
+- **Competição:** cronômetro e salas com duração configurável, confirmação dos
+  parâmetros, quantidade mínima para iniciar e limite máximo de 16 participantes.
 
-Durante uma sala multiplayer, um segundo indicador mostra o ping P2P: a medição
-de ida e volta entre os aparelhos pelo canal WebRTC. Ele só apresenta latência
-quando há uma resposta recente; sem pareamento, mostra o estado correspondente.
-Esse valor é diferente da estimativa local de rede e não é o ping de um servidor.
+As abas usam um painel comum de rolagem. Ao navegar para outra aba, o painel
+retorna ao início em web, Android e desktop.
 
-As salas de competição tentam criar conexões WebRTC diretas entre os participantes.
-O dispositivo conectado com menor ping médio é eleito principal; o seguinte
-torna-se a reserva. O painel da sala mostra a latência média por dispositivo,
-faixa de ping, variação recente das amostras e estado da conexão. Pedidos de
-pontuação usam o principal quando o canal direto está disponível. O estado
-oficial da partida continua persistido no Firestore, que também transporta a
-sinalização necessária para estabelecer as conexões.
+## Limites pedagógicos importantes
 
-Esse recurso exige configuração do Firebase no ambiente (`__firebase_config`
-ou `VITE_FIREBASE_CONFIG` como JSON e, opcionalmente, `VITE_APP_ID`), autenticação
-anônima habilitada e regras do Firestore que permitam aos participantes ler e
-atualizar a sala e os documentos da subcoleção `peerSignals`. As variáveis
-`VITE_*` são incorporadas ao build, então precisam estar definidas ao compilar
-para navegador, Android ou Windows. Sem essa configuração, partidas individuais
-continuam disponíveis. O pareamento usa STUN para descoberta de rota; redes que
-exigem TURN podem impedir a conexão direta, e nesse caso a sala recorre à
-sincronização normal do Firestore. O código funciona no navegador, no WebView
-Android e no Electron para Windows.
+- O juiz de Programação verifica padrões previstos no código da atividade; não
+  inicia um compilador C++ ou Python e não executa os programas enviados.
+- A “IA mentora” desta versão seleciona explicações e pistas predefinidas no
+  aplicativo. Não chama um modelo generativo nem envia o texto para um provedor.
+- A análise de depuração é heurística; ausência de alerta não significa que o
+  programa está correto.
+- As regras e os rankings exibidos são educativos/demonstrativos, não material ou
+  classificação oficial da OBI.
 
-Na tela de competição, as ações **Criar uma partida** e **Entrar em uma partida**
-ficam separadas: o criador compartilha o código gerado e os demais o digitam para
-entrar. Sem Firebase, a interface identifica a criação como demonstração local;
-não há pareamento ou entrada online.
+## Conexão, partidas e dados
 
-Para uma partida online, **Configurar e criar sala** abre a configuração da
-duração, do mínimo de participantes necessário para iniciar e do máximo permitido
-(até 16). Antes da criação, um resumo pede confirmação. A sala mostra quantos
-jogadores já entraram e quantos ainda faltam; o início só é liberado ao alcançar
-o mínimo. Salas cheias e partidas em andamento não aceitam novas entradas.
+O indicador local de rede usa informações fornecidas pelo navegador ou sistema,
+quando disponíveis. Ele não envia requisições nem mede ping contra um servidor.
+O indicador P2P da sala, quando há pareamento, mede respostas recentes entre
+dispositivos pelo canal WebRTC; não é o mesmo indicador e não mede o ping da
+Internet.
 
-## Tecnologias
+Com Firebase configurado, as salas e alguns dados de progresso podem ser
+sincronizados pelo Firestore. As conexões WebRTC tentam eleger como principal o
+participante com menor ping medido e como reserva o seguinte. A sinalização e o
+estado oficial da sala continuam dependendo do Firestore. O pareamento usa STUN;
+algumas redes exigem TURN e podem impedir uma conexão direta.
 
-- React
-- Vite
-- Firebase
-- lucide-react
+Para habilitar esse modo, configure `__firebase_config` ou `VITE_FIREBASE_CONFIG`
+como JSON e, opcionalmente, `VITE_APP_ID`. Habilite autenticação anônima e
+configure regras Firestore para as salas e a subcoleção `peerSignals`. Os valores
+`VITE_*` são incorporados ao compilar cada distribuição. Sem Firebase, exercícios
+individuais funcionam e a interface pode demonstrar uma sala apenas local; não
+há multiplayer entre dispositivos.
 
-## Como executar
+O perfil, preferências, atividades pedagógicas e recordes locais usam
+`localStorage`. Esses dados não sincronizam automaticamente entre navegador,
+Android e Windows.
 
-1. Instale as dependências:
-   ```bash
-   npm install
-   ```
-2. Inicie o servidor de desenvolvimento:
-   ```bash
-   npm run dev
-   ```
-3. Para gerar o build de produção:
-   ```bash
-   npm run build
-   ```
-4. Para executar os testes unitários:
-   ```bash
-   npm test
-   ```
+## Desenvolvimento web
 
-## Aplicativo Android (Capacitor)
+Requisitos: Node.js compatível com Vite e npm.
 
-O app Android usa o mesmo build React/Vite em uma WebView. Os fontes web continuam sendo a origem da interface; depois de alterá-los, sincronize novamente os assets nativos.
+```bash
+npm install
+npm run dev
+npm test
+npm run build
+npm run preview
+```
 
-Pré-requisitos: Android Studio, Android SDK e um JDK compatível com a versão do Gradle do projeto.
+`npm run build` gera `dist/`; `npm run preview` serve esse build para revisão.
+
+## Pacotes Android
+
+O Android usa Capacitor e exibe o mesmo build web numa WebView. Requer Android
+SDK e JDK compatível com o Gradle.
 
 ```bash
 npm run android:sync
 npm run android:open
-```
-
-No Windows, com o SDK e o JDK configurados, gere um APK de depuração com:
-
-```bash
 npm run android:apk
 ```
 
-O APK de depuração fica em `android/app/build/outputs/apk/debug/app-debug.apk`. Para instalar em dispositivos fora do ambiente de desenvolvimento, ainda será necessário configurar assinatura de release.
+O APK de depuração gerado localmente fica em
+`android/app/build/outputs/apk/debug/app-debug.apk`. O APK 1.4.2 pronto para
+teste está na branch `app-mobile`:
+[baixar OBI Quest 1.4.2 para Android](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-mobile/installers/android/OBI-Quest-1.4.2-android.apk).
+Ele usa a chave de depuração (`versionCode` 8), não é um pacote assinado para
+publicação na Play Store e não foi testado em aparelho físico nesta rodada.
 
-## Aplicativo Windows (Electron)
+## Pacotes Windows
 
-O app portátil inclui o executável Electron e a aplicação web em `resources/app.asar`. O shell mantém isolamento de contexto; links HTTPS externos abrem no navegador padrão. O empacotamento requer Node.js 22.12 ou superior.
+O app de desktop usa Electron com sandbox, isolamento de contexto e abertura de
+links HTTPS no navegador externo. Requer Node.js 22.12 ou superior para
+empacotamento.
 
 ```bash
 npm run app:windows
@@ -103,24 +105,49 @@ npm run app:windows:package
 npm run app:windows:installer
 ```
 
-O segundo comando gera `%LOCALAPPDATA%\OBI-Quest\portable\OBI Quest.exe`. Distribua a pasta `portable` completa; o executável não está assinado digitalmente e não é um instalador. O terceiro gera um instalador NSIS x64 em `release/windows/OBI-Quest-Setup-1.4.2.exe`, que permite escolher a pasta de instalação e cria atalhos no menu Iniciar e na área de trabalho. O instalador não está assinado digitalmente e sua geração requer uma máquina que permita executar os auxiliares criados pelo empacotador.
+`app:windows:package` gera a aplicação portátil completa em
+`%LOCALAPPDATA%\OBI-Quest\portable`; distribua a pasta completa, não apenas o
+executável. `app:windows:installer` gera um instalador assistido NSIS x64 em
+`release/windows/`, que permite escolher a pasta de instalação e cria atalhos
+no menu Iniciar e na área de trabalho. O instalador não tem assinatura digital;
+sua geração depende de o ambiente permitir a execução dos auxiliares do
+empacotador.
 
-Os comandos web `npm run dev`, `npm run build` e `npm run preview` permanecem disponíveis e não dependem dos wrappers nativos.
+O pacote portátil 1.4.2 está na branch `app-pc`:
+[baixar OBI Quest 1.4.2 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.4.2-Windows-x64.7z).
+Extraia com 7-Zip ou NanaZip e execute `OBI Quest.exe` na pasta extraída. O
+arquivo comprimido tem cerca de 98,8 MB (94,25 MiB); o GitHub recomenda manter
+arquivos abaixo de 50 MB. A aplicação e o pacote não têm assinatura digital, e
+políticas de segurança do Windows podem bloquear a execução. O assistente
+Setup.exe ainda não foi publicado.
 
-## Branches
+## Branches e distribuição
 
-- `main` contém a versão integrada do projeto, incluindo os fontes e configurações
-  web, Android e Windows.
-- `test` é a branch para validar alterações antes de integrá-las em `main`.
-- `app-mobile` e `app-pc` são pontos de trabalho para empacotamento Android e
-  Windows, respectivamente. Cada uma mantém o projeto completo para permitir a
-  compilação da aplicação.
+- `main`: versão integrada e fontes completos.
+- `test`: validação antes da integração em `main`.
+- `app-mobile`: árvore completa do projeto e APK Android de teste.
+- `app-pc`: árvore completa do projeto e pacote portátil Windows.
 
-## Estrutura principal
+As branches de plataforma mantêm os fontes compartilhados e acrescentam os
+artefatos daquela plataforma; não são versões com os fontes removidos. Os
+READMEs específicos e os artefatos ficam em `installers/android/` na branch
+`app-mobile` e em `installers/windows/` na branch `app-pc`.
 
-- `src/App.jsx` — aplicação completa
-- `src/main.jsx` — bootstrap do React
-- `index.html` — entrada HTML do Vite
-- `capacitor.config.json` — identidade e pasta web usada pelo Android
-- `android/` — projeto Android nativo gerado pelo Capacitor
-- `electron/main.cjs` — janela segura do aplicativo Windows
+## Documentação para estudo e NotebookLM
+
+`docs/guia_de_estudo_e_apresentacao.md` contém uma explicação longa dos módulos,
+fluxos, armazenamento, limites e roteiro de demonstração. Para fontes temáticas
+mais curtas em texto simples, consulte [`docs/README.md`](docs/README.md) e os
+arquivos `.ignore` da pasta `docs/`.
+
+## Estrutura do projeto
+
+- `src/App.jsx`: interface, telas e fluxos principais.
+- `src/competitionRooms.js`: regras e validação das salas.
+- `src/peerPairing.js`: pareamento P2P e resumo das medições recentes.
+- `src/localConnection.js`: indicadores locais de conectividade.
+- `src/styles.css`: estilos globais.
+- `android/`: projeto nativo Gradle/Capacitor.
+- `electron/main.cjs`: inicialização da janela Electron.
+- `scripts/package-windows.cjs`: empacotamento portátil Windows.
+- `CHANGELOG.md`: notas e numeração de versão.
