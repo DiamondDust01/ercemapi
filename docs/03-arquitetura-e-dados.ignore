@@ -1,0 +1,94 @@
+FONTE DE ESTUDO: ARQUITETURA, ARMAZENAMENTO E REDE
+Atualizada para a versao 1.4.2 em 11/10/2026.
+
+ARQUITETURA DO CLIENTE
+
+O projeto e uma aplicacao React construida com Vite e Tailwind CSS. src/main.jsx
+monta o React; src/App.jsx concentra as telas e grande parte dos fluxos; src/
+styles.css contem estilos globais. As telas web, Android e Windows partilham o
+mesmo cliente web.
+
+Android usa Capacitor para empacotar o build dist/ dentro de uma WebView. O
+projeto Gradle correspondente fica em android/. Windows usa Electron; o
+entrypoint electron/main.cjs cria uma janela com sandbox, contextIsolation
+ativado e nodeIntegration desativado. Links HTTPS externos sao encaminhados ao
+navegador do sistema.
+
+Modulos de dominio importantes:
+
+- src/competitionRooms.js e src/competitionRooms.test.js: validacao de duracao e
+  limites de participantes.
+- src/peerPairing.js e src/peerPairing.test.js: coordenacao de pareamento WebRTC,
+  escolha de principal/reserva e resumo de amostras.
+- src/localConnection.js e src/localConnection.test.js: leitura dos indicadores
+  locais de conectividade que o navegador disponibiliza.
+
+PERSISTENCIA LOCAL
+
+O localStorage e separado por origem e instalacao. Nome, avatar, preferencias,
+checklist, alguns recordes e registros pedagogicos podem ser locais. O
+localStorage do navegador nao e automaticamente o mesmo do app Windows ou da
+WebView Android; portanto nao se deve prometer migracao ou sincronizacao
+automatica desses dados.
+
+Algumas ferramentas permitem exportar registros. A exportacao manual nao
+significa que os dados foram compartilhados automaticamente com professores ou
+com a nuvem.
+
+FIREBASE E FIRESTORE
+
+A aplicacao procura a configuracao Firebase em __firebase_config ou
+VITE_FIREBASE_CONFIG (JSON), e pode receber VITE_APP_ID. Sem uma configuracao
+valida, inicializacao Firebase, autenticacao e Firestore nao estao disponiveis.
+Autenticacao anonima precisa estar habilitada no projeto Firebase.
+
+Os caminhos conhecidos incluem:
+
+- artifacts/{appId}/users/{uid}: progresso de usuario.
+- artifacts/{appId}/rooms/{codigo}: salas de competicao.
+- artifacts/{appId}/classrooms/{codigo}: salas de minicurso.
+- documentos peerSignals dentro de uma sala: sinalizacao para estabelecer
+  conexoes ponto a ponto.
+
+As regras Firestore precisam autorizar as operacoes necessarias, inclusive os
+documentos de sinalizacao. Configuracao incompleta pode impedir multiplayer
+mesmo que as telas carreguem. Valores VITE_* sao incorporados ao bundle; a
+distribuicao precisa ser compilada com os valores corretos. Uma conta anonima
+nao e identidade institucional verificada.
+
+INDICADORES DE CONEXAO SAO DIFERENTES
+
+Indicador local: observa o estado online/offline e, quando disponiveis,
+informacoes fornecidas pelo navegador, como tipo de rede, throughput estimado
+ou RTT local. E uma estimativa local e nao uma chamada de ping a um servidor.
+Se o sistema nao expuser estimativas, o aplicativo nao inventa uma medicao.
+
+Indicador P2P: existe no contexto de uma sala com aparelhos pareados. Mede a
+ida-e-volta de mensagens entre participantes pelo canal WebRTC. So representa
+uma medicao atual se houver resposta recente e canal aberto. Nao e latencia do
+Firestore nem ping da Internet.
+
+ELEICAO E LIMITES DO PAREAMENTO
+
+Entre pares com medidas validas, o dispositivo de menor ping medio pode ser
+principal e o seguinte, reserva. Os pedidos de pontuacao usam o principal se o
+canal direto estiver disponivel. O estado oficial da sala e mantido no
+Firestore; o P2P complementa o transporte de mensagens, nao substitui o backend
+persistente.
+
+A conexao usa STUN para descobrir caminhos diretos. Redes com NAT ou firewall
+restritivos podem exigir TURN; sem relay configurado, o pareamento direto pode
+falhar e as atualizacoes dependem da sincronizacao via Firestore. Logo, "todos
+estao na Internet" nao garante que os aparelhos tenham uma boa conexao entre si.
+
+SEGURANCA E PRIVACIDADE - COMO EXPLICAR SEM EXAGERAR
+
+- Configuracao de cliente Firebase nao substitui regras Firestore; o acesso
+  efetivo depende das regras e dos provedores habilitados.
+- Dados pedagogicos locais nao sao transmitidos so por estarem preenchidos.
+- Dados de sala e progresso podem ser sincronizados quando Firebase esta
+  configurado.
+- Nao afirme que o produto e anonimo em sentido absoluto: salas e provedores
+  podem processar identificadores e dados configurados pelo servico.
+- Nao envie credenciais privadas ao NotebookLM nem inclua chaves privadas nos
+  arquivos explicativos.

@@ -1,0 +1,77 @@
+FONTE DE ESTUDO: VISAO GERAL DO OBI QUEST
+Atualizada para a versao 1.4.2 em 11/10/2026.
+
+O QUE E O PROJETO
+
+OBI Quest e uma plataforma educacional de treino inspirada nas modalidades da
+Olimpiada Brasileira de Informatica. Seu objetivo e reunir exercicios de logica,
+desafios introdutorios de programacao e recursos de reflexao pedagogica numa
+aplicacao que pode ser demonstrada na web, no Android e no desktop Windows.
+
+O nome e a inspiracao nao significam afiliacao oficial. OBI Quest nao e o site da
+OBI, nao publica regulamentos oficiais, nao substitui provas e nao representa
+classificacoes oficiais. Use as expressoes "plataforma de treino", "simulador
+educacional" ou "projeto inspirado na OBI".
+
+PUBLICO E OBJETIVOS
+
+O publico principal sao estudantes que querem praticar raciocinio, interpretar
+enunciados, comecar a programar e aprender a revisar uma tentativa. Professores
+podem usar algumas telas para orientar atividades demonstrativas. O aplicativo
+procura apoiar quatro praticas:
+
+1. Ler um problema com atencao e identificar o que e pedido.
+2. Formular uma estrategia antes de responder ou escrever codigo.
+3. Receber feedback didatico e rever os erros sem confundir feedback com prova
+   formal de correcao.
+4. Refletir sobre a diferenca entre resolver sozinho e receber uma pista.
+
+MAPA DAS TELAS PRINCIPAIS
+
+Inicio: apresenta a plataforma, o perfil do usuario, um resumo de progresso e
+atalhos. Nome, avatar e parte dos dados ficam locais a esta instalacao.
+
+Iniciacao: modulo de questoes objetivas de logica e interpretacao. O participante
+escolhe uma faixa, dificuldade e duracao, responde e consulta pontuacao e
+feedback. A rodada nao e uma prova oficial.
+
+Codigo: modulo com desafios introdutorios, exemplos em C++ e Python, editor e
+resultado didatico local. O editor apresenta codigo, mas o juiz desta versao nao
+compila nem executa esse codigo.
+
+Mentoria: conjunto de dez areas de apoio, incluindo mentor pedagogico,
+comparacao Sem IA/com IA, depuracao guiada, variacoes, entrevista, trilha
+estrategica, uso responsavel, relatorios/diario, professor/minicurso e
+organizacao de resultados de juizes externos.
+
+Regras: resumo educativo para contextualizar as modalidades. Para regulamento,
+datas, categorias e regras oficiais atuais, consulte diretamente a OBI.
+
+Uma segunda navegacao dentro de Mentoria escolhe a ferramenta pedagogica. A
+navegacao principal e compartilhada por web, Android e desktop; em telas largas
+fica no cabecalho e, em telas estreitas, usa uma barra inferior. Ao mudar de aba,
+o painel de conteudo volta ao inicio.
+
+MENSAGEM CURTA PARA APRESENTAR
+
+"O OBI Quest e um ambiente de treino inspirado nas modalidades da OBI. Ele
+combina questoes de logica, desafios introdutorios de programacao e ferramentas
+para refletir sobre estrategias e pistas. E um simulador educacional: o juiz e a
+mentoria sao locais e didaticos, e as salas online dependem de configuracao
+externa do Firebase."
+
+O QUE NAO AFIRMAR
+
+- Nao chamar o produto de aplicativo oficial da OBI.
+- Nao afirmar que o juiz local compila ou executa programas.
+- Nao afirmar que a mentoria consulta ChatGPT, outro modelo generativo ou um
+  servico externo.
+- Nao tratar pontos ou colocacao local como resultado oficial.
+- Nao prometer sala entre aparelhos sem Firebase corretamente configurado.
+
+CONTEXTO DA FONTE
+
+Este documento e um resumo para estudo e para alimentar uma base de perguntas e
+respostas. Nao substitui a leitura dos outros documentos tematicos, do README ou
+do codigo atual. A versao 1.4.2 e uma referencia temporal; uma atualizacao
+posterior pode alterar funcionalidades e disponibilidade de pacotes.

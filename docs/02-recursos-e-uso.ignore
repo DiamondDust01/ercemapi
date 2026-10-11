@@ -1,0 +1,95 @@
+FONTE DE ESTUDO: MODULOS, FLUXOS E EXPERIENCIA DE USO
+Atualizada para a versao 1.4.2 em 11/10/2026.
+
+INICIACAO
+
+O modulo apresenta perguntas de multipla escolha sobre raciocinio e
+interpretacao. O banco descrito no codigo desta versao contem 24 questoes, 12
+associadas a cada faixa Iniciacao 1 e Iniciacao 2. Uma rodada exibe ate dez
+questoes, dependendo da faixa e do filtro.
+
+O participante escolhe faixa, dificuldade e duracao, depois inicia o cronometro.
+Enquanto parado, o cronometro nao aceita respostas. Ao terminar o tempo, novas
+respostas deixam de ser aceitas. A correcao imediata pode ser exibida ou
+escondida. A pontuacao depende da dificuldade atribuida a questao: os valores
+padrao sao 5 pontos para facil, 8 para media e 12 para dificil. Uma resposta
+incorreta nao acrescenta pontos.
+
+A ordem das questoes e embaralhada de maneira reproduzivel para determinados
+dados de entrada. Nao prometa que cada recarregamento gera uma prova aleatoria
+completamente independente.
+
+PROGRAMACAO E JUIZ DIDATICO
+
+A trilha tem desafios introdutorios com editor para C++ e Python. O participante
+seleciona um problema, escreve ou ajusta codigo, ativa o cronometro de
+competicao quando necessario e envia a tentativa. Ao receber Accepted (AC), pode
+avancar. O editor oferece reinicio para o codigo inicial.
+
+Limite essencial: o envio nao executa compilador nem interpretador. As
+verificacoes locais procuram padroes textuais predefinidos para cada desafio.
+Accepted significa que a verificacao didatica prevista foi satisfeita; nao
+comprova que o programa funciona para entradas arbitrarias. O feedback e util
+para uma demonstracao, nao substitui juiz real.
+
+COMPETICAO E SALAS
+
+A criacao e a entrada sao fluxos distintos. Quem organiza escolhe duracao,
+numero minimo de participantes para liberar o inicio e maximo permitido (ate
+16); antes de criar, a interface mostra um resumo para confirmacao. A sala
+apresenta a ocupacao e quantas pessoas faltam para o minimo. O inicio fica
+bloqueado enquanto o minimo nao for atingido. Entradas tambem respeitam o limite
+maximo e o estado de partida.
+
+Com Firebase configurado, a sala e compartilhada por codigo e atualizada no
+Firestore. Sem Firebase, pode ser demonstrada uma sala local no proprio
+dispositivo; isso nao equivale a partida multiplayer entre dispositivos. Os
+recordes locais nao sao classificacao oficial.
+
+MENTORIA E APRENDIZAGEM
+
+A interface chama a secao "IA Mentora", mas a implementacao desta versao nao
+chama um modelo generativo. Uma funcao local seleciona respostas, perguntas,
+conceitos, analogias ou roteiros parciais a partir de regras e textos existentes
+no aplicativo. O texto digitado nao e enviado a um provedor de IA.
+
+A experiencia inclui:
+
+- Mentor pedagogico com niveis de pergunta socratica, dica conceitual, exemplo
+  analogo e roteiro parcial; existem confirmacoes e limites de consultas.
+- Comparacao entre duas tentativas equivalentes, uma sem dicas e outra com
+  ajuda limitada. Tempo, tentativas e respostas sao comparados, mas uma sessao
+  nao prova que a ajuda causou melhora.
+- Depuracao guiada baseada em padroes textuais e casos de borda predefinidos.
+  Nao entende semanticamente o codigo.
+- Variacoes de problemas montadas a partir de modelos e opcoes preparadas; nao
+  sao geracao livre por modelo de linguagem.
+- Banca/entrevista com feedback por palavras-chave, nao avaliacao completa da
+  validade da estrategia.
+- Trilha de uso estrategico e checklist de autonomia, para autorreflexao; nao
+  sao nota oficial, diagnostico ou prova de autoria.
+- Relatorios, diario e exportacao CSV para registros locais.
+- Painel professor/minicurso que so conecta dispositivos quando backend e
+  permissoes do Firebase existem.
+- Organizacao de links e resultados de juizes externos; o login e o envio de
+  submissao continuam nos sites oficiais.
+
+ROTEIRO BREVE DE DEMONSTRACAO
+
+1. Mostre Inicio e explique que e um simulador educacional.
+2. Abra Iniciacao, ajuste a rodada e responda uma questao.
+3. Abra um desafio de Codigo; mostre editor, linguagem e feedback, explicando
+   que o juiz e uma simulacao textual.
+4. Abra Mentoria e compare uma tentativa independente com outra apoiada por
+   pistas.
+5. Apresente relatorio, diario ou sala de competicao.
+6. Termine explicando os limites: simulacoes locais, dados locais e dependencia
+   de Firebase para sincronizacao entre dispositivos.
+
+PONTOS PARA NAO GENERALIZAR
+
+- A quantidade de questoes, niveis, limites de consulta e desafios descreve a
+  versao documentada; pode mudar em futuras atualizacoes.
+- O tempo e os resultados mostrados nao equivalem a avaliacao externa.
+- Um indicador de qualidade local da rede nao e prova de ping para um servidor.
+- Pontos e salas demonstrativas nao sao um ranking ou torneio oficial.
