@@ -3139,7 +3139,7 @@ export default function App() {
                             <p className="text-[10px] leading-relaxed text-slate-500">A sala só inicia ao atingir o mínimo. Depois de alcançar o máximo, novos jogadores não poderão entrar. Limite máximo: 16.</p>
                             {roomSetupError && <p role="alert" className="text-[11px] text-rose-300">{roomSetupError}</p>}
                             <div className="grid grid-cols-2 gap-2">
-                              <button type="button" onClick={() => setRoomSetupStep('closed')} className="rounded-lg border border-slate-700 px-3 py-2 !text-xs !font-normal !leading-4 text-slate-300">Cancelar</button>
+                              <button type="button" onClick={() => setRoomSetupStep('closed')} className="rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-300">Cancelar</button>
                               <button type="button" onClick={confirmRoomSetup} disabled={!roomSetupValidation.valid} className="rounded-lg bg-indigo-500 px-3 py-2 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Revisar partida</button>
                             </div>
                           </div>

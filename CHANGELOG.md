@@ -30,6 +30,14 @@ a numeração das versões consistente entre o código e os próximos lançament
 - Validações transacionais de entrada e início para manter os limites de
   participantes mesmo quando vários aparelhos tentam entrar ao mesmo tempo.
 
+## 1.4.2 - 2026-10-11
+
+### Corrigido
+
+- Removida a regra global que forçava a fonte padrão em todos os botões e
+  sobrescrevia os tamanhos tipográficos definidos por tela; os estilos dos
+  botões ficam consistentes na web, Android e Windows.
+
 ## 1.4.1 - 2026-10-11
 
 ### Corrigido
