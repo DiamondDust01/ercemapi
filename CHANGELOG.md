@@ -18,6 +18,18 @@ a numeração das versões consistente entre o código e os próximos lançament
 - Escreva notas curtas, em português, agrupadas por funcionalidades, correções e
   mudanças incompatíveis, quando aplicável.
 
+## 1.4.0 - 2026-10-11
+
+### Adicionado
+
+- Assistente de criação de sala com configuração de duração, mínimo para iniciar
+  e máximo de jogadores, seguido de um resumo para confirmar antes de criar.
+- Salas mostram a ocupação e o que falta para atingir o mínimo; o início fica
+  bloqueado até o limite mínimo ser alcançado e novas entradas são recusadas
+  quando a sala está cheia ou a partida já começou.
+- Validações transacionais de entrada e início para manter os limites de
+  participantes mesmo quando vários aparelhos tentam entrar ao mesmo tempo.
+
 ## 1.3.1 - 2026-10-11
 
 ### Melhorado

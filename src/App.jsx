@@ -2,8 +2,13 @@ import React, { useState, useEffect, useRef, memo, useMemo } from 'react';
 import packageJson from '../package.json';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, onSnapshot, getDoc, updateDoc, increment } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, onSnapshot, getDoc, updateDoc, increment, runTransaction } from 'firebase/firestore';
 import { PeerPairing, summarizePeerConnection } from './peerPairing.js';
+import {
+  getRoomPlayerCount,
+  getRoomStartState,
+  validateRoomSettings
+} from './competitionRooms.js';
 import {
   Terminal, Shield, Sword, Code, Cpu, Sparkles,
   ArrowRight, BookOpen, Crosshair, Coins, Glasses, Bot, BrainCircuit,
@@ -847,6 +852,13 @@ export default function App() {
   const [iniciacaoTimerRunning, setIniciacaoTimerRunning] = useState(false);
   const [iniciacaoTimerAlert, setIniciacaoTimerAlert] = useState(false);
   const [competitionMinutes, setCompetitionMinutes] = useState(45);
+  const [roomSetupStep, setRoomSetupStep] = useState('closed');
+  const [roomSetupMinutes, setRoomSetupMinutes] = useState(45);
+  const [roomSetupCustomMinutes, setRoomSetupCustomMinutes] = useState('');
+  const [roomSetupMinPlayers, setRoomSetupMinPlayers] = useState(2);
+  const [roomSetupMaxPlayers, setRoomSetupMaxPlayers] = useState(8);
+  const [roomSetupError, setRoomSetupError] = useState('');
+  const [roomCreating, setRoomCreating] = useState(false);
   const [programacaoCustomSelected, setProgramacaoCustomSelected] = useState(false);
   const [programacaoCustomMinutes, setProgramacaoCustomMinutes] = useState('');
   const [programacaoCustomError, setProgramacaoCustomError] = useState('');
@@ -1818,6 +1830,7 @@ export default function App() {
   const isTimerActive = timerRunning && timeLeft > 0;
   const canControlCompetition = !db || !user || !roomInfo
     || (peerStatus.primaryUid || roomInfo.hostUid) === user.uid;
+  const roomStartState = getRoomStartState(roomInfo);
   const peerPingSummary = summarizePeerConnection(peerStatus.peers);
   const peerConnectionLabel = peerPingSummary.averagePing !== null
     ? `ativa · ${peerPingSummary.averagePing} ms`
@@ -1828,6 +1841,11 @@ export default function App() {
       disconnected: 'desconectada',
       waiting: 'aguardando aparelhos'
     })[peerPingSummary.state];
+  const roomSetupValidation = validateRoomSettings({
+    timeMinutes: roomSetupMinutes,
+    minPlayers: roomSetupMinPlayers,
+    maxPlayers: roomSetupMaxPlayers
+  });
   const timerStateLabel = timeLeft === 0
     ? 'Tempo esgotado — você não pode responder enquanto o cronômetro estiver parado.'
     : timerRunning
@@ -1843,7 +1861,44 @@ export default function App() {
       ? 'Cronômetro ativo — você pode responder às perguntas.'
       : 'Cronômetro pausado — retome para poder responder.';
 
+  const openRoomSetup = () => {
+    setRoomSetupMinutes(competitionMinutes);
+    setRoomSetupCustomMinutes('');
+    setRoomSetupMinPlayers(db ? 2 : 1);
+    setRoomSetupMaxPlayers(db ? 8 : 1);
+    setRoomSetupError('');
+    setRoomSetupStep('configure');
+  };
+
+  const confirmRoomSetup = () => {
+    const settings = {
+      timeMinutes: roomSetupMinutes,
+      minPlayers: roomSetupMinPlayers,
+      maxPlayers: roomSetupMaxPlayers
+    };
+    const validation = validateRoomSettings(settings);
+    if (!validation.valid) {
+      setRoomSetupError(validation.error);
+      return;
+    }
+    setRoomSetupError('');
+    setRoomSetupStep('confirm');
+  };
+
   const createCompetitionRoom = async () => {
+    const settings = {
+      timeMinutes: roomSetupMinutes,
+      minPlayers: roomSetupMinPlayers,
+      maxPlayers: roomSetupMaxPlayers
+    };
+    const validation = validateRoomSettings(settings);
+    if (!validation.valid) {
+      setRoomSetupError(validation.error);
+      setRoomSetupStep('configure');
+      return;
+    }
+
+    setRoomCreating(true);
     const code = generateRoomCode();
     const displayName = formatPlayerDisplayName(playerName.trim() || (user ? `Jogador ${user.uid.slice(0, 4)}` : 'Visitante'));
     const avatar = playerAvatar || '🧠';
@@ -1854,7 +1909,10 @@ export default function App() {
         code,
         status: 'lobby',
         signal: 'local',
-        timeLimit: competitionMinutes * 60,
+        durationMinutes: settings.timeMinutes,
+        timeLimit: settings.timeMinutes * 60,
+        minPlayers: settings.minPlayers,
+        maxPlayers: settings.maxPlayers,
         startedAt: null,
         players: {
           [playerKey]: { uid: user?.uid || playerKey, name: displayName, avatar, score: 0, joinedAt: new Date().toISOString() }
@@ -1863,7 +1921,10 @@ export default function App() {
       setRoomInfo(fallbackRoom);
       setActiveRoomCode(code);
       setRoomCodeInput(code);
-      setRoomMessage('Sala local criada. Use o código para simular uma partida local.');
+      setCompetitionMinutes(settings.timeMinutes);
+      setRoomSetupStep('closed');
+      setRoomMessage('Demonstração local criada. Os limites definidos continuam valendo para iniciar a rodada.');
+      setRoomCreating(false);
       return;
     }
 
@@ -1874,7 +1935,10 @@ export default function App() {
       status: 'lobby',
       createdAt: new Date().toISOString(),
       startedAt: null,
-      timeLimit: competitionMinutes * 60,
+      durationMinutes: settings.timeMinutes,
+      timeLimit: settings.timeMinutes * 60,
+      minPlayers: settings.minPlayers,
+      maxPlayers: settings.maxPlayers,
       players: {
         [user.uid]: { uid: user.uid, name: displayName, avatar, score: 0, joinedAt: new Date().toISOString() }
       }
@@ -1884,12 +1948,16 @@ export default function App() {
       await setDoc(roomRef, initialRoom);
     } catch (error) {
       setRoomMessage(`Não foi possível criar a sala: ${error.message}`);
+      setRoomCreating(false);
       return;
     }
     setRoomInfo(initialRoom);
     setActiveRoomCode(code);
     setRoomCodeInput(code);
+    setCompetitionMinutes(settings.timeMinutes);
+    setRoomSetupStep('closed');
     setRoomMessage('Sala criada. Compartilhe o código com os outros participantes.');
+    setRoomCreating(false);
   };
 
   const joinCompetitionRoom = async () => {
@@ -1908,34 +1976,45 @@ export default function App() {
     }
 
     const roomRef = doc(db, 'artifacts', appId, 'rooms', code);
-    let roomSnap;
-    try {
-      roomSnap = await getDoc(roomRef);
-    } catch (error) {
-      setRoomMessage(`Não foi possível consultar a sala: ${error.message}`);
-      return;
-    }
-
-    if (!roomSnap.exists()) {
-      setRoomMessage('Sala não encontrada. Verifique o código.');
-      return;
-    }
-
-    const roomData = roomSnap.data();
     const currentPlayer = { uid: user.uid, name: displayName, avatar, score: 0, joinedAt: new Date().toISOString() };
-    const updatedPlayers = { ...(roomData.players || {}), [user.uid]: currentPlayer };
-
+    let joinedRoom;
     try {
-      await updateDoc(roomRef, {
-        players: updatedPlayers,
-        updatedAt: new Date().toISOString()
+      joinedRoom = await runTransaction(db, async (transaction) => {
+        const latestSnapshot = await transaction.get(roomRef);
+        if (!latestSnapshot.exists()) return { error: 'Sala não encontrada. Verifique o código.' };
+
+        const latestRoom = latestSnapshot.data();
+        const latestPlayers = latestRoom.players || {};
+        const alreadyJoined = Boolean(latestPlayers[user.uid]);
+        if (latestRoom.status !== 'lobby' && !alreadyJoined) {
+          return { error: 'Esta partida já começou e não aceita novos jogadores.' };
+        }
+
+        const maxPlayers = Number.isInteger(latestRoom.maxPlayers) ? latestRoom.maxPlayers : 16;
+        if (!alreadyJoined && getRoomPlayerCount(latestPlayers) >= maxPlayers) {
+          return { error: `A sala está cheia (${maxPlayers} jogadores no máximo).` };
+        }
+
+        const updatedPlayers = { ...latestPlayers, [user.uid]: alreadyJoined ? latestPlayers[user.uid] : currentPlayer };
+        if (!alreadyJoined) {
+          transaction.update(roomRef, {
+            players: updatedPlayers,
+            updatedAt: new Date().toISOString()
+          });
+        }
+        return { room: { ...latestRoom, players: updatedPlayers } };
       });
     } catch (error) {
       setRoomMessage(`Não foi possível entrar na sala: ${error.message}`);
       return;
     }
 
-    setRoomInfo({ ...roomData, players: updatedPlayers });
+    if (joinedRoom.error) {
+      setRoomMessage(joinedRoom.error);
+      return;
+    }
+    const { room: roomData } = joinedRoom;
+    setRoomInfo(roomData);
     setActiveRoomCode(code);
     setRoomMessage('Você entrou na sala com sucesso.');
   };
@@ -1950,24 +2029,74 @@ export default function App() {
       return;
     }
 
-    const updatedRoom = {
+    if (!roomStartState.canStart) {
+      setRoomMessage(`Ainda faltam ${roomStartState.playersNeeded} jogador(es) para iniciar a partida.`);
+      return;
+    }
+
+    const startTime = new Date().toISOString();
+    const durationMinutes = Number.isInteger(roomInfo.durationMinutes)
+      ? roomInfo.durationMinutes
+      : Math.ceil((roomInfo.timeLimit || competitionMinutes * 60) / 60);
+    const durationSeconds = durationMinutes * 60;
+    let updatedRoom = {
       ...roomInfo,
       status: 'running',
-      startedAt: new Date().toISOString(),
-      timeLimit: competitionMinutes * 60
+      startedAt: startTime,
+      durationMinutes,
+      timeLimit: durationSeconds
     };
 
     if (db && user && roomInfo.code) {
       const roomRef = doc(db, 'artifacts', appId, 'rooms', roomInfo.code);
-      await updateDoc(roomRef, {
-        status: 'running',
-        startedAt: updatedRoom.startedAt,
-        timeLimit: updatedRoom.timeLimit
-      });
+      try {
+        const result = await runTransaction(db, async (transaction) => {
+          const latestSnapshot = await transaction.get(roomRef);
+          if (!latestSnapshot.exists()) return { error: 'A sala não existe mais.' };
+          const latestRoom = latestSnapshot.data();
+          if (latestRoom.status === 'running') {
+            return { error: 'Esta partida já foi iniciada.' };
+          }
+          const latestStartState = getRoomStartState(latestRoom);
+          if (!latestStartState.canStart) {
+            return {
+              error: `A partida ainda não pode começar: ${latestStartState.playerCount}/${latestStartState.minPlayers} jogadores mínimos.`
+            };
+          }
+
+          const latestDuration = Number.isInteger(latestRoom.durationMinutes)
+            ? latestRoom.durationMinutes
+            : durationMinutes;
+          const startedAt = new Date().toISOString();
+          transaction.update(roomRef, {
+            status: 'running',
+            startedAt,
+            durationMinutes: latestDuration,
+            timeLimit: latestDuration * 60
+          });
+          return {
+            room: {
+              ...latestRoom,
+              status: 'running',
+              startedAt,
+              durationMinutes: latestDuration,
+              timeLimit: latestDuration * 60
+            }
+          };
+        });
+        if (result.error) {
+          setRoomMessage(result.error);
+          return;
+        }
+        updatedRoom = result.room;
+      } catch (error) {
+        setRoomMessage(`Não foi possível iniciar a partida: ${error.message}`);
+        return;
+      }
     }
 
     setRoomInfo(updatedRoom);
-    setTimeLeft(competitionMinutes * 60);
+    setTimeLeft(updatedRoom.timeLimit);
     setTimerRunning(true);
     setTimerAlert(false);
     setRoomMessage('Partida iniciada.');
@@ -2005,14 +2134,18 @@ export default function App() {
       return;
     }
     setTimerRunning(false);
-    setTimeLeft(competitionMinutes * 60);
+    const resetDurationMinutes = Number.isInteger(roomInfo?.durationMinutes)
+      ? roomInfo.durationMinutes
+      : competitionMinutes;
+    setTimeLeft(resetDurationMinutes * 60);
     setTimerAlert(false);
     if (roomInfo) {
       const updatedRoom = {
         ...roomInfo,
         status: 'lobby',
         startedAt: null,
-        timeLimit: competitionMinutes * 60
+        durationMinutes: resetDurationMinutes,
+        timeLimit: resetDurationMinutes * 60
       };
       setRoomInfo(updatedRoom);
 
@@ -2021,7 +2154,8 @@ export default function App() {
         await updateDoc(roomRef, {
           status: 'lobby',
           startedAt: null,
-          timeLimit: competitionMinutes * 60
+          durationMinutes: resetDurationMinutes,
+          timeLimit: resetDurationMinutes * 60
         });
       }
     }
@@ -2920,11 +3054,120 @@ export default function App() {
                       <section className="space-y-2 rounded-lg border border-indigo-500/30 bg-indigo-500/5 p-3" aria-labelledby="create-room-title">
                         <div>
                           <h3 id="create-room-title" className="text-sm font-bold text-white">Criar uma partida</h3>
-                          <p className="mt-1 text-[11px] leading-relaxed text-slate-400">{db ? 'Abra uma sala nova e compartilhe o código com os outros jogadores.' : 'Abra uma sala de demonstração neste aparelho.'}</p>
+                          <p className="mt-1 text-[11px] leading-relaxed text-slate-400">{db ? 'Defina as regras, confira o resumo e crie sua sala.' : 'Configure uma demonstração local neste aparelho.'}</p>
                         </div>
-                        <button type="button" onClick={createCompetitionRoom} className="w-full rounded-lg bg-indigo-500 px-3 py-2.5 text-xs font-bold text-white transition-colors hover:bg-indigo-400">
-                          {db ? 'Criar sala e receber código' : 'Criar partida local'}
-                        </button>
+                        {roomSetupStep === 'closed' && (
+                          <button type="button" onClick={openRoomSetup} className="w-full rounded-lg bg-indigo-500 px-3 py-2.5 text-xs font-bold text-white transition-colors hover:bg-indigo-400">
+                            Configurar e criar sala
+                          </button>
+                        )}
+                        {roomSetupStep === 'configure' && (
+                          <div className="space-y-3 rounded-lg border border-slate-800 bg-slate-950/80 p-3">
+                            <div>
+                              <h4 className="text-xs font-bold text-white">1. Configure a partida</h4>
+                              <p className="mt-1 text-[10px] text-slate-400">Escolha a duração e quantas pessoas podem participar.</p>
+                            </div>
+                            <fieldset className="space-y-2">
+                              <legend className="text-[11px] font-semibold text-slate-300">Tempo da partida</legend>
+                              <div className="flex flex-wrap gap-2">
+                                {[15, 30, 45, 60].map((minutes) => (
+                                  <button
+                                    key={minutes}
+                                    type="button"
+                                    onClick={() => {
+                                      setRoomSetupMinutes(minutes);
+                                      setRoomSetupCustomMinutes('');
+                                      setRoomSetupError('');
+                                    }}
+                                    aria-pressed={roomSetupMinutes === minutes && !roomSetupCustomMinutes}
+                                    className={`rounded-full border px-3 py-1.5 text-[11px] font-bold ${roomSetupMinutes === minutes && !roomSetupCustomMinutes ? 'border-indigo-400 bg-indigo-500 text-white' : 'border-slate-700 text-slate-300 hover:border-indigo-400'}`}
+                                  >
+                                    {minutes} min
+                                  </button>
+                                ))}
+                              </div>
+                              <label className="block text-[10px] text-slate-400">
+                                Ou informe outro tempo (1 a 480 minutos)
+                                <input
+                                  type="number"
+                                  min="1"
+                                  max="480"
+                                  step="1"
+                                  value={roomSetupCustomMinutes}
+                                  onChange={(event) => {
+                                    setRoomSetupCustomMinutes(event.target.value);
+                                    setRoomSetupMinutes(Number(event.target.value));
+                                    setRoomSetupError('');
+                                  }}
+                                  placeholder="Minutos personalizados"
+                                  className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white"
+                                />
+                              </label>
+                            </fieldset>
+                            <div className="grid grid-cols-2 gap-3">
+                              <label className="text-[11px] text-slate-300">
+                                Mínimo para iniciar
+                                <input
+                                  type="number"
+                                  min="1"
+                                  max="16"
+                                  step="1"
+                                  value={roomSetupMinPlayers}
+                                  onChange={(event) => {
+                                    setRoomSetupMinPlayers(Number(event.target.value));
+                                    setRoomSetupError('');
+                                  }}
+                                  className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white"
+                                />
+                              </label>
+                              <label className="text-[11px] text-slate-300">
+                                Máximo de jogadores
+                                <input
+                                  type="number"
+                                  min={Math.max(1, roomSetupMinPlayers)}
+                                  max="16"
+                                  step="1"
+                                  value={roomSetupMaxPlayers}
+                                  onChange={(event) => {
+                                    setRoomSetupMaxPlayers(Number(event.target.value));
+                                    setRoomSetupError('');
+                                  }}
+                                  className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white"
+                                />
+                              </label>
+                            </div>
+                            <p className="text-[10px] leading-relaxed text-slate-500">A sala só inicia ao atingir o mínimo. Depois de alcançar o máximo, novos jogadores não poderão entrar. Limite máximo: 16.</p>
+                            {roomSetupError && <p role="alert" className="text-[11px] text-rose-300">{roomSetupError}</p>}
+                            <div className="grid grid-cols-2 gap-2">
+                              <button type="button" onClick={() => setRoomSetupStep('closed')} className="rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-300">Cancelar</button>
+                              <button type="button" onClick={confirmRoomSetup} disabled={!roomSetupValidation.valid} className="rounded-lg bg-indigo-500 px-3 py-2 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Revisar partida</button>
+                            </div>
+                          </div>
+                        )}
+                        {roomSetupStep === 'confirm' && (
+                          <div className="space-y-3 rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-3">
+                            <div>
+                              <h4 className="text-xs font-bold text-emerald-200">2. Confirme os dados</h4>
+                              <p className="mt-1 text-[10px] text-slate-400">Confira antes de criar a sala e compartilhar o código.</p>
+                            </div>
+                            <dl className="grid grid-cols-2 gap-2 text-[11px]">
+                              <div className="rounded bg-slate-950/70 p-2"><dt className="text-slate-500">Duração</dt><dd className="mt-1 font-bold text-white">{roomSetupMinutes} minutos</dd></div>
+                              <div className="rounded bg-slate-950/70 p-2"><dt className="text-slate-500">Participantes agora</dt><dd className="mt-1 font-bold text-white">1 — você</dd></div>
+                              <div className="rounded bg-slate-950/70 p-2"><dt className="text-slate-500">Mínimo para iniciar</dt><dd className="mt-1 font-bold text-white">{roomSetupMinPlayers} jogadores</dd></div>
+                              <div className="rounded bg-slate-950/70 p-2"><dt className="text-slate-500">Máximo na sala</dt><dd className="mt-1 font-bold text-white">{roomSetupMaxPlayers} jogadores</dd></div>
+                            </dl>
+                            <p className="text-[10px] leading-relaxed text-slate-400">
+                              {roomSetupMinPlayers > 1
+                                ? `A partida aguardará mais ${roomSetupMinPlayers - 1} jogador(es) antes de liberar o início.`
+                                : 'A partida poderá ser iniciada assim que a sala for criada.'}
+                            </p>
+                            {roomSetupError && <p role="alert" className="text-[11px] text-rose-300">{roomSetupError}</p>}
+                            <div className="grid grid-cols-2 gap-2">
+                              <button type="button" onClick={() => setRoomSetupStep('configure')} disabled={roomCreating} className="rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-300 disabled:opacity-40">Voltar e editar</button>
+                              <button type="button" onClick={createCompetitionRoom} disabled={roomCreating || !roomSetupValidation.valid} className="rounded-lg bg-emerald-500 px-3 py-2 text-xs font-bold text-slate-950 disabled:cursor-wait disabled:opacity-50">{roomCreating ? 'Criando sala…' : 'Confirmar e criar sala'}</button>
+                            </div>
+                          </div>
+                        )}
                       </section>
                       <section className="space-y-2 rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3" aria-labelledby="join-room-title">
                         <div>
@@ -2968,6 +3211,19 @@ export default function App() {
                               )}
                             </div>
                             {roomInfo.players && <div className="mt-1">{Object.keys(roomInfo.players).length} jogador(es)</div>}
+                            <div className="mt-2 grid grid-cols-2 gap-2 border-t border-slate-800 pt-2 text-[10px]">
+                              <span>Duração: <strong className="text-white">{roomInfo.durationMinutes || Math.ceil((roomInfo.timeLimit || 0) / 60)} min</strong></span>
+                              <span>Jogadores: <strong className="text-white">{roomStartState.playerCount}/{roomStartState.maxPlayers}</strong></span>
+                              <span>Mínimo para iniciar: <strong className="text-white">{roomStartState.minPlayers}</strong></span>
+                              <span>Máximo: <strong className="text-white">{roomStartState.maxPlayers}</strong></span>
+                            </div>
+                            {roomInfo.status !== 'running' && (
+                              <p className={`mt-2 text-[10px] ${roomStartState.canStart ? 'text-emerald-300' : 'text-amber-200'}`}>
+                                {roomStartState.canStart
+                                  ? 'Mínimo atingido: a partida pode começar.'
+                                  : `Aguardando ${roomStartState.playersNeeded} jogador(es) para atingir o mínimo.`}
+                              </p>
+                            )}
                           </div>
                         )}
                         {roomInfo?.code && roomInfo.signal !== 'local' && (
@@ -3124,7 +3380,14 @@ export default function App() {
                       )}
                     </div>
                     <div className="grid grid-cols-3 gap-2">
-                      <button onClick={startCompetition} disabled={!canControlCompetition} title={canControlCompetition ? '' : 'Somente o dispositivo principal pode controlar a partida.'} className="py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs disabled:cursor-not-allowed disabled:opacity-40">Iniciar</button>
+                      <button
+                        onClick={startCompetition}
+                        disabled={!canControlCompetition || (roomInfo && (!roomStartState.canStart || roomInfo.status === 'running'))}
+                        title={!canControlCompetition ? 'Somente o dispositivo principal pode controlar a partida.' : roomInfo && !roomStartState.canStart ? `Aguardando ${roomStartState.playersNeeded} jogador(es).` : ''}
+                        className="py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        {roomInfo?.status === 'running' ? 'Em andamento' : roomInfo && !roomStartState.canStart ? `Aguardando ${roomStartState.playersNeeded}` : 'Iniciar'}
+                      </button>
                       <button onClick={pauseCompetition} disabled={!canControlCompetition} title={canControlCompetition ? '' : 'Somente o dispositivo principal pode controlar a partida.'} className="py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs disabled:cursor-not-allowed disabled:opacity-40">Pausar</button>
                       <button onClick={resetCompetition} disabled={!canControlCompetition} title={canControlCompetition ? '' : 'Somente o dispositivo principal pode controlar a partida.'} className="py-2 rounded-xl bg-rose-500 text-white font-bold text-xs disabled:cursor-not-allowed disabled:opacity-40">Reset</button>
                     </div>
