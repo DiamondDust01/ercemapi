@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, memo, useMemo } from 'react';
+import packageJson from '../package.json';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, onSnapshot, getDoc, updateDoc } from 'firebase/firestore';
@@ -23,6 +24,17 @@ const app = firebaseConfig ? initializeApp(firebaseConfig) : null;
 const auth = app ? getAuth(app) : null;
 const db = app ? getFirestore(app) : null;
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'obi-quest-v1';
+
+function AppVersion() {
+  return (
+    <span
+      className="fixed bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] right-3 z-40 rounded-full border border-slate-800 bg-slate-950/80 px-2 py-1 font-mono text-[10px] text-slate-500 backdrop-blur-sm md:bottom-3"
+      aria-label={`Versão ${packageJson.version}`}
+    >
+      v{packageJson.version}
+    </span>
+  );
+}
 
 const Filter = ({ className }) => (
   <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -2848,6 +2860,7 @@ export default function App() {
           ))}
         </div>
       </nav>
+      <AppVersion />
     </div>
   );
 }
