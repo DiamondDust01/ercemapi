@@ -100,9 +100,10 @@ O app portátil inclui o executável Electron e a aplicação web em `resources/
 ```bash
 npm run app:windows
 npm run app:windows:package
+npm run app:windows:installer
 ```
 
-O segundo comando gera `%LOCALAPPDATA%\OBI-Quest\portable\OBI Quest.exe`. Distribua a pasta `portable` completa; o executável não está assinado digitalmente e não é um instalador.
+O segundo comando gera `%LOCALAPPDATA%\OBI-Quest\portable\OBI Quest.exe`. Distribua a pasta `portable` completa; o executável não está assinado digitalmente e não é um instalador. O terceiro gera um instalador NSIS x64 em `release/windows/OBI-Quest-Setup-1.4.2.exe`, que permite escolher a pasta de instalação e cria atalhos no menu Iniciar e na área de trabalho. O instalador não está assinado digitalmente e sua geração requer uma máquina que permita executar os auxiliares criados pelo empacotador.
 
 Os comandos web `npm run dev`, `npm run build` e `npm run preview` permanecem disponíveis e não dependem dos wrappers nativos.
 

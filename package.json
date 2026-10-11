@@ -15,7 +15,8 @@
     "android:open": "cap open android",
     "android:apk": "npm run android:sync && cd android && .\\gradlew.bat assembleDebug",
     "app:windows": "npm run build && electron .",
-    "app:windows:package": "npm run build && node scripts/package-windows.cjs"
+    "app:windows:package": "npm run build && node scripts/package-windows.cjs",
+    "app:windows:installer": "npm run build && electron-builder --win nsis --x64 --publish never"
   },
   "dependencies": {
     "firebase": "^12.19.0",
@@ -31,10 +32,39 @@
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-react": "^4.3.1",
     "electron": "^44.5.1",
+    "electron-builder": "^26.15.3",
     "tailwindcss": "^4.3.3",
     "vite": "^6.4.3"
   },
   "overrides": {
     "@grpc/grpc-js": "^1.14.5"
+  },
+  "build": {
+    "appId": "com.obique.quest",
+    "productName": "OBI Quest",
+    "electronLanguages": [
+      "en-US",
+      "pt-BR"
+    ],
+    "directories": {
+      "output": "release/windows"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "artifactName": "OBI-Quest-Setup-${version}.${ext}",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "differentialPackage": false
+    }
   }
 }
