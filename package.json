@@ -1,7 +1,7 @@
 {
   "name": "obi-quest-v1",
   "private": true,
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Plataforma de treino para as modalidades da Olimpíada Brasileira de Informática",
   "author": "OBI Quest",
   "type": "module",
