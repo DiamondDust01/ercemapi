@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, memo, useMemo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, memo, useMemo } from 'react';
 import packageJson from '../package.json';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
@@ -1808,7 +1808,7 @@ export default function App() {
     }));
   }, [selectedIniciacaoAnswers]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (mainScrollRef.current) mainScrollRef.current.scrollTop = 0;
   }, [activeTab]);
 
@@ -2298,7 +2298,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-[#020408] text-slate-300 font-sans selection:bg-indigo-500/30 overflow-hidden flex flex-col relative">
+    <div className="h-[100dvh] bg-[#020408] text-slate-300 font-sans selection:bg-indigo-500/30 overflow-hidden flex flex-col relative">
       <BinaryBackdrop />
       <header className="fixed top-0 left-0 right-0 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-md z-50">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 h-14 md:h-16 flex items-center justify-between gap-2">
@@ -2330,7 +2330,7 @@ export default function App() {
         </div>
       </header>
 
-      <main ref={mainScrollRef} className="flex-1 overflow-y-auto relative z-10 pt-14 pb-20 md:pt-16 md:pb-0">
+      <main ref={mainScrollRef} className="min-h-0 flex-1 overflow-y-auto relative z-10 pt-14 pb-20 md:pt-16 md:pb-0">
         {activeTab === 'menu' && (
           <div className="max-w-6xl mx-auto px-4 py-16 md:py-20">
             <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_0.9fr] gap-6 items-stretch">

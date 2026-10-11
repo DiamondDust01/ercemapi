@@ -18,6 +18,13 @@ a numeração das versões consistente entre o código e os próximos lançament
 - Escreva notas curtas, em português, agrupadas por funcionalidades, correções e
   mudanças incompatíveis, quando aplicável.
 
+## Não lançado
+
+### Corrigido
+
+- Ao trocar de aba, o conteúdo volta ao início em web, Android e desktop; a
+  rolagem fica restrita ao painel da aplicação em vez de permanecer na página.
+
 ## 1.4.0 - 2026-10-11
 
 ### Adicionado
