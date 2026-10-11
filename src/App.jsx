@@ -16,9 +16,10 @@ import {
   Skull, Flame, AlertTriangle, Radio, Percent, Parentheses, Calculator,
   FastForward, CircleDashed, Fingerprint, Microchip, HardDrive, Unlink,
   GitPullRequest, Waypoints, TreeDeciduous, TerminalSquare, MemoryStick,
-  Cloud, Download, Upload, Copy, GraduationCap, Map as MapIcon, Compass,
+  Cloud, Download, Upload, Copy, GraduationCap, Map as MapIcon, Compass, Wifi, WifiOff,
   Plus, Repeat2
 } from 'lucide-react';
+import { readLocalConnectionQuality } from './localConnection.js';
 
 const firebaseConfigValue = typeof __firebase_config !== 'undefined'
   ? __firebase_config
@@ -37,6 +38,57 @@ function AppVersion() {
     >
       v{packageJson.version}
     </span>
+  );
+}
+
+function LocalConnectionIndicator() {
+  const [connection, setConnection] = useState(() => readLocalConnectionQuality());
+
+  useEffect(() => {
+    const refresh = () => setConnection(readLocalConnectionQuality());
+    const browserConnection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    window.addEventListener('online', refresh);
+    window.addEventListener('offline', refresh);
+    browserConnection?.addEventListener?.('change', refresh);
+    return () => {
+      window.removeEventListener('online', refresh);
+      window.removeEventListener('offline', refresh);
+      browserConnection?.removeEventListener?.('change', refresh);
+    };
+  }, []);
+
+  const tone = !connection.online
+    ? 'text-rose-300'
+    : connection.quality === 'good' ? 'text-emerald-300'
+      : connection.quality === 'fair' ? 'text-amber-300'
+        : connection.quality === 'poor' ? 'text-rose-300' : 'text-slate-300';
+  const ConnectionIcon = connection.online ? Wifi : WifiOff;
+
+  return (
+    <details className="fixed bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] left-3 z-40 md:bottom-3">
+      <summary
+        className={`flex max-w-[calc(100vw-6rem)] cursor-pointer list-none items-center gap-2 rounded-full border border-slate-800 bg-slate-950/90 px-3 py-2 text-xs font-semibold shadow-lg backdrop-blur-sm marker:hidden ${tone}`}
+        title="Estado de la red detectado localmente; no se envían pruebas a ningún servidor."
+      >
+        <ConnectionIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
+        <span className="truncate">Conexión: {connection.label}</span>
+        {connection.typeLabel && <span className="hidden truncate text-slate-500 sm:inline">· {connection.typeLabel}</span>}
+      </summary>
+      <div className="absolute bottom-full left-0 mb-2 w-[min(20rem,calc(100vw-1.5rem))] rounded-xl border border-slate-700 bg-slate-950/95 p-4 text-xs text-slate-300 shadow-2xl backdrop-blur-md">
+        <div className={`font-bold ${tone}`}>Qualidade estimada neste dispositivo: {connection.label}</div>
+        <div className="mt-2 space-y-1 text-slate-400">
+          <div>Estado da rede: {connection.online ? 'conectada, segundo o sistema' : 'desconectada, segundo o sistema'}</div>
+          {connection.typeLabel && <div>Tipo: {connection.typeLabel}</div>}
+          {connection.effectiveType && <div>Categoria local: {connection.effectiveType.toUpperCase()}</div>}
+          {connection.downlinkMbps !== null && <div>Taxa estimada: {connection.downlinkMbps} Mbps</div>}
+          {connection.rttMs !== null && <div>Latência estimada pelo sistema: {connection.rttMs} ms</div>}
+          {connection.quality === 'unknown' && <div>Este navegador não fornece estimativas locais de qualidade.</div>}
+        </div>
+        <p className="mt-3 border-t border-slate-800 pt-2 text-[10px] leading-relaxed text-slate-500">
+          Indicador local baseado no estado e nas estimativas de rede do dispositivo. Não envia tráfego de teste nem mede a latência até um servidor.
+        </p>
+      </div>
+    </details>
   );
 }
 
@@ -2029,6 +2081,7 @@ export default function App() {
           <Loader2 className="w-12 h-12 animate-spin" />
           <p className="tracking-widest animate-pulse">CARREGANDO OBI QUEST...</p>
         </div>
+        <LocalConnectionIndicator />
       </div>
     );
   }
@@ -3027,6 +3080,7 @@ export default function App() {
           ))}
         </div>
       </nav>
+      <LocalConnectionIndicator />
       <AppVersion />
     </div>
   );

@@ -18,6 +18,16 @@ a numeração das versões consistente entre o código e os próximos lançament
 - Escreva notas curtas, em português, agrupadas por funcionalidades, correções e
   mudanças incompatíveis, quando aplicável.
 
+## 1.3.0 - 2026-10-11
+
+### Adicionado
+
+- Indicador local de conectividade em todas as telas, com estimativa de
+  qualidade quando o navegador ou sistema fornece esses dados, sem testar ping
+  contra servidores.
+- Detalhes locais de tipo de rede, taxa estimada e latência quando disponíveis;
+  sem estimativas, o app informa apenas o estado de conexão fornecido pelo sistema.
+
 ## 1.2.0 - 2026-10-11
 
 ### Adicionado
