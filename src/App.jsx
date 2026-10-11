@@ -3,7 +3,7 @@ import packageJson from '../package.json';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, onSnapshot, getDoc, updateDoc, increment } from 'firebase/firestore';
-import { PeerPairing } from './peerPairing.js';
+import { PeerPairing, summarizePeerConnection } from './peerPairing.js';
 import {
   Terminal, Shield, Sword, Code, Cpu, Sparkles,
   ArrowRight, BookOpen, Crosshair, Coins, Glasses, Bot, BrainCircuit,
@@ -68,10 +68,10 @@ function LocalConnectionIndicator() {
     <details className="fixed bottom-[calc(env(safe-area-inset-bottom)+4.5rem)] left-3 z-40 md:bottom-3">
       <summary
         className={`flex max-w-[calc(100vw-6rem)] cursor-pointer list-none items-center gap-2 rounded-full border border-slate-800 bg-slate-950/90 px-3 py-2 text-xs font-semibold shadow-lg backdrop-blur-sm marker:hidden ${tone}`}
-        title="Estado de la red detectado localmente; no se envían pruebas a ningún servidor."
+        title="Estado da rede detectado localmente; nenhum teste é enviado a servidores."
       >
         <ConnectionIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
-        <span className="truncate">Conexión: {connection.label}</span>
+        <span className="truncate">Conexão: {connection.label}</span>
         {connection.typeLabel && <span className="hidden truncate text-slate-500 sm:inline">· {connection.typeLabel}</span>}
       </summary>
       <div className="absolute bottom-full left-0 mb-2 w-[min(20rem,calc(100vw-1.5rem))] rounded-xl border border-slate-700 bg-slate-950/95 p-4 text-xs text-slate-300 shadow-2xl backdrop-blur-md">
@@ -87,6 +87,56 @@ function LocalConnectionIndicator() {
         <p className="mt-3 border-t border-slate-800 pt-2 text-[10px] leading-relaxed text-slate-500">
           Indicador local baseado no estado e nas estimativas de rede do dispositivo. Não envia tráfego de teste nem mede a latência até um servidor.
         </p>
+      </div>
+    </details>
+  );
+}
+
+function PeerConnectionIndicator({ roomCode, peers, players }) {
+  if (!roomCode) return null;
+
+  const pingStatus = summarizePeerConnection(peers);
+  const label = pingStatus.averagePing !== null
+    ? `${pingStatus.averagePing} ms`
+    : ({
+      unresponsive: 'Sem resposta',
+      measuring: 'Medindo…',
+      connecting: 'Conectando…',
+      disconnected: 'Desconectado',
+      waiting: 'Aguardando par'
+    })[pingStatus.state];
+  const tone = pingStatus.averagePing === null
+    ? 'text-slate-300'
+    : pingStatus.averagePing <= 50 ? 'text-emerald-300'
+      : pingStatus.averagePing <= 100 ? 'text-cyan-300'
+        : pingStatus.averagePing <= 200 ? 'text-amber-300' : 'text-rose-300';
+
+  return (
+    <details className="fixed bottom-[calc(env(safe-area-inset-bottom)+7rem)] right-3 z-40 md:bottom-14">
+      <summary className={`flex max-w-[calc(100vw-6rem)] cursor-pointer list-none items-center gap-2 rounded-full border border-slate-800 bg-slate-950/90 px-3 py-2 text-xs font-semibold shadow-lg backdrop-blur-sm marker:hidden ${tone}`}>
+        <Activity className="h-4 w-4 shrink-0" aria-hidden="true" />
+        <span className="truncate">Ping P2P: {label}</span>
+      </summary>
+      <div className="absolute bottom-full right-0 mb-2 w-[min(20rem,calc(100vw-1.5rem))] rounded-xl border border-slate-700 bg-slate-950/95 p-4 text-xs text-slate-300 shadow-2xl backdrop-blur-md">
+        <div className={`font-bold ${tone}`}>Conexão direta da partida: {label}</div>
+        <p className="mt-2 text-slate-400">
+          Sala {roomCode}. Medição real de ida e volta pelo canal WebRTC entre os aparelhos; não é a qualidade geral da internet nem o ping de um servidor.
+        </p>
+        {peers.length > 0 && (
+          <ul className="mt-3 space-y-1 border-t border-slate-800 pt-2 text-slate-400">
+            {peers.map((peer) => (
+              <li key={peer.uid} className="flex justify-between gap-3">
+                <span className="truncate">{players?.[peer.uid]?.name || peer.uid}</span>
+                <span className="shrink-0">
+                  {pingStatus.measuredPeers.includes(peer)
+                    ? `${peer.average} ms`
+                    : peer.channelState !== 'open' ? peer.state : peer.lastPingAt ? 'sem resposta' : 'medindo'}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {peers.length === 0 && <p className="mt-2 text-slate-500">Entre na sala com outro aparelho para medir a latência P2P.</p>}
       </div>
     </details>
   );
@@ -571,7 +621,7 @@ const BinaryBackdrop = () => {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.18),transparent_35%),linear-gradient(180deg,#020408_0%,#030712_100%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.10)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.10)_1px,transparent_1px)] bg-[size:24px_24px]" />
       <div
-        className="absolute inset-0 p-3 md:p-6 grid gap-1 md:gap-2 text-[8px] md:text-[10px] font-mono text-cyan-300/30"
+        className="android-binary-decoration absolute inset-0 p-3 md:p-6 grid gap-1 md:gap-2 text-[8px] md:text-[10px] font-mono text-cyan-300/30"
         style={{
           gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
           gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
@@ -1820,7 +1870,12 @@ export default function App() {
       }
     };
 
-    await setDoc(roomRef, initialRoom);
+    try {
+      await setDoc(roomRef, initialRoom);
+    } catch (error) {
+      setRoomMessage(`Não foi possível criar a sala: ${error.message}`);
+      return;
+    }
     setRoomInfo(initialRoom);
     setActiveRoomCode(code);
     setRoomCodeInput(code);
@@ -1843,7 +1898,13 @@ export default function App() {
     }
 
     const roomRef = doc(db, 'artifacts', appId, 'rooms', code);
-    const roomSnap = await getDoc(roomRef);
+    let roomSnap;
+    try {
+      roomSnap = await getDoc(roomRef);
+    } catch (error) {
+      setRoomMessage(`Não foi possível consultar a sala: ${error.message}`);
+      return;
+    }
 
     if (!roomSnap.exists()) {
       setRoomMessage('Sala não encontrada. Verifique o código.');
@@ -1854,10 +1915,15 @@ export default function App() {
     const currentPlayer = { uid: user.uid, name: displayName, avatar, score: 0, joinedAt: new Date().toISOString() };
     const updatedPlayers = { ...(roomData.players || {}), [user.uid]: currentPlayer };
 
-    await updateDoc(roomRef, {
-      players: updatedPlayers,
-      updatedAt: new Date().toISOString()
-    });
+    try {
+      await updateDoc(roomRef, {
+        players: updatedPlayers,
+        updatedAt: new Date().toISOString()
+      });
+    } catch (error) {
+      setRoomMessage(`Não foi possível entrar na sala: ${error.message}`);
+      return;
+    }
 
     setRoomInfo({ ...roomData, players: updatedPlayers });
     setActiveRoomCode(code);
@@ -2082,6 +2148,7 @@ export default function App() {
           <p className="tracking-widest animate-pulse">CARREGANDO OBI QUEST...</p>
         </div>
         <LocalConnectionIndicator />
+        <PeerConnectionIndicator roomCode={activeRoomCode} peers={peerStatus.peers} />
       </div>
     );
   }
@@ -2833,33 +2900,70 @@ export default function App() {
                       {timeLeft === 0 ? 'Tempo esgotado — finalize a rodada.' : timerAlert ? 'Últimos minutos — pressione com foco.' : roomInfo?.status === 'running' ? 'Modo competição sincronizado.' : 'Modo competição ativo.'}
                     </div>
 
-                    <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-3 mb-3">
-                      <div className="text-[11px] font-mono text-cyan-300 uppercase mb-2">Sala multiplayer</div>
-                      <div className="flex flex-col gap-2">
-                        <div className="rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-xs text-slate-300 flex items-center gap-2">
-                          <span className="text-lg">{playerAvatar}</span>
-                          <span className="font-bold text-white">{formatPlayerDisplayName(playerName)}</span>
+                    <div className="mb-3 space-y-2 rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+                      <div className="text-[11px] font-mono uppercase text-cyan-300">Partida multiplayer</div>
+                      <div className="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/70 px-3 py-2 text-xs text-slate-300">
+                        <span className="text-base">{playerAvatar}</span>
+                        <span>Você participa como <strong className="text-white">{formatPlayerDisplayName(playerName)}</strong></span>
+                      </div>
+                      {!db && <p className="rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-[11px] leading-relaxed text-amber-200">Este ambiente está sem Firebase: criar uma sala funciona apenas como demonstração local. Para jogar online, configure o Firebase no aplicativo.</p>}
+                      <section className="space-y-2 rounded-lg border border-indigo-500/30 bg-indigo-500/5 p-3" aria-labelledby="create-room-title">
+                        <div>
+                          <h3 id="create-room-title" className="text-sm font-bold text-white">Criar uma partida</h3>
+                          <p className="mt-1 text-[11px] leading-relaxed text-slate-400">{db ? 'Abra uma sala nova e compartilhe o código com os outros jogadores.' : 'Abra uma sala de demonstração neste aparelho.'}</p>
                         </div>
-                        <button onClick={createCompetitionRoom} className="w-full py-2 rounded-lg bg-indigo-500 text-white font-bold text-xs">Criar sala</button>
+                        <button type="button" onClick={createCompetitionRoom} className="w-full rounded-lg bg-indigo-500 px-3 py-2.5 text-xs font-bold text-white transition-colors hover:bg-indigo-400">
+                          {db ? 'Criar sala e receber código' : 'Criar partida local'}
+                        </button>
+                      </section>
+                      <section className="space-y-2 rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3" aria-labelledby="join-room-title">
+                        <div>
+                          <h3 id="join-room-title" className="text-sm font-bold text-white">Entrar em uma partida</h3>
+                          <p className="mt-1 text-[11px] leading-relaxed text-slate-400">Digite o código que o criador da sala compartilhou.</p>
+                        </div>
+                        <label className="sr-only" htmlFor="competition-room-code">Código da sala</label>
                         <div className="flex gap-2">
                           <input
+                            id="competition-room-code"
                             value={roomCodeInput}
                             onChange={(e) => setRoomCodeInput(e.target.value.toUpperCase())}
-                            placeholder="Código da sala"
-                            className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white outline-none"
+                            placeholder="Ex.: ABC123"
+                            autoComplete="off"
+                            className="min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white outline-none focus:border-cyan-500"
                           />
-                          <button onClick={joinCompetitionRoom} className="px-3 py-2 rounded-lg bg-slate-800 text-slate-200 font-bold text-xs border border-slate-700">Entrar</button>
+                          <button type="button" onClick={joinCompetitionRoom} className="rounded-lg border border-cyan-700 bg-cyan-900/60 px-4 py-2 text-xs font-bold text-cyan-100 transition-colors hover:bg-cyan-800">
+                            Entrar
+                          </button>
                         </div>
+                      </section>
                         {roomInfo?.code && (
                           <div className="rounded-lg bg-slate-900 px-3 py-2 text-xs text-slate-300">
-                            Sala: <span className="font-bold text-cyan-300">{roomInfo.code}</span>
-                            {roomInfo.players && <span className="ml-2">• {Object.keys(roomInfo.players).length} jogador(es)</span>}
+                            <div className="flex items-center justify-between gap-2">
+                              <span>Sala: <span className="select-all font-bold text-cyan-300">{roomInfo.code}</span></span>
+                              {roomInfo.signal !== 'local' && (
+                                <button
+                                  type="button"
+                                  onClick={async () => {
+                                    try {
+                                      await navigator.clipboard.writeText(roomInfo.code);
+                                      setRoomMessage('Código da sala copiado.');
+                                    } catch (error) {
+                                      setRoomMessage(`Não foi possível copiar o código automaticamente (${error.message}). Código: ${roomInfo.code}`);
+                                    }
+                                  }}
+                                  className="shrink-0 rounded border border-slate-700 px-2 py-1 text-[10px] font-bold text-slate-200 hover:border-cyan-500"
+                                >
+                                  Copiar código
+                                </button>
+                              )}
+                            </div>
+                            {roomInfo.players && <div className="mt-1">{Object.keys(roomInfo.players).length} jogador(es)</div>}
                           </div>
                         )}
-                        {roomInfo?.code && (
+                        {roomInfo?.code && roomInfo.signal !== 'local' && (
                           <div className="space-y-1 rounded-lg border border-cyan-900/60 bg-cyan-950/20 px-3 py-2 text-xs text-slate-300" role="status" aria-live="polite">
                             <div className="font-bold text-cyan-200">
-                              Pareamento P2P: {peerStatus.state === 'connected' ? 'conectado' : peerStatus.state === 'connecting' ? 'conectando' : 'aguardando dispositivos'}
+                              Conexão direta entre aparelhos: {peerStatus.state === 'connected' ? 'conectada' : peerStatus.state === 'connecting' ? 'conectando' : 'aguardando aparelhos'}
                             </div>
                             <div>Principal (menor ping médio): {peerStatus.primaryUid ? roomInfo.players?.[peerStatus.primaryUid]?.name || peerStatus.primaryUid : 'elegendo...'}</div>
                             <div>Reserva: {peerStatus.backupUid ? roomInfo.players?.[peerStatus.backupUid]?.name || peerStatus.backupUid : 'aguardando outro dispositivo'}</div>
@@ -2911,7 +3015,6 @@ export default function App() {
                           </div>
                         )}
                         {roomMessage && <div className="text-[11px] text-amber-200">{roomMessage}</div>}
-                      </div>
                     </div>
 
                     {roomInfo?.players && (
@@ -3081,6 +3184,11 @@ export default function App() {
         </div>
       </nav>
       <LocalConnectionIndicator />
+      <PeerConnectionIndicator
+        roomCode={roomInfo?.code === activeRoomCode && roomInfo.signal !== 'local' ? activeRoomCode : ''}
+        peers={peerStatus.peers}
+        players={roomInfo?.players}
+      />
       <AppVersion />
     </div>
   );

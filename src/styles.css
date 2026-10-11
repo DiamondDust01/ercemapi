@@ -29,6 +29,14 @@ body {
   color: #e2e8f0;
 }
 
+html.android-app {
+  font-size: 14px;
+}
+
+html.android-app .android-binary-decoration {
+  display: none;
+}
+
 button,
 textarea {
   font: inherit;
