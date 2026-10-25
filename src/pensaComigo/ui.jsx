@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import qrcode from 'qrcode-generator';
 
-export const buttonPrimary = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-cyan-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:cursor-not-allowed disabled:opacity-40';
-export const buttonSecondary = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:border-cyan-400 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 disabled:cursor-not-allowed disabled:opacity-40';
+export const buttonPrimary = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-300 disabled:cursor-not-allowed disabled:opacity-40';
+export const buttonSecondary = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:border-violet-400 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-300 disabled:cursor-not-allowed disabled:opacity-40';
 export const buttonDanger = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-rose-500/60 px-4 py-2 text-sm font-semibold text-rose-200 transition hover:bg-rose-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-300';
-export const inputClass = 'block w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-3 text-base text-white placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none';
+export const inputClass = 'block w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-3 text-base text-white placeholder:text-slate-500 focus:border-violet-400 focus:outline-none';
 
 export const Card = ({ children, className = '' }) => (
   <section className={`rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-6 ${className}`}>{children}</section>
@@ -12,7 +12,7 @@ export const Card = ({ children, className = '' }) => (
 
 export const Notice = ({ tone = 'info', children, role = 'status' }) => {
   const tones = {
-    info: 'border-cyan-500/40 bg-cyan-500/10 text-cyan-100',
+    info: 'border-violet-500/40 bg-violet-500/10 text-violet-100',
     warn: 'border-amber-500/40 bg-amber-500/10 text-amber-100',
     error: 'border-rose-500/40 bg-rose-500/10 text-rose-100',
     success: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-100'
@@ -20,7 +20,7 @@ export const Notice = ({ tone = 'info', children, role = 'status' }) => {
   return <div role={role} aria-live="polite" className={`rounded-xl border px-3 py-2 text-sm leading-relaxed ${tones[tone] || tones.info}`}>{children}</div>;
 };
 
-export const Bar = ({ label, value, max = 100, color = 'bg-cyan-400', suffix = '%', large = false }) => {
+export const Bar = ({ label, value, max = 100, color = 'bg-violet-400', suffix = '%', large = false }) => {
   const safe = Number.isFinite(value) ? value : 0;
   const width = max > 0 ? Math.min(100, Math.round((safe / max) * 100)) : 0;
   return (
@@ -58,7 +58,7 @@ export const QrCode = ({ value, size = 220, label = 'QR code para entrar na sala
   }, [value]);
   if (!cells) return null;
   return (
-    <svg role="img" aria-label={label} viewBox={`0 0 ${cells.count} ${cells.count}`} width={size} height={size} className="h-auto max-w-full rounded-lg bg-white" shapeRendering="crispEdges">
+    <svg role="img" aria-label={label} viewBox={`0 0 ${cells.count} ${cells.count}`} width={size} height={size} className="h-auto max-w-full rounded-lg bg-[#ffffff]" shapeRendering="crispEdges">
       <rect width={cells.count} height={cells.count} fill="#ffffff" />
       <path d={cells.path} fill="#000000" />
     </svg>
