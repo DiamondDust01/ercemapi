@@ -1,13 +1,21 @@
 # OBI Quest para Windows
 
-Esta branch contém o pacote portátil x64 do OBI Quest 1.4.2:
-[`OBI-Quest-1.4.2-Windows-x64.7z`](OBI-Quest-1.4.2-Windows-x64.7z). O arquivo
-tem 98.825.858 bytes (94,25 MiB), contém o aplicativo Electron completo e foi
-verificado com 7-Zip. O GitHub aceitou o arquivo e informou que ele ultrapassa a
-recomendação de 50 MB. Para downloads futuros, considere uma GitHub Release ou
-Git LFS se os pacotes crescerem.
+Esta branch contém o pacote portátil x64 do OBI Quest 1.5.0:
+[`OBI-Quest-1.5.0-Windows-x64.7z`](OBI-Quest-1.5.0-Windows-x64.7z). O arquivo
+tem 99.926.521 bytes (95,30 MiB), contém o aplicativo Electron completo e foi
+verificado com 7-Zip. Ele ultrapassa a recomendação de 50 MB do GitHub e está
+perto do limite de 100 MiB por arquivo; se os pacotes crescerem, use uma GitHub
+Release ou Git LFS.
 
-SHA-256: `CCC34BF8105DA7A7D9C79AF38A0F3908A77FA29BDC9F4A3531B5A219161D2DAC`.
+SHA-256: `65DD689B941FA8BE2E14BCAD25CC71FC7F474F642677493C2510B65A59CB62FD`.
+
+Ao abrir, o app pergunta qual variação usar: OBI Quest ou Pensa Comigo. No app
+para Windows, os alunos entram numa sala do Pensa Comigo digitando o código; o
+QR aponta para a versão web publicada.
+
+O pacote portátil 1.5.0 foi aberto num teste automatizado nesta máquina: a
+tela de escolha apareceu, o Pensa Comigo criou uma sala de demonstração e a
+troca para o OBI Quest funcionou.
 
 ## Instalação portátil
 
@@ -32,7 +40,7 @@ npm run app:windows:installer
 ```
 
 O resultado esperado é
-`release/windows/OBI-Quest-Setup-1.4.2.exe`. Ele permite selecionar uma pasta de
+`release/windows/OBI-Quest-Setup-1.5.0.exe`. Ele permite selecionar uma pasta de
 instalação, cria atalhos no menu Iniciar e na área de trabalho, e grava um
 desinstalador no diretório escolhido. Se um instalador com esse nome já existir,
 o script interrompe a operação em vez de sobrescrevê-lo. O build não executa o
@@ -44,10 +52,11 @@ bloqueada pela política de Controle de Aplicativos do Windows. Não desative
 proteções do sistema nem tente contornar esses bloqueios; use um ambiente de
 build aprovado pela organização.
 
-O Setup 1.4.2 gerado nesta rodada foi instalado em uma pasta temporária isolada,
-o aplicativo foi aberto e sua janela respondeu, e a instalação foi removida com
-o desinstalador. Isso valida o fluxo básico nesta máquina Windows, mas não
-substitui testes em outras versões do Windows. O arquivo não é assinado.
+O Setup 1.5.0 tem 110.148.689 bytes. SHA-256:
+`D1A9129D5DA675C42852F263CBC2E5D3C8357CB016CEA7D008C766B66F0924CC`.
+Ele foi compilado, mas **não foi executado** nesta rodada: instale-o primeiro
+numa máquina ou pasta de teste. O Setup 1.4.2 anterior foi instalado, aberto e
+desinstalado com sucesso num teste isolado. O arquivo não é assinado.
 
 O instalador tem aproximadamente 110 MB. O ZIP testado não reduziu o tamanho,
 pois o conteúdo do instalador já usa compressão LZMA. Para disponibilizá-lo no
@@ -60,7 +69,7 @@ git lfs pull
 ```
 
 Também é possível baixar o
-[Setup OBI Quest 1.4.2 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-Setup-1.4.2.exe)
+[Setup OBI Quest 1.5.0 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-Setup-1.5.0.exe)
 diretamente. A versão portátil continua disponível no arquivo `.7z` acima.
 
 Para mais detalhes, consulte o
