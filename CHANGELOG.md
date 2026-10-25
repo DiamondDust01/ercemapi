@@ -20,6 +20,25 @@ a numeração das versões consistente entre o código e os próximos lançament
 
 ## Não lançado
 
+## 1.6.0 - 2026-10-25
+
+### Adicionado
+
+- Temas claro e escuro na tela de escolha, no OBI Quest, no Pensa Comigo e no
+  telão, em web, Android e Windows. O escuro continua como padrão; a escolha
+  fica salva no aparelho. O tema claro é gerado a partir da paleta do Tailwind
+  por `scripts/generate-light-theme.mjs`.
+- Paleta própria do Pensa Comigo: violeta e magenta nos destaques e fundo com
+  malha hexagonal e um zero ou um em gradiente no centro de cada hexágono.
+- Fundo próprio na tela de escolha: malha de pontos com gradiente que vai das
+  cores do OBI Quest às do Pensa Comigo.
+
+### Melhorado
+
+- O rótulo do topo do Pensa Comigo passou a ser só "Variação".
+- O sorteio dos grupos continua funcionando quando o palestrante ensaia a visão
+  do aluno na mesma aba.
+
 ## 1.5.0 - 2026-10-25
 
 ### Adicionado
