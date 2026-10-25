@@ -6,7 +6,7 @@ de programação, recursos de reflexão pedagógica e salas demonstrativas de
 competição. **Não é um serviço oficial da OBI, não substitui uma prova oficial e
 não executa um juiz de programação real.**
 
-Versão atual do código: **1.6.0**. A fonte da numeração é `package.json`; o
+Versão atual do código: **1.6.1**. A fonte da numeração é `package.json`; o
 histórico de mudanças está em `CHANGELOG.md`.
 
 ## O que o aplicativo oferece

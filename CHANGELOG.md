@@ -20,6 +20,8 @@ a numeração das versões consistente entre o código e os próximos lançament
 
 ## Não lançado
 
+## 1.6.1 - 2026-10-25
+
 ### Melhorado
 
 - Nova paleta do Pensa Comigo, em âmbar e laranja, ligada ao ícone de lâmpada:
