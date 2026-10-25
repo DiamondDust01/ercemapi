@@ -3,8 +3,8 @@ import { hexCenters, hexPolygon, digitFor } from './hexGrid.js';
 import useViewportSize from '../useViewportSize.js';
 
 // Fundo próprio do Pensa Comigo: malha hexagonal (no lugar da grade quadrada do
-// OBI Quest) com um zero ou um no centro de cada hexágono, em gradiente violeta →
-// magenta → ciano. Contornos e dígitos saem da mesma geometria (hexGrid.js), dentro
+// OBI Quest) com um zero ou um no centro de cada hexágono, em gradiente âmbar →
+// laranja → coral. Contornos e dígitos saem da mesma geometria (hexGrid.js), dentro
 // do mesmo SVG, então ficam sempre alinhados. As cores vêm das variáveis --pensa-*.
 const SIDE = 22;
 
