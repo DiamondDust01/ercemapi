@@ -1,10 +1,14 @@
 # OBI Quest para Android
 
-Este é o pacote de teste Android 1.4.2. O arquivo
-[`OBI-Quest-1.4.2-android.apk`](OBI-Quest-1.4.2-android.apk) é um APK instalável
-(`applicationId` `com.obique.quest`, `versionCode` 8, `versionName` `1.4.2`).
-Tamanho: 4.446.830 bytes. SHA-256:
-`DAA325355A878A8E8257D52B4B71566E094D2CE41600C714BCE323732944F986`.
+Este é o pacote de teste Android 1.5.0. O arquivo
+[`OBI-Quest-1.5.0-android.apk`](OBI-Quest-1.5.0-android.apk) é um APK instalável
+(`applicationId` `com.obique.quest`, `versionCode` 9, `versionName` `1.5.0`).
+Tamanho: 4.500.973 bytes. SHA-256:
+`012B40CEB05D7301C136F3A08F63926583BE481DAB9F0EE20CBB456D487B326C`.
+
+Ao abrir, o app pergunta qual variação usar: OBI Quest ou Pensa Comigo. No
+Android, os alunos entram numa sala do Pensa Comigo digitando o código; o QR
+aponta para a versão web publicada.
 
 ## Instalação
 
