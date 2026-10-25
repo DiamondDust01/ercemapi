@@ -20,10 +20,43 @@ a numeração das versões consistente entre o código e os próximos lançament
 
 ## Não lançado
 
+## 1.5.0 - 2026-10-25
+
+### Adicionado
+
+- Tela inicial de escolha entre as duas variações do app, **OBI Quest** e
+  **Pensa Comigo**, com botão "Trocar de modo" nas duas. A escolha vale para a
+  aba aberta; um link `?sala=CÓDIGO` abre direto o Pensa Comigo.
+- Modo **Pensa Comigo** para palestras em escolas (11 a 14 anos): sala com telão
+  em tempo real, etapas conduzidas pelo palestrante, entrada por código ou QR
+  (`?sala=CÓDIGO`) sem cadastro e com apelido sorteado, enquete anônima, modo em
+  duplas e modo sem celular com contagem de cartões.
+- Quatro mini-missões: Tente primeiro, Remix de prompt (rubrica local, o texto
+  não sai do aparelho), Me teste e Detetive de erros.
+- Experimento "copiar × estudar ativamente" com distribuição balanceada, quiz sem
+  IA com nível de confiança, três medidas no telão, código de retorno e re-teste.
+- Tutor local do modo (tentativa, três dicas e explicação), "Escolha seu desafio"
+  com o conteúdo existente classificado por faixa etária, kit impresso,
+  exportação anonimizada e botão "Encerrar neste aparelho".
+- Regras sugeridas do Firestore (`firestore.rules`) e configuração de hospedagem
+  (`firebase.json`); conexão opcional aos emuladores do Firebase em desenvolvimento.
+
 ### Corrigido
 
+- Gabaritos das questões 110 (8), 112 (18), 122 (8) e 123 (13) da Iniciação; a
+  explicação da 112 também foi corrigida.
+- O desafio 7 em C++ aceita `"\n"` e `'\n'`, como a dica sugere.
+- A tela inicial informa "Até 10" questões por rodada e 12 no banco por faixa.
+- O README da `main` deixa de citar o script do instalador NSIS, que só existe na
+  branch `app-pc`, e o
+  `requirements.txt` acompanha as versões do `package.json`.
 - Ao trocar de aba, o conteúdo volta ao início em web, Android e desktop; a
   rolagem fica restrita ao painel da aplicação em vez de permanecer na página.
+
+### Organização
+
+- Banco de Iniciação e textos do mentor movidos para `src/content/obiContent.js`,
+  sem mudança de comportamento, para serem compartilhados com o novo modo.
 
 ## 1.4.0 - 2026-10-11
 
