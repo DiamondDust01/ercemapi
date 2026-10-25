@@ -159,10 +159,10 @@ npm run android:apk
 ```
 
 O APK de depuração gerado localmente fica em
-`android/app/build/outputs/apk/debug/app-debug.apk`. O APK 1.6.0 pronto para
+`android/app/build/outputs/apk/debug/app-debug.apk`. O APK 1.6.1 pronto para
 teste está na branch `app-mobile`:
-[baixar OBI Quest 1.6.0 para Android](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-mobile/installers/android/OBI-Quest-1.6.0-android.apk).
-Ele usa a chave de depuração (`versionCode` 10), não é um pacote assinado para
+[baixar OBI Quest 1.6.1 para Android](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-mobile/installers/android/OBI-Quest-1.6.1-android.apk).
+Ele usa a chave de depuração (`versionCode` 11), não é um pacote assinado para
 publicação na Play Store e não foi testado em aparelho físico nesta rodada.
 
 ## Pacotes Windows
@@ -181,11 +181,11 @@ npm run app:windows:package
 executável. O instalador assistido (NSIS) é gerado na branch `app-pc`, que
 acrescenta o script `npm run app:windows:installer`.
 
-O pacote portátil 1.6.0 está na branch `app-pc`:
-[baixar OBI Quest 1.6.0 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.6.0-Windows-x64.7z).
+O pacote portátil 1.6.1 está na branch `app-pc`:
+[baixar OBI Quest 1.6.1 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.6.1-Windows-x64.7z).
 Extraia com 7-Zip ou NanaZip e execute `OBI Quest.exe` na pasta extraída. O
 arquivo comprimido tem cerca de 99,9 MB (95,30 MiB); o GitHub recomenda manter
-arquivos abaixo de 50 MB. O instalador assistido 1.6.0 (Setup, via Git LFS)
+arquivos abaixo de 50 MB. O instalador assistido 1.6.1 (Setup, via Git LFS)
 também está em `installers/windows/` na branch `app-pc`. A aplicação e os
 pacotes não têm assinatura digital, e políticas de segurança do Windows podem
 bloquear a execução.
