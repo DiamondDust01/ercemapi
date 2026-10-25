@@ -177,10 +177,10 @@ O pacote portátil 1.5.0 está na branch `app-pc`:
 [baixar OBI Quest 1.5.0 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.5.0-Windows-x64.7z).
 Extraia com 7-Zip ou NanaZip e execute `OBI Quest.exe` na pasta extraída. O
 arquivo comprimido tem cerca de 99,9 MB (95,30 MiB); o GitHub recomenda manter
-arquivos abaixo de 50 MB. O instalador assistido 1.5.0 (Setup, via Git LFS) também
-está em `installers/windows/` na branch `app-pc`. A aplicação e o pacote não têm assinatura digital, e
-políticas de segurança do Windows podem bloquear a execução. O assistente
-Setup.exe ainda não foi publicado.
+arquivos abaixo de 50 MB. O instalador assistido 1.5.0 (Setup, via Git LFS)
+também está em `installers/windows/` na branch `app-pc`. A aplicação e os
+pacotes não têm assinatura digital, e políticas de segurança do Windows podem
+bloquear a execução.
 
 ## Branches e distribuição
 
