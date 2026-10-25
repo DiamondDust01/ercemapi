@@ -159,10 +159,10 @@ npm run android:apk
 ```
 
 O APK de depuração gerado localmente fica em
-`android/app/build/outputs/apk/debug/app-debug.apk`. O APK 1.5.0 pronto para
+`android/app/build/outputs/apk/debug/app-debug.apk`. O APK 1.6.0 pronto para
 teste está na branch `app-mobile`:
-[baixar OBI Quest 1.5.0 para Android](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-mobile/installers/android/OBI-Quest-1.5.0-android.apk).
-Ele usa a chave de depuração (`versionCode` 9), não é um pacote assinado para
+[baixar OBI Quest 1.6.0 para Android](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-mobile/installers/android/OBI-Quest-1.6.0-android.apk).
+Ele usa a chave de depuração (`versionCode` 10), não é um pacote assinado para
 publicação na Play Store e não foi testado em aparelho físico nesta rodada.
 
 ## Pacotes Windows
@@ -185,19 +185,19 @@ um instalador auxiliar temporário. Ele permite escolher a pasta de instalação
 cria atalhos no menu Iniciar e na área de trabalho, e inclui um desinstalador.
 O instalador não tem assinatura digital; políticas de segurança ainda podem
 bloquear sua compilação ou execução. Não desative proteções do Windows para
-contornar esses bloqueios. O Setup 1.5.0 foi compilado, mas não foi executado
+contornar esses bloqueios. O Setup 1.6.0 foi compilado, mas não foi executado
 nesta rodada; o Setup 1.4.2 anterior foi instalado, aberto e desinstalado num
 teste local isolado. Não tem assinatura digital.
 
-O pacote portátil 1.5.0 está na branch `app-pc`:
-[baixar OBI Quest 1.5.0 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.5.0-Windows-x64.7z).
+O pacote portátil 1.6.0 está na branch `app-pc`:
+[baixar OBI Quest 1.6.0 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.6.0-Windows-x64.7z).
 Extraia com 7-Zip ou NanaZip e execute `OBI Quest.exe` na pasta extraída. O
 arquivo comprimido tem cerca de 99,9 MB (95,30 MiB); o GitHub recomenda manter
-arquivos abaixo de 50 MB. O instalador assistido 1.5.0, com aproximadamente
+arquivos abaixo de 50 MB. O instalador assistido 1.6.0, com aproximadamente
 110 MB, está em [`installers/windows/`](installers/windows/) e é armazenado com
 Git LFS por exceder 100 MiB. Para clonar e obter esse arquivo, instale Git LFS
 e execute `git lfs install` e `git lfs pull`. Também é possível baixar o
-[Setup para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-Setup-1.5.0.exe).
+[Setup para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-Setup-1.6.0.exe).
 O instalador e o app portátil não têm assinatura digital; políticas de
 segurança do Windows podem bloquear a execução.
 
