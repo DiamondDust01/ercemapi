@@ -6,7 +6,7 @@ de programação, recursos de reflexão pedagógica e salas demonstrativas de
 competição. **Não é um serviço oficial da OBI, não substitui uma prova oficial e
 não executa um juiz de programação real.**
 
-Versão atual do código: **1.5.0**. A fonte da numeração é `package.json`; o
+Versão atual do código: **1.6.0**. A fonte da numeração é `package.json`; o
 histórico de mudanças está em `CHANGELOG.md`.
 
 ## O que o aplicativo oferece
@@ -159,10 +159,10 @@ npm run android:apk
 ```
 
 O APK de depuração gerado localmente fica em
-`android/app/build/outputs/apk/debug/app-debug.apk`. O APK 1.5.0 pronto para
+`android/app/build/outputs/apk/debug/app-debug.apk`. O APK 1.6.0 pronto para
 teste está na branch `app-mobile`:
-[baixar OBI Quest 1.5.0 para Android](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-mobile/installers/android/OBI-Quest-1.5.0-android.apk).
-Ele usa a chave de depuração (`versionCode` 9), não é um pacote assinado para
+[baixar OBI Quest 1.6.0 para Android](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-mobile/installers/android/OBI-Quest-1.6.0-android.apk).
+Ele usa a chave de depuração (`versionCode` 10), não é um pacote assinado para
 publicação na Play Store e não foi testado em aparelho físico nesta rodada.
 
 ## Pacotes Windows
@@ -181,11 +181,11 @@ npm run app:windows:package
 executável. O instalador assistido (NSIS) é gerado na branch `app-pc`, que
 acrescenta o script `npm run app:windows:installer`.
 
-O pacote portátil 1.5.0 está na branch `app-pc`:
-[baixar OBI Quest 1.5.0 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.5.0-Windows-x64.7z).
+O pacote portátil 1.6.0 está na branch `app-pc`:
+[baixar OBI Quest 1.6.0 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.6.0-Windows-x64.7z).
 Extraia com 7-Zip ou NanaZip e execute `OBI Quest.exe` na pasta extraída. O
 arquivo comprimido tem cerca de 99,9 MB (95,30 MiB); o GitHub recomenda manter
-arquivos abaixo de 50 MB. O instalador assistido 1.5.0 (Setup, via Git LFS)
+arquivos abaixo de 50 MB. O instalador assistido 1.6.0 (Setup, via Git LFS)
 também está em `installers/windows/` na branch `app-pc`. A aplicação e os
 pacotes não têm assinatura digital, e políticas de segurança do Windows podem
 bloquear a execução.
