@@ -1,0 +1,189 @@
+OBI QUEST 1.5.0 — MODO PENSA COMIGO
+
+Fonte de estudo em texto simples. Descreve o modo Pensa Comigo do OBI Quest 1.5.0.
+Para detalhes que possam mudar, confira o código em src/pensaComigo/.
+
+1. PARA QUE SERVE
+
+O Pensa Comigo acompanha palestras em escolas para estudantes do Ensino
+Fundamental II, de cerca de 11 a 14 anos. Muitos alunos já usam IA para tarefas,
+mas só copiam a resposta. O modo mostra, na prática, que a IA pode ser um tutor
+que ajuda a pensar, e não uma ferramenta que pensa pelo aluno.
+
+O modo ensina quatro técnicas:
+- tentar resolver antes de perguntar;
+- pedir explicações em vez de respostas prontas;
+- pedir que a IA faça perguntas para testar o que foi aprendido;
+- conferir as informações recebidas.
+
+"Pensa Comigo" é o nome do modo na interface. O aplicativo continua se chamando
+OBI Quest. Nenhum identificador técnico mudou: pacote, appId do Capacitor
+(com.obique.quest), appId do Firestore (obi-quest-v1) e chaves de localStorage.
+
+2. COMO ENTRAR
+
+Ao abrir, o app mostra uma tela de escolha entre as duas variações: OBI Quest e
+Pensa Comigo. O Pensa Comigo tem cabeçalho e navegação próprios; o botão "Trocar
+de modo" volta para a escolha. A escolha fica guardada só na aba aberta, então
+um aparelho compartilhado volta a perguntar quando o app é aberto de novo.
+
+Outras entradas:
+- Pelo cartão "Pensa Comigo" no Início do OBI Quest.
+- Pela seção Professor da Mentoria, botão "Trocar para o Pensa Comigo".
+- Por um link com ?sala=CÓDIGO, que abre direto a entrada na sala. O QR do telão
+  aponta para esse link.
+
+A barra inferior do OBI Quest continua com cinco itens.
+
+3. PAPÉIS
+
+Palestrante: cria a sala, projeta o telão, avança as etapas, libera conteúdo
+extra, conta cartões no modo sem celular, exporta os dados anonimizados e baixa o
+kit impresso. Só o aparelho que criou a sala controla a sala.
+
+Aluno: entra pelo código ou QR, recebe um apelido sorteado (por exemplo,
+"Capivara Curiosa") e pode sortear outro. Não digita nome. Um aparelho pode
+representar uma dupla.
+
+4. ETAPAS
+
+1. Abertura: enquete anônima "Quem já copiou uma resposta da IA sem entender?".
+2. Missão Tente primeiro: o tutor só libera a primeira dica depois de uma
+   tentativa e de duas confirmações adaptadas do checklist da Oficina.
+3. Missão Remix de prompt: o aluno reescreve um pedido "copiador". Uma rubrica
+   local confere três critérios: conta o que já tentou, pede explicação ou
+   perguntas, e não pede a resposta pronta. O texto fica no aparelho; só a
+   pontuação vai para o telão.
+4. Missão Me teste: três perguntas; ver o gabarito antes de responder não vale
+   ponto. Depois, o aluno explica em uma frase como pensou.
+5. Missão Detetive de erros: respostas de uma "IA" com erros plantados. São as
+   versões originais, com erro, das questões 110, 112, 122 e 123, mais um caso
+   certo de controle e um caso novo marcado para revisão.
+6. Experimento, atividade: dois temas curtos, um em cada modo.
+7. Experimento, quiz sem IA: quatro perguntas com nível de confiança.
+8. Resultado: o telão compara os dois modos.
+9. Fechamento: desafio da semana e código de retorno.
+10. Re-teste: mini-quiz surpresa dias depois, no app ou em papel.
+
+O palestrante pode pular para qualquer etapa. As missões não usam itens do
+experimento, então a ordem não vaza respostas do quiz.
+
+5. O EXPERIMENTO "COPIAR × ESTUDAR ATIVAMENTE"
+
+Desenho: cada aluno passa pelos dois modos, em temas diferentes.
+- Grupo 1: Tema A (sequências e padrões) copiando; Tema B (problemas em duas
+  etapas) estudando ativamente.
+- Grupo 2: o inverso.
+
+O palestrante atribui os grupos pela ordem de entrada, sempre completando o grupo
+menor. Assim a turma fica dividida ao meio e ninguém fica só no grupo "errado".
+
+Modo copiar: a "IA" entrega a alternativa correta e a explicação, rotuladas como
+resposta pronta. Modo ativo: o tutor exige tentativa, dá três dicas e só então
+mostra a explicação. No fim do tema, o tutor faz duas perguntas de checagem e
+pede que o aluno confira no caderno.
+
+Quiz sem IA: para cada tema, uma pergunta igual à da atividade e uma parecida em
+contexto novo. Cada resposta vem com "Chutei", "Acho que sim" ou "Tenho certeza".
+A correção só aparece no fim.
+
+Telão, três medidas por modo:
+1. acertos durante a atividade, com a IA disponível;
+2. acertos no quiz sem IA, separados em pergunta igual e parecida;
+3. confiança × acerto: quantas respostas "Tenho certeza" estavam erradas.
+
+O resultado aparece como vier, sem ajuste. O telão avisa que é uma demonstração
+com a turma.
+
+Re-teste: no fechamento, cada aluno anota um código de retorno de cinco
+caracteres, como K7M2-Q. O último caractere confere a digitação e guarda o grupo,
+sem nenhum dado pessoal. No papel, o grupo vem impresso na folha.
+
+Todo o conteúdo do experimento vai embarcado no build. Ele roda sem IA ao vivo.
+
+6. TUTOR
+
+O tutor do modo segue regras fixas:
+- exige uma tentativa antes de ajudar;
+- dá três dicas antes da explicação (pergunta, pista e exemplo);
+- usa linguagem para 11 a 14 anos;
+- termina pedindo que o aluno confira no caderno ou no livro;
+- fica restrito ao item da atividade.
+
+As dicas dos itens foram criadas para o modo e estão marcadas como "gerado —
+revisar" no código. Precisam de revisão humana antes do uso com alunos.
+
+O tutor generativo é opcional e fica atrás da flag VITE_ENABLE_LLM_TUTOR,
+desligada por padrão. Esta versão não inclui o backend exigido para guardar a
+chave do provedor. Por isso, mesmo com a flag ligada, o modo continua local e a
+interface diz isso. Um backend com Cloud Functions exige o plano Blaze do
+Firebase, que é pago por uso.
+
+7. ESCOLHA SEU DESAFIO
+
+Menu opcional com conteúdo que já existia no OBI Quest, sempre conduzido pelo
+tutor. O cronômetro é opcional. Durante uma palestra, o palestrante libera o
+menu; as questões do experimento só entram depois do resultado.
+
+Classificação por faixa:
+- Liberado: as 24 questões de Iniciação.
+- Desafio avançado: pares de busca binária, grafos e contagem de repetidos;
+  desafios 1 a 3 de Programação; templates de busca binária e de frequência.
+- Oculto por padrão: pares de programação dinâmica, desafios 4 a 10 de
+  Programação e templates de programação dinâmica e de grafos.
+
+8. ESCOLA REAL
+
+Celular: o uso pelos alunos em sala depende de autorização pedagógica do
+professor (Lei 15.100/2025). Por isso existem o modo em duplas e o modo sem
+celular, e o checklist do palestrante lembra de combinar a atividade.
+
+Internet fraca: tudo o que o experimento e as missões precisam vai no build. Sem
+rede, o palestrante usa os cartões A/B/C/D, lança no painel as contagens das
+folhas e usa o kit impresso gerado pelo app.
+
+Privacidade: só apelido sorteado e resultados. O texto livre não sai do aparelho.
+Os dados do modo ficam em sessionStorage, nunca em localStorage, e "Encerrar
+neste aparelho" apaga tudo do modo. A exportação segue o padrão anonimizado do
+Professor. O checklist lembra da autorização da escola e dos responsáveis.
+
+Idade mínima das ferramentas: o modo não pede contas externas aos alunos. Os
+modos de estudo das ferramentas de IA são demonstrados pelo palestrante, no
+telão, com um roteiro no painel.
+
+9. DADOS E SINCRONIZAÇÃO
+
+Com Firebase:
+- artifacts/{appId}/classrooms/{código}: turma, no mesmo formato do Professor,
+  com mode "pensa-comigo" e hostUid.
+- .../pensaComigo/state: etapa, grupos, liberações e contagens manuais. Só o
+  palestrante escreve.
+- .../pensaComigoParticipants/{uid}: registro de cada aparelho. Só o próprio
+  aluno escreve, e só o palestrante lê a turma inteira.
+
+Cada aluno escreve apenas o próprio documento, então cerca de 30 aparelhos não
+disputam o mesmo registro. Todos usam onSnapshot, sem conexão direta entre
+aparelhos. As salas de competição, o limite de 16 jogadores e o P2P não mudaram.
+
+Sem Firebase, o modo vira uma demonstração local: funciona no aparelho do
+palestrante e em outras abas do mesmo navegador. Os celulares da turma não
+conseguem entrar.
+
+Hospedagem: para o QR funcionar nos celulares, publique o dist/ (por exemplo, no
+Firebase Hosting) e compile com VITE_PUBLIC_APP_URL. No Android e no Windows, a
+entrada é pelo código.
+
+10. O QUE NÃO AFIRMAR
+
+- Não diga que o experimento prova que copiar faz mal ou que estudar ativamente
+  funciona. Com uma turma, ele é uma demonstração, não prova científica, e não
+  mostra causalidade.
+- Não diga que o tutor do app é uma IA generativa. Ele segue regras fixas.
+- Não diga que o Pensa Comigo é oficial da OBI ou ligado à organização da OBI.
+- Não diga que nenhum dado é coletado. O app guarda apelido sorteado, grupo,
+  acertos, pontuações e nível de confiança. Ele não guarda nome nem texto livre.
+- Não diga que a turma simulada do painel representa uma turma real. Ela serve
+  para ensaio e o telão avisa quando há dados simulados.
+- Não diga que as dicas novas já foram revisadas. Elas estão marcadas para
+  revisão humana.
+- Não diga que o QR funciona no app instalado sem um endereço publicado.
