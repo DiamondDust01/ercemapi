@@ -151,10 +151,10 @@ npm run android:apk
 ```
 
 O APK de depuração gerado localmente fica em
-`android/app/build/outputs/apk/debug/app-debug.apk`. O APK 1.4.2 pronto para
+`android/app/build/outputs/apk/debug/app-debug.apk`. O APK 1.5.0 pronto para
 teste está na branch `app-mobile`:
-[baixar OBI Quest 1.4.2 para Android](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-mobile/installers/android/OBI-Quest-1.4.2-android.apk).
-Ele usa a chave de depuração (`versionCode` 8), não é um pacote assinado para
+[baixar OBI Quest 1.5.0 para Android](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-mobile/installers/android/OBI-Quest-1.5.0-android.apk).
+Ele usa a chave de depuração (`versionCode` 9), não é um pacote assinado para
 publicação na Play Store e não foi testado em aparelho físico nesta rodada.
 
 ## Pacotes Windows
@@ -173,11 +173,12 @@ npm run app:windows:package
 executável. O instalador assistido (NSIS) é gerado na branch `app-pc`, que
 acrescenta o script `npm run app:windows:installer`.
 
-O pacote portátil 1.4.2 está na branch `app-pc`:
-[baixar OBI Quest 1.4.2 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.4.2-Windows-x64.7z).
+O pacote portátil 1.5.0 está na branch `app-pc`:
+[baixar OBI Quest 1.5.0 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.5.0-Windows-x64.7z).
 Extraia com 7-Zip ou NanaZip e execute `OBI Quest.exe` na pasta extraída. O
-arquivo comprimido tem cerca de 98,8 MB (94,25 MiB); o GitHub recomenda manter
-arquivos abaixo de 50 MB. A aplicação e o pacote não têm assinatura digital, e
+arquivo comprimido tem cerca de 99,9 MB (95,30 MiB); o GitHub recomenda manter
+arquivos abaixo de 50 MB. O instalador assistido 1.5.0 (Setup, via Git LFS) também
+está em `installers/windows/` na branch `app-pc`. A aplicação e o pacote não têm assinatura digital, e
 políticas de segurança do Windows podem bloquear a execução. O assistente
 Setup.exe ainda não foi publicado.
 
