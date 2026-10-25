@@ -20,6 +20,22 @@ a numeração das versões consistente entre o código e os próximos lançament
 
 ## Não lançado
 
+### Melhorado
+
+- Nova paleta do Pensa Comigo, em âmbar e laranja, ligada ao ícone de lâmpada:
+  título, fundo hexagonal, botões e o cartão da tela de escolha. O magenta ficou
+  só no "modo copiar" do experimento, para não confundir com o resto do modo.
+- O rodapé da tela de escolha passou a citar a ERCEMAPI (Escola Regional de
+  Computação Ceará, Maranhão e Piauí) e mantém o aviso de que o app não tem
+  vínculo oficial com a OBI.
+
+### Corrigido
+
+- Os botões dos cartões do Pensa Comigo e os links dos cartões do Início do OBI
+  Quest ficam na mesma altura, mesmo quando um texto ocupa mais linhas.
+- O menu do cabeçalho do OBI Quest não fica mais por baixo dos botões da direita
+  entre 768 e 1023 px; nessa faixa ele usa rótulos curtos, sem ícones.
+
 ## 1.6.0 - 2026-10-25
 
 ### Adicionado

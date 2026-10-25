@@ -17,19 +17,19 @@
   --scroll-thumb: #1f2937;
   --selection: rgba(99, 102, 241, 0.45);
   /* Pensa Comigo */
-  --pensa-glow-a: rgba(167, 139, 250, 0.20);
-  --pensa-glow-b: rgba(34, 211, 238, 0.12);
-  --pensa-hex: rgba(192, 132, 252, 0.2);
-  --pensa-digit-a: #a78bfa;
-  --pensa-digit-b: #e879f9;
-  --pensa-digit-c: #67e8f9;
+  --pensa-glow-a: rgba(251, 146, 60, 0.18);
+  --pensa-glow-b: rgba(251, 191, 36, 0.10);
+  --pensa-hex: rgba(251, 146, 60, 0.16);
+  --pensa-digit-a: #fcd34d;
+  --pensa-digit-b: #fb923c;
+  --pensa-digit-c: #fb7185;
   --pensa-digits-opacity: 0.32;
   /* Tela de escolha */
   --selector-glow-a: rgba(99, 102, 241, 0.22);
-  --selector-glow-b: rgba(217, 70, 239, 0.18);
+  --selector-glow-b: rgba(251, 146, 60, 0.16);
   --selector-a: #22d3ee;
   --selector-b: #818cf8;
-  --selector-c: #e879f9;
+  --selector-c: #fb923c;
   --selector-dots-opacity: 0.55;
 }
 
@@ -44,18 +44,18 @@
   --editor-body: #ffffff;
   --scroll-thumb: #cbd5e1;
   --selection: rgba(79, 70, 229, 0.25);
-  --pensa-glow-a: rgba(139, 92, 246, 0.16);
-  --pensa-glow-b: rgba(8, 145, 178, 0.12);
-  --pensa-hex: rgba(147, 51, 234, 0.14);
-  --pensa-digit-a: #7c3aed;
-  --pensa-digit-b: #c026d3;
-  --pensa-digit-c: #0891b2;
+  --pensa-glow-a: rgba(234, 88, 12, 0.12);
+  --pensa-glow-b: rgba(217, 119, 6, 0.10);
+  --pensa-hex: rgba(234, 88, 12, 0.16);
+  --pensa-digit-a: #b45309;
+  --pensa-digit-b: #ea580c;
+  --pensa-digit-c: #e11d48;
   --pensa-digits-opacity: 0.35;
   --selector-glow-a: rgba(79, 70, 229, 0.16);
-  --selector-glow-b: rgba(192, 38, 211, 0.13);
+  --selector-glow-b: rgba(234, 88, 12, 0.12);
   --selector-a: #0891b2;
   --selector-b: #4f46e5;
-  --selector-c: #c026d3;
+  --selector-c: #ea580c;
   --selector-dots-opacity: 0.45;
 }
 
