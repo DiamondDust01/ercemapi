@@ -1,8 +1,8 @@
 # Relatório da adaptação — OBI Quest 1.5.0 com o modo Pensa Comigo
 
-Branch: `feat/pensa-comigo`, criada a partir de `main` (642315f). Nada foi
-publicado nem enviado ao GitHub. As mudanças estão na árvore de trabalho, ainda
-sem commit.
+Desenvolvido na branch `feat/pensa-comigo`, a partir de `main` (642315f), e
+integrado em `test` e `main`. As branches `app-mobile` e `app-pc` receberam a
+`main` e os pacotes 1.5.0. Nada foi enviado ao GitHub.
 
 ## 1. Diagnóstico: Parte II × código real
 
@@ -124,9 +124,10 @@ abra a sala num computador e entre por dois celulares.
   no seu projeto antes de substituí-las.
 - **Hospedagem:** não publiquei nada. O QR nos celulares depende de publicar o
   `dist/` e compilar com `VITE_PUBLIC_APP_URL`.
-- **Pacotes:** a versão subiu para 1.5.0 e o `versionCode` para 9, mas não gerei
-  APK nem pacote Windows. O download do kit impresso no WebView do Android não
-  foi testado.
+- **Pacotes:** o APK 1.5.0 foi compilado e conferido com o `aapt`, mas não foi
+  instalado num aparelho. O pacote portátil do Windows abriu num teste
+  automatizado. O Setup 1.5.0 foi compilado, mas não foi executado. O download
+  do kit impresso no WebView do Android não foi testado.
 - **Offline:** o Firestore guarda escritas sem rede só enquanto a página está
   aberta. Fechar a aba descarta o progresso do aluno, como pede o D7.
 - **Código de retorno:** um erro de digitação tem chance pequena de cair no outro
