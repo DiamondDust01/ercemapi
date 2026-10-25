@@ -35,11 +35,11 @@ const MODES = [
     ],
     action: 'Entrar no Pensa Comigo',
     tone: {
-      card: 'border-fuchsia-500/40 hover:border-fuchsia-400 focus-within:border-fuchsia-400',
-      icon: 'bg-fuchsia-500/15 text-fuchsia-300',
-      title: 'from-violet-400 to-fuchsia-400',
-      button: 'bg-fuchsia-700 hover:bg-fuchsia-600 focus-visible:outline-fuchsia-300',
-      bullet: 'text-fuchsia-300'
+      card: 'border-orange-500/40 hover:border-orange-400 focus-within:border-orange-400',
+      icon: 'bg-orange-500/15 text-amber-300',
+      title: 'from-amber-300 to-orange-500',
+      button: 'bg-orange-700 hover:bg-orange-600 focus-visible:outline-amber-300',
+      bullet: 'text-orange-300'
     }
   }
 ];
@@ -88,10 +88,13 @@ export default function ModeSelector({ onSelect, version, backdrop = <SelectorBa
             })}
           </div>
 
-          <p className="mt-5 text-center text-xs text-slate-500 md:mt-8">
-            Plataforma de treino inspirada na OBI. Não é um serviço oficial da OBI.
-            {version ? <span className="ml-2 font-mono">v{version}</span> : null}
-          </p>
+          <div className="mt-5 space-y-1 text-center text-xs text-slate-500 md:mt-8">
+            <p>Projeto para a ERCEMAPI · Escola Regional de Computação Ceará, Maranhão e Piauí.</p>
+            <p>
+              Inspirado na OBI, sem vínculo oficial com a OBI.
+              {version ? <span className="ml-2 font-mono">v{version}</span> : null}
+            </p>
+          </div>
         </div>
       </main>
     </div>

@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import qrcode from 'qrcode-generator';
 
-export const buttonPrimary = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-300 disabled:cursor-not-allowed disabled:opacity-40';
-export const buttonSecondary = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:border-violet-400 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-300 disabled:cursor-not-allowed disabled:opacity-40';
+export const buttonPrimary = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-orange-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:cursor-not-allowed disabled:opacity-40';
+export const buttonSecondary = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-600 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:border-orange-400 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:cursor-not-allowed disabled:opacity-40';
 export const buttonDanger = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-rose-500/60 px-4 py-2 text-sm font-semibold text-rose-200 transition hover:bg-rose-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-300';
-export const inputClass = 'block w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-3 text-base text-white placeholder:text-slate-500 focus:border-violet-400 focus:outline-none';
+export const inputClass = 'block w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-3 text-base text-white placeholder:text-slate-500 focus:border-orange-400 focus:outline-none';
 
 export const Card = ({ children, className = '' }) => (
   <section className={`rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-6 ${className}`}>{children}</section>
@@ -12,7 +12,7 @@ export const Card = ({ children, className = '' }) => (
 
 export const Notice = ({ tone = 'info', children, role = 'status' }) => {
   const tones = {
-    info: 'border-violet-500/40 bg-violet-500/10 text-violet-100',
+    info: 'border-sky-500/40 bg-sky-500/10 text-sky-100',
     warn: 'border-amber-500/40 bg-amber-500/10 text-amber-100',
     error: 'border-rose-500/40 bg-rose-500/10 text-rose-100',
     success: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-100'
@@ -20,7 +20,7 @@ export const Notice = ({ tone = 'info', children, role = 'status' }) => {
   return <div role={role} aria-live="polite" className={`rounded-xl border px-3 py-2 text-sm leading-relaxed ${tones[tone] || tones.info}`}>{children}</div>;
 };
 
-export const Bar = ({ label, value, max = 100, color = 'bg-violet-400', suffix = '%', large = false }) => {
+export const Bar = ({ label, value, max = 100, color = 'bg-orange-400', suffix = '%', large = false }) => {
   const safe = Number.isFinite(value) ? value : 0;
   const width = max > 0 ? Math.min(100, Math.round((safe / max) * 100)) : 0;
   return (
