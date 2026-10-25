@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createTransport, deepMerge } from './transport.js';
+import { assignBalancedGroups } from './assignment.js';
 import {
   getStage, isValidRoomCode, normalizeRoomCode, createRoomCode, resolveJoinBaseUrl, readSessionValue,
   writeSessionValue, clearPensaComigoStorage, resolveTutorEngine, experimentContentLocked
@@ -14,6 +15,7 @@ import {
   ClosingStage, RetestStage
 } from './StudentStages.jsx';
 import { buttonPrimary, buttonSecondary, buttonDanger, inputClass, Card, Notice } from './ui.jsx';
+import ThemeToggle from '../ThemeToggle.jsx';
 
 const storage = typeof window !== 'undefined' ? window.sessionStorage : null;
 
@@ -95,10 +97,28 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
     return transport.watchState(activeCode, (state) => setRoomState(state), () => setMessage('Sem acesso à sala no momento. Verifique a conexão.'));
   }, [activeCode, transport]);
 
+  // O palestrante acompanha a turma enquanto a sala dele existir neste aparelho,
+  // inclusive quando ensaia a visão do aluno na mesma aba.
   useEffect(() => {
-    if (view !== 'host' || !host?.code) return undefined;
+    if (!host?.code) return undefined;
     return transport.watchParticipants(host.code, setParticipants, () => setMessage('Não foi possível ler os participantes. Confira as regras do Firestore para o Pensa Comigo.'));
-  }, [view, host?.code, transport]);
+  }, [host?.code, transport]);
+
+  // O palestrante é o único que atribui grupos: sem disputa entre ~30 aparelhos.
+  // As atribuições ainda em gravação contam no equilíbrio, para não sortear duas vezes.
+  const pendingAssignments = useRef({});
+  const hostControls = Boolean(host?.code) && activeCode === host?.code && roomState?.hostUid === uid;
+  useEffect(() => {
+    if (!hostControls) return;
+    const known = { ...(roomState.assignments || {}), ...pendingAssignments.current };
+    const entries = Object.entries(assignBalancedGroups(participants, known));
+    if (!entries.length) return;
+    entries.forEach(([participantUid, assignment]) => { pendingAssignments.current[participantUid] = assignment; });
+    const patch = Object.fromEntries(entries.map(([participantUid, assignment]) => [`assignments.${participantUid}`, assignment]));
+    transport.updateState(host.code, patch)
+      .catch(() => setMessage('Não foi possível gravar os grupos. Verifique a conexão e as regras do Firestore.'))
+      .finally(() => entries.forEach(([participantUid]) => { delete pendingAssignments.current[participantUid]; }));
+  }, [hostControls, participants, roomState?.assignments, transport, host?.code]);
 
   // Código de retorno: criado no aparelho quando o grupo chega.
   const group = student && roomState?.assignments?.[uid]?.group;
@@ -211,10 +231,13 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
   const header = (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div>
-        <div className="text-xs font-mono uppercase tracking-[0.3em] text-fuchsia-300">OBI Quest · variação</div>
-        <h1 className="text-3xl font-black text-white sm:text-4xl">Pensa <span className="text-cyan-400">Comigo</span></h1>
+        <div className="text-xs font-mono uppercase tracking-[0.3em] text-fuchsia-300">Variação</div>
+        <h1 className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-3xl font-black tracking-tight text-transparent sm:text-4xl">Pensa Comigo</h1>
       </div>
-      <button type="button" className={buttonSecondary} onClick={onExit}>Trocar de modo</button>
+      <div className="flex flex-wrap gap-2">
+        <ThemeToggle variant="label" className={buttonSecondary} />
+        <button type="button" className={buttonSecondary} onClick={onExit}>Trocar de modo</button>
+      </div>
     </div>
   );
 
@@ -273,7 +296,7 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
         <div className="mt-4">
           <div className="text-sm font-semibold text-slate-200">Seu apelido (sorteado)</div>
           <div className="mt-1 flex flex-wrap items-center gap-3">
-            <span className="rounded-xl border border-cyan-500/50 bg-cyan-500/10 px-4 py-2 text-xl font-bold text-white" aria-live="polite">{formatParticipantName(nickname, kind)}</span>
+            <span className="rounded-xl border border-violet-500/50 bg-violet-500/10 px-4 py-2 text-xl font-bold text-white" aria-live="polite">{formatParticipantName(nickname, kind)}</span>
             <button type="button" className={buttonSecondary} onClick={() => setNickname(drawNickname(Math.random, nickname))}>Sortear outro</button>
           </div>
           <p className="mt-1 text-xs text-slate-500">Ninguém digita nome aqui. Assim ninguém fica identificado.</p>
@@ -282,7 +305,7 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
           <legend className="text-sm font-semibold text-slate-200">Neste aparelho</legend>
           <div className="mt-1 flex flex-wrap gap-2">
             {[['solo', 'Sou uma pessoa'], ['dupla', 'Somos uma dupla']].map(([value, label]) => (
-              <button key={value} type="button" aria-pressed={kind === value} onClick={() => setKind(value)} className={`${buttonSecondary} ${kind === value ? 'border-cyan-400 text-cyan-100' : ''}`}>{label}</button>
+              <button key={value} type="button" aria-pressed={kind === value} onClick={() => setKind(value)} className={`${buttonSecondary} ${kind === value ? 'border-violet-400 text-violet-100' : ''}`}>{label}</button>
             ))}
           </div>
         </fieldset>
@@ -376,7 +399,7 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
           {freePlay && (
             <div className="mt-3 flex gap-2" role="tablist" aria-label="Seções">
               {[['atividade', 'Atividade da palestra'], ['desafio', 'Escolha seu desafio']].map(([id, label]) => (
-                <button key={id} type="button" role="tab" aria-selected={(student.tab || 'atividade') === id} onClick={() => setStudent((previous) => ({ ...previous, tab: id }))} className={`${buttonSecondary} ${(student.tab || 'atividade') === id ? 'border-cyan-400 text-cyan-100' : ''}`}>{label}</button>
+                <button key={id} type="button" role="tab" aria-selected={(student.tab || 'atividade') === id} onClick={() => setStudent((previous) => ({ ...previous, tab: id }))} className={`${buttonSecondary} ${(student.tab || 'atividade') === id ? 'border-violet-400 text-violet-100' : ''}`}>{label}</button>
               ))}
             </div>
           )}

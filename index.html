@@ -1,13 +1,25 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
     <meta
       name="description"
       content="OBI Quest - Simulador de modalidades da Olimpíada Brasileira de Informática"
     />
     <title>OBI Quest</title>
+    <script>
+      // Aplica o tema salvo antes de a página aparecer (evita piscar). Padrão: escuro.
+      (function () {
+        try {
+          var saved = window.localStorage.getItem('obi-quest-theme');
+          document.documentElement.dataset.theme = saved === 'light' ? 'light' : 'dark';
+        } catch (error) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
   </head>
   <body class="bg-slate-950">
     <div id="root"></div>

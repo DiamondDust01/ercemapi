@@ -7,12 +7,13 @@ import {
   computeExperimentMetrics, summarizePoll, summarizeMissions, countParticipants, countStageProgress,
   summarizeCards, buildParticipantsCsvRows, CARD_LETTERS, MODES
 } from './metrics.js';
-import { assignBalancedGroups, countGroups, modeFor, GROUP_LABELS, GROUPS } from './assignment.js';
+import { countGroups, modeFor, GROUP_LABELS, GROUPS } from './assignment.js';
 import {
   OPENING_POLL, MODE_LABELS, SPEAKER_CHECKLIST, DEMO_SCRIPT, HONESTY_NOTES, WEEKLY_CHALLENGE,
   DETECTIVE_CASES, getDetectiveCase, QUIZ_ITEMS, getItem, THEME_ORDER, EXPERIMENT_THEMES
 } from './content.js';
 import { buildPrintKit } from './printKit.js';
+import ThemeToggle from '../ThemeToggle.jsx';
 import { drawNickname, formatParticipantName } from './nicknames.js';
 import { buttonPrimary, buttonSecondary, buttonDanger, Card, Notice, Bar, QrCode, downloadText } from './ui.jsx';
 
@@ -21,11 +22,11 @@ const storage = typeof window !== 'undefined' ? window.sessionStorage : null;
 // ---------------------------------------------------------------------------
 // Telão: tipografia ampliada e contraste reforçado para projetor (D9).
 // ---------------------------------------------------------------------------
-function TelaoContent({ state, participants, joinUrl, code, light }) {
+function TelaoContent({ state, participants, joinUrl, code }) {
   const stage = getStage(state.stage);
   const counts = countParticipants(participants);
   const manualCards = state.manual?.cards?.[state.stage];
-  const muted = light ? 'text-slate-600' : 'text-slate-300';
+  const muted = 'text-slate-300';
   const missions = useMemo(() => summarizeMissions(participants), [participants]);
   const metrics = useMemo(() => computeExperimentMetrics(participants, state.manual), [participants, state.manual]);
   const progress = countStageProgress(participants, state.stage);
@@ -46,7 +47,7 @@ function TelaoContent({ state, participants, joinUrl, code, light }) {
     return (
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <div className="space-y-4 text-center">
-          {joinUrl ? <div className="mx-auto w-fit rounded-2xl bg-white p-3"><QrCode value={joinUrl} size={320} /></div> : null}
+          {joinUrl ? <div className="mx-auto w-fit rounded-2xl bg-[#ffffff] p-3"><QrCode value={joinUrl} size={320} /></div> : null}
           <div className="text-2xl font-semibold">Entre com o código</div>
           <div className="font-mono text-6xl font-black tracking-[0.25em] sm:text-7xl">{code}</div>
           {joinUrl && <div className={`break-all text-lg ${muted}`}>{joinUrl}</div>}
@@ -54,7 +55,7 @@ function TelaoContent({ state, participants, joinUrl, code, light }) {
         </div>
         <div className="space-y-5">
           <h2 className="text-4xl font-black leading-tight sm:text-5xl">{OPENING_POLL.question}</h2>
-          {poll.options.map((option, index) => <Bar key={option.id} large label={`${CARD_LETTERS[index]} · ${option.label} (${option.count})`} value={option.pct} color="bg-cyan-400" />)}
+          {poll.options.map((option, index) => <Bar key={option.id} large label={`${CARD_LETTERS[index]} · ${option.label} (${option.count})`} value={option.pct} color="bg-violet-400" />)}
           <p className={`text-xl ${muted}`}>{poll.total} resposta(s) anônima(s)</p>
         </div>
       </div>
@@ -67,7 +68,7 @@ function TelaoContent({ state, participants, joinUrl, code, light }) {
         <h2 className="text-5xl font-black">Tente primeiro</h2>
         <Progress />
         <Bar large label="Acertaram" value={missions.tente.correctPct} color="bg-emerald-400" />
-        <Bar large label="Acertaram sem nenhuma dica" value={missions.tente.done ? Math.round((100 * missions.tente.withoutHint) / missions.tente.done) : null} color="bg-cyan-400" />
+        <Bar large label="Acertaram sem nenhuma dica" value={missions.tente.done ? Math.round((100 * missions.tente.withoutHint) / missions.tente.done) : null} color="bg-violet-400" />
         <p className="text-3xl">Média de dicas: <strong className="font-mono">{missions.tente.averageHints}</strong> de 3</p>
         {cards}
       </div>
@@ -123,7 +124,7 @@ function TelaoContent({ state, participants, joinUrl, code, light }) {
         <Progress />
         <div className="grid gap-4 sm:grid-cols-2">
           {GROUPS.map((group) => (
-            <div key={group} className={`rounded-2xl border-2 p-5 ${light ? 'border-slate-300' : 'border-slate-600'}`}>
+            <div key={group} className={`rounded-2xl border-2 p-5 border-slate-600`}>
               <div className="text-3xl font-black">{GROUP_LABELS[group]} · {groupCounts[group]}</div>
               <ul className="mt-2 space-y-1 text-2xl">
                 {THEME_ORDER.map((themeId) => <li key={themeId}>Tema {themeId} ({EXPERIMENT_THEMES[themeId].title}): {MODE_LABELS[modeFor(group, themeId)]}</li>)}
@@ -149,12 +150,12 @@ function TelaoContent({ state, participants, joinUrl, code, light }) {
                 <div className="text-3xl font-black">{MODE_LABELS[mode]}</div>
                 {isRetest ? (
                   <>
-                    <Bar large label="Quiz no dia da palestra" value={stats.quizPct} color="bg-cyan-400" />
+                    <Bar large label="Quiz no dia da palestra" value={stats.quizPct} color="bg-violet-400" />
                     <Bar large label="Re-teste" value={stats.retestPct} color={mode === 'copiar' ? 'bg-fuchsia-400' : 'bg-emerald-400'} />
                   </>
                 ) : (
                   <>
-                    <Bar large label="1. Acertos na atividade (com IA)" value={stats.activityPct} color="bg-cyan-400" />
+                    <Bar large label="1. Acertos na atividade (com IA)" value={stats.activityPct} color="bg-violet-400" />
                     <Bar large label="2. Acertos no quiz sem IA" value={stats.quizPct} color={mode === 'copiar' ? 'bg-fuchsia-400' : 'bg-emerald-400'} />
                     <p className={`text-xl ${muted}`}>Pergunta igual: {stats.identicalPct ?? '—'}% · pergunta parecida: {stats.similarPct ?? '—'}%</p>
                     <Bar large label="3. Estavam seguros e erraram" value={stats.sureWrongPct} color="bg-amber-400" />
@@ -165,7 +166,7 @@ function TelaoContent({ state, participants, joinUrl, code, light }) {
             );
           })}
         </div>
-        <p className={`rounded-2xl border-2 p-4 text-2xl ${light ? 'border-amber-500 bg-amber-100 text-amber-900' : 'border-amber-400 bg-amber-500/15 text-amber-100'}`}>
+        <p className={`rounded-2xl border-2 p-4 text-2xl border-amber-400 bg-amber-500/15 text-amber-100`}>
           Isto é uma demonstração com a nossa turma, não uma prova científica. Com poucos alunos o resultado varia muito e pode sair diferente do esperado. Mostramos como veio.
         </p>
         {metrics.hasManual && <p className={`text-xl ${muted}`}>Inclui contagens das folhas de papel.</p>}
@@ -180,7 +181,7 @@ function TelaoContent({ state, participants, joinUrl, code, light }) {
         <ol className="space-y-4 text-3xl">
           {WEEKLY_CHALLENGE.map((item, index) => <li key={item.text}><strong>{index + 1}.</strong> {item.text}</li>)}
         </ol>
-        <p className="text-3xl font-bold text-cyan-400">Anote no caderno o código de retorno que aparece no seu aparelho.</p>
+        <p className="text-3xl font-bold text-violet-400">Anote no caderno o código de retorno que aparece no seu aparelho.</p>
       </div>
     );
   }
@@ -189,11 +190,9 @@ function TelaoContent({ state, participants, joinUrl, code, light }) {
 }
 
 function Telao({ state, participants, joinUrl, code, onClose }) {
-  const [light, setLight] = useState(() => readSessionValue(storage, 'telao-light', false));
   const containerRef = useRef(null);
   const counts = countParticipants(participants);
   const simulated = participants.filter((participant) => participant.simulated).length;
-  useEffect(() => { writeSessionValue(storage, 'telao-light', light); }, [light]);
 
   const fullscreen = () => {
     const element = containerRef.current;
@@ -203,21 +202,21 @@ function Telao({ state, participants, joinUrl, code, onClose }) {
   };
 
   return createPortal(
-    <div ref={containerRef} className={`fixed inset-0 z-[60] overflow-y-auto ${light ? 'bg-white text-slate-950' : 'bg-black text-white'}`} role="dialog" aria-label="Telão do Pensa Comigo">
+    <div ref={containerRef} className={`fixed inset-0 z-[60] overflow-y-auto bg-black text-white`} role="dialog" aria-label="Telão do Pensa Comigo">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-8">
-        <header className={`mb-8 flex flex-wrap items-center justify-between gap-4 border-b-2 pb-4 ${light ? 'border-slate-300' : 'border-slate-700'}`}>
+        <header className={`mb-8 flex flex-wrap items-center justify-between gap-4 border-b-2 pb-4 border-slate-700`}>
           <div>
-            <div className="text-xl font-bold uppercase tracking-widest text-cyan-500">Pensa Comigo · {getStage(state.stage).label}</div>
+            <div className="text-xl font-bold uppercase tracking-widest text-violet-500">Pensa Comigo · {getStage(state.stage).label}</div>
             <div className="text-2xl">Sala <span className="font-mono font-black tracking-widest">{code}</span> · {counts.devices} aparelho(s){counts.duplas ? ` · ${counts.duplas} dupla(s)` : ''}</div>
             {simulated > 0 && <div className="text-xl font-bold text-amber-500">Inclui {simulated} participante(s) simulado(s) para ensaio</div>}
           </div>
           <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={() => setLight(!light)} className={`min-h-11 rounded-xl border-2 px-4 text-lg font-bold ${light ? 'border-slate-400' : 'border-slate-500'}`}>{light ? 'Tema escuro' : 'Tema claro'}</button>
-            <button type="button" onClick={fullscreen} className={`min-h-11 rounded-xl border-2 px-4 text-lg font-bold ${light ? 'border-slate-400' : 'border-slate-500'}`}>Tela cheia</button>
-            <button type="button" onClick={onClose} className="min-h-11 rounded-xl bg-cyan-600 px-4 text-lg font-bold text-white">Voltar ao painel</button>
+            <ThemeToggle variant="label" className="inline-flex min-h-11 items-center gap-2 rounded-xl border-2 border-slate-500 px-4 text-lg font-bold" />
+            <button type="button" onClick={fullscreen} className={`min-h-11 rounded-xl border-2 px-4 text-lg font-bold border-slate-500`}>Tela cheia</button>
+            <button type="button" onClick={onClose} className="min-h-11 rounded-xl bg-violet-600 px-4 text-lg font-bold text-white">Voltar ao painel</button>
           </div>
         </header>
-        <TelaoContent state={state} participants={participants} joinUrl={joinUrl} code={code} light={light} />
+        <TelaoContent state={state} participants={participants} joinUrl={joinUrl} code={code} />
       </div>
     </div>,
     document.body
@@ -301,7 +300,6 @@ export default function HostView({ transport, code, title, state, participants, 
   const [showTelao, setShowTelao] = useState(false);
   const [message, setMessage] = useState('');
   const [checklist, setChecklist] = useState(() => readSessionValue(storage, 'speaker-checklist', SPEAKER_CHECKLIST.map(() => false)));
-  const pendingAssignments = useRef({});
   const joinUrl = buildJoinUrl(joinBase.baseUrl, code);
   const counts = countParticipants(participants);
   const groupCounts = countGroups(state.assignments);
@@ -309,19 +307,6 @@ export default function HostView({ transport, code, title, state, participants, 
   const isLocal = transport.kind === 'local';
 
   useEffect(() => { writeSessionValue(storage, 'speaker-checklist', checklist); }, [checklist]);
-
-  // O palestrante é o único que atribui grupos: sem disputa entre ~30 aparelhos.
-  // As atribuições ainda em gravação contam no equilíbrio, para não sortear duas vezes.
-  useEffect(() => {
-    const known = { ...(state.assignments || {}), ...pendingAssignments.current };
-    const entries = Object.entries(assignBalancedGroups(participants, known));
-    if (!entries.length) return;
-    entries.forEach(([uid, assignment]) => { pendingAssignments.current[uid] = assignment; });
-    const patch = Object.fromEntries(entries.map(([uid, assignment]) => [`assignments.${uid}`, assignment]));
-    transport.updateState(code, patch)
-      .catch(() => setMessage('Não foi possível gravar os grupos. Verifique a conexão e as regras do Firestore.'))
-      .finally(() => entries.forEach(([uid]) => { delete pendingAssignments.current[uid]; }));
-  }, [participants, state.assignments, transport, code]);
 
   const update = (patch, okMessage = '') => transport.updateState(code, patch)
     .then(() => okMessage && setMessage(okMessage))
@@ -350,7 +335,7 @@ export default function HostView({ transport, code, title, state, participants, 
             <h2 className="mt-1 text-2xl font-black text-white">{title}</h2>
             <div className="mt-2 font-mono text-4xl font-black tracking-[0.25em] text-white">{code}</div>
             <p className="mt-1 text-sm text-slate-400">{isLocal ? 'Demonstração local: só neste aparelho (e em outras abas deste navegador). Configure o Firebase para receber os celulares da turma.' : 'Sala sincronizada pelo Firestore. Sem conexão direta entre aparelhos.'}</p>
-            {joinUrl && <p className="mt-1 break-all text-sm text-cyan-200">{joinUrl}</p>}
+            {joinUrl && <p className="mt-1 break-all text-sm text-violet-200">{joinUrl}</p>}
             {joinBase.warning && <div className="mt-2"><Notice tone="warn">{joinBase.warning}</Notice></div>}
           </div>
           {joinUrl && <QrCode value={joinUrl} size={160} />}
@@ -373,7 +358,7 @@ export default function HostView({ transport, code, title, state, participants, 
         <ol className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {STAGES.map((item, index) => (
             <li key={item.id}>
-              <button type="button" aria-current={item.id === state.stage ? 'step' : undefined} onClick={() => setStage(item.id)} className={`flex min-h-11 w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-sm ${item.id === state.stage ? 'border-cyan-400 bg-cyan-500/15 text-white' : 'border-slate-700 text-slate-300 hover:border-slate-500'}`}>
+              <button type="button" aria-current={item.id === state.stage ? 'step' : undefined} onClick={() => setStage(item.id)} className={`flex min-h-11 w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-sm ${item.id === state.stage ? 'border-violet-400 bg-violet-500/15 text-white' : 'border-slate-700 text-slate-300 hover:border-slate-500'}`}>
                 <span>{index + 1}. {item.label}</span>
                 <span className="font-mono text-xs text-slate-400">{countStageProgress(participants, item.id)}</span>
               </button>
