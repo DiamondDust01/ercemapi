@@ -1,5 +1,7 @@
 import React from 'react';
 import { Trophy, Lightbulb, ChevronRight } from 'lucide-react';
+import ThemeToggle from './ThemeToggle.jsx';
+import SelectorBackdrop from './SelectorBackdrop.jsx';
 
 const MODES = [
   {
@@ -35,7 +37,7 @@ const MODES = [
     tone: {
       card: 'border-fuchsia-500/40 hover:border-fuchsia-400 focus-within:border-fuchsia-400',
       icon: 'bg-fuchsia-500/15 text-fuchsia-300',
-      title: 'from-fuchsia-300 to-cyan-300',
+      title: 'from-violet-400 to-fuchsia-400',
       button: 'bg-fuchsia-700 hover:bg-fuchsia-600 focus-visible:outline-fuchsia-300',
       bullet: 'text-fuchsia-300'
     }
@@ -43,11 +45,12 @@ const MODES = [
 ];
 
 // Tela inicial: o usuário escolhe a variação do app. Pode trocar a qualquer momento.
-export default function ModeSelector({ onSelect, version, backdrop = null }) {
+export default function ModeSelector({ onSelect, version, backdrop = <SelectorBackdrop /> }) {
   return (
-    <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-[#020408] font-sans text-slate-300">
+    <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-[var(--app-bg)] font-sans text-slate-300">
       {backdrop}
       <main className="relative z-10 min-h-0 flex-1 overflow-y-auto">
+        <div className="absolute right-3 top-3 z-20 sm:right-5 sm:top-5"><ThemeToggle /></div>
         <div className="mx-auto flex min-h-full max-w-5xl flex-col justify-center px-4 py-5 md:py-16">
           <div className="mb-5 text-center md:mb-8">
             <div className="text-xs font-mono uppercase tracking-[0.3em] text-cyan-300">Bem-vindo</div>

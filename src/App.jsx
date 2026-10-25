@@ -28,6 +28,8 @@ import { readLocalConnectionQuality } from './localConnection.js';
 import { parseRoomParam } from './pensaComigo/session.js';
 import { readAppMode, writeAppMode } from './appMode.js';
 import ModeSelector from './ModeSelector.jsx';
+import ThemeToggle from './ThemeToggle.jsx';
+import PensaBackdrop from './pensaComigo/PensaBackdrop.jsx';
 import {
   INICIACAO_QUESTIONS, MENTOR_LEVELS, IA_PROMPT_LIBRARY, DEBUG_GUIDE, VARIATION_TEMPLATES,
   RESPONSIBLE_CHECKLIST, PRE_AI_CHECKLIST, COMPARISON_PAIRS, MENTOR_REFUSAL_PATTERN,
@@ -387,8 +389,8 @@ const BinaryBackdrop = () => {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.18),transparent_35%),linear-gradient(180deg,#020408_0%,#030712_100%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.10)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.10)_1px,transparent_1px)] bg-[size:24px_24px]" />
+      <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at top, var(--backdrop-glow), transparent 35%), linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg-end) 100%)' }} />
+      <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(var(--backdrop-grid) 1px, transparent 1px), linear-gradient(90deg, var(--backdrop-grid) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
       <div
         className="android-binary-decoration absolute inset-0 p-3 md:p-6 grid gap-1 md:gap-2 text-[8px] md:text-[10px] font-mono text-cyan-300/30"
         style={{
@@ -525,7 +527,7 @@ const CodeEditor = memo(({ initialValueCpp, initialValuePython, language, onRun,
   };
 
   return (
-    <div className={`bg-[#05070a] rounded-3xl border-2 ${isVictory ? 'border-emerald-500' : 'border-slate-800'} flex flex-col h-[400px] overflow-hidden shadow-2xl relative`}>
+    <div className={`bg-[var(--editor-bg)] rounded-3xl border-2 ${isVictory ? 'border-emerald-500' : 'border-slate-800'} flex flex-col h-[400px] overflow-hidden shadow-2xl relative`}>
       <div className="bg-slate-900/80 px-6 py-3 border-b border-slate-800 flex justify-between items-center z-10">
         <div className="flex items-center gap-4">
           <div className="flex gap-2">
@@ -561,7 +563,7 @@ const CodeEditor = memo(({ initialValueCpp, initialValuePython, language, onRun,
           </button>
         </div>
       </div>
-      <div className="flex-1 relative bg-[#0a0f18] p-4">
+      <div className="flex-1 relative bg-[var(--editor-body)] p-4">
         <div className="absolute left-0 top-0 bottom-0 w-12 bg-slate-900/50 border-r border-slate-800/50 flex flex-col items-end pt-4 pr-2 text-slate-600 font-mono text-sm select-none">
           {localCode.split('\n').map((_, i) => <div key={i}>{i + 1}</div>)}
         </div>
@@ -2035,13 +2037,13 @@ export default function App() {
   }
 
   if (!appMode) {
-    return <ModeSelector onSelect={chooseAppMode} version={packageJson.version} backdrop={<BinaryBackdrop />} />;
+    return <ModeSelector onSelect={chooseAppMode} version={packageJson.version} />;
   }
 
   if (appMode === 'pensa') {
     return (
-      <div className="h-[100dvh] bg-[#020408] text-slate-300 font-sans selection:bg-fuchsia-500/30 overflow-hidden flex flex-col relative">
-        <BinaryBackdrop />
+      <div className="h-[100dvh] bg-[var(--app-bg)] text-slate-300 font-sans selection:bg-fuchsia-500/30 overflow-hidden flex flex-col relative">
+        <PensaBackdrop />
         <main className="relative z-10 min-h-0 flex-1 overflow-y-auto pb-16">
           <React.Suspense fallback={<div className="p-8 text-center font-mono text-cyan-300">Carregando o Pensa Comigo…</div>}>
             <PensaComigo db={db} user={user} appId={appId} programming={LEVELS} initialRoomCode={pensaInitialCode} onExit={() => chooseAppMode(null)} />
@@ -2054,7 +2056,7 @@ export default function App() {
   }
 
   return (
-    <div className="h-[100dvh] bg-[#020408] text-slate-300 font-sans selection:bg-indigo-500/30 overflow-hidden flex flex-col relative">
+    <div className="h-[100dvh] bg-[var(--app-bg)] text-slate-300 font-sans selection:bg-indigo-500/30 overflow-hidden flex flex-col relative">
       <BinaryBackdrop />
       <header className="fixed top-0 left-0 right-0 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-md z-50">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 h-14 md:h-16 flex items-center justify-between gap-2">
@@ -2078,6 +2080,7 @@ export default function App() {
               <button type="button" onClick={() => chooseAppMode(null)} aria-label="Trocar de modo" title="Trocar de modo" className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-800 hover:text-white">
                 <ArrowLeftRight className="w-5 h-5" />
               </button>
+              <ThemeToggle />
               <div className="flex min-h-9 items-center gap-1 rounded-full bg-emerald-400/10 px-2 py-1 text-xs font-bold text-emerald-400 sm:gap-2 sm:px-3 sm:text-sm">
                 <Activity className="h-4 w-4" /> <span>{userData?.score || 0}<span className="hidden sm:inline"> pts</span></span>
               </div>
@@ -3173,7 +3176,7 @@ export default function App() {
               )}
             </div>
 
-            <div className="flex-1 flex flex-col h-full bg-[#020408] p-4 md:p-6 gap-4">
+            <div className="flex-1 flex flex-col h-full bg-[var(--app-bg)] p-4 md:p-6 gap-4">
               <div className="flex-1 min-h-[300px]">
                 <CodeEditor
                   initialValueCpp={currentLevel.initialCodeCpp}
