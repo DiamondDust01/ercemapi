@@ -27,13 +27,13 @@ const MissionHeader = ({ mission }) => (
 export function PollStage({ record, save }) {
   return (
     <Card>
-      <div className="text-xs font-mono uppercase tracking-widest text-cyan-300">Enquete anônima</div>
+      <div className="text-xs font-mono uppercase tracking-widest text-violet-300">Enquete anônima</div>
       <h2 className="mt-1 text-2xl font-black text-white">{OPENING_POLL.question}</h2>
       <p className="mt-1 text-sm text-slate-400">Ninguém vê o seu voto. O telão mostra só o total da turma.</p>
       <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
         {OPENING_POLL.options.map((option, index) => (
-          <button key={option.id} type="button" aria-pressed={record.poll === option.id} onClick={() => save({ poll: option.id })} className={`min-h-14 rounded-xl border px-4 py-3 text-left text-lg font-semibold transition ${record.poll === option.id ? 'border-cyan-300 bg-cyan-500/20 text-white' : 'border-slate-700 bg-slate-950 text-slate-200 hover:border-cyan-400'}`}>
-            <span className="mr-2 font-mono text-cyan-300">{OPTION_LETTERS[index]}</span>{option.label}
+          <button key={option.id} type="button" aria-pressed={record.poll === option.id} onClick={() => save({ poll: option.id })} className={`min-h-14 rounded-xl border px-4 py-3 text-left text-lg font-semibold transition ${record.poll === option.id ? 'border-violet-300 bg-violet-500/20 text-white' : 'border-slate-700 bg-slate-950 text-slate-200 hover:border-violet-400'}`}>
+            <span className="mr-2 font-mono text-violet-300">{OPTION_LETTERS[index]}</span>{option.label}
           </button>
         ))}
       </div>
@@ -178,7 +178,7 @@ export function MeTesteStage({ record, save }) {
                     <input value={explanations[item.id] || ''} onChange={(event) => setExplanations((previous) => ({ ...previous, [item.id]: event.target.value }))} className={`${inputClass} mt-1`} />
                   </label>
                   <button type="button" onClick={() => explain(item)} className={buttonSecondary}>Receber retorno</button>
-                  {feedback[item.id] && <p className="text-sm text-cyan-100">{feedback[item.id]}</p>}
+                  {feedback[item.id] && <p className="text-sm text-violet-100">{feedback[item.id]}</p>}
                 </div>
               )}
             </article>
@@ -233,7 +233,7 @@ export function DetectiveStage({ record, save }) {
           <p className="text-sm text-slate-200">Qual é a resposta certa?</p>
           <div className="mt-2 grid grid-cols-2 gap-2">
             {current.options.map((option, optionIndex) => (
-              <button key={option} type="button" onClick={() => setFix(optionIndex)} className="min-h-11 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-left font-mono text-slate-100 hover:border-cyan-400">{OPTION_LETTERS[optionIndex]}) {option}</button>
+              <button key={option} type="button" onClick={() => setFix(optionIndex)} className="min-h-11 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-left font-mono text-slate-100 hover:border-violet-400">{OPTION_LETTERS[optionIndex]}) {option}</button>
             ))}
           </div>
         </div>
@@ -282,7 +282,7 @@ export function ExperimentStage({ record, save, group }) {
   return (
     <Card>
       <header className="mb-4">
-        <div className="text-xs font-mono uppercase tracking-widest text-cyan-300">{GROUP_LABELS[group]} · Tema {theme.id} de 2</div>
+        <div className="text-xs font-mono uppercase tracking-widest text-violet-300">{GROUP_LABELS[group]} · Tema {theme.id} de 2</div>
         <h2 className="mt-1 text-2xl font-black text-white">{theme.title}</h2>
         <div className={`mt-2 inline-block rounded-full px-3 py-1 text-sm font-bold ${mode === 'copiar' ? 'bg-fuchsia-500/20 text-fuchsia-100' : 'bg-emerald-500/20 text-emerald-100'}`}>
           {MODE_LABELS[mode]}
@@ -366,7 +366,7 @@ function ConfidenceQuiz({ group, onSubmit, title, intro }) {
               <p className="text-lg text-white"><strong>{number + 1}.</strong> {item.question}</p>
               <div className="grid grid-cols-2 gap-2" role="group" aria-label={`Alternativas da questão ${number + 1}`}>
                 {item.options.map((option, index) => (
-                  <button key={option} type="button" aria-pressed={answers[quizItem.itemId] === index} onClick={() => setAnswers((previous) => ({ ...previous, [quizItem.itemId]: index }))} className={`min-h-11 rounded-xl border px-3 py-2 text-left font-mono text-slate-100 ${answers[quizItem.itemId] === index ? 'border-cyan-300 bg-cyan-500/20' : 'border-slate-700 bg-slate-950'}`}>
+                  <button key={option} type="button" aria-pressed={answers[quizItem.itemId] === index} onClick={() => setAnswers((previous) => ({ ...previous, [quizItem.itemId]: index }))} className={`min-h-11 rounded-xl border px-3 py-2 text-left font-mono text-slate-100 ${answers[quizItem.itemId] === index ? 'border-violet-300 bg-violet-500/20' : 'border-slate-700 bg-slate-950'}`}>
                     {OPTION_LETTERS[index]}) {option}
                   </button>
                 ))}
@@ -437,8 +437,8 @@ export function ClosingStage({ returnCode }) {
         ))}
       </ul>
       {returnCode && (
-        <div className="mt-6 rounded-2xl border-2 border-cyan-400 bg-cyan-500/10 p-4 text-center">
-          <div className="text-sm font-bold uppercase tracking-widest text-cyan-200">Anote no caderno: seu código de retorno</div>
+        <div className="mt-6 rounded-2xl border-2 border-violet-400 bg-violet-500/10 p-4 text-center">
+          <div className="text-sm font-bold uppercase tracking-widest text-violet-200">Anote no caderno: seu código de retorno</div>
           <div className="mt-2 font-mono text-4xl font-black tracking-[0.2em] text-white sm:text-5xl">{formatReturnCode(returnCode)}</div>
           <p className="mt-2 text-sm text-slate-300">Ele não tem seu nome. Você vai usar no re-teste surpresa daqui a alguns dias.</p>
         </div>

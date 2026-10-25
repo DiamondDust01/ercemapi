@@ -1,13 +1,70 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
+@import "./themeLight.css";
 
+/* Cores que não vêm da paleta do Tailwind. O tema claro redefine estas variáveis
+   e src/themeLight.css inverte a paleta. */
 :root {
   color-scheme: dark;
+  --app-bg: #020408;
+  --app-bg-end: #030712;
+  --app-text: #e2e8f0;
+  --app-glow: rgba(99, 102, 241, 0.12);
+  --backdrop-glow: rgba(34, 211, 238, 0.18);
+  --backdrop-grid: rgba(34, 211, 238, 0.10);
+  --editor-bg: #05070a;
+  --editor-body: #0a0f18;
+  --scroll-thumb: #1f2937;
+  --selection: rgba(99, 102, 241, 0.45);
+  /* Pensa Comigo */
+  --pensa-glow-a: rgba(167, 139, 250, 0.20);
+  --pensa-glow-b: rgba(34, 211, 238, 0.12);
+  --pensa-hex: rgba(192, 132, 252, 0.2);
+  --pensa-digit-a: #a78bfa;
+  --pensa-digit-b: #e879f9;
+  --pensa-digit-c: #67e8f9;
+  --pensa-digits-opacity: 0.32;
+  /* Tela de escolha */
+  --selector-glow-a: rgba(99, 102, 241, 0.22);
+  --selector-glow-b: rgba(217, 70, 239, 0.18);
+  --selector-a: #22d3ee;
+  --selector-b: #818cf8;
+  --selector-c: #e879f9;
+  --selector-dots-opacity: 0.55;
+}
+
+:root[data-theme="light"] {
+  --app-bg: #f3f6fb;
+  --app-bg-end: #e8eef7;
+  --app-text: #1e293b;
+  --app-glow: rgba(79, 70, 229, 0.10);
+  --backdrop-glow: rgba(8, 145, 178, 0.16);
+  --backdrop-grid: rgba(8, 145, 178, 0.12);
+  --editor-bg: #f8fafc;
+  --editor-body: #ffffff;
+  --scroll-thumb: #cbd5e1;
+  --selection: rgba(79, 70, 229, 0.25);
+  --pensa-glow-a: rgba(139, 92, 246, 0.16);
+  --pensa-glow-b: rgba(8, 145, 178, 0.12);
+  --pensa-hex: rgba(147, 51, 234, 0.14);
+  --pensa-digit-a: #7c3aed;
+  --pensa-digit-b: #c026d3;
+  --pensa-digit-c: #0891b2;
+  --pensa-digits-opacity: 0.35;
+  --selector-glow-a: rgba(79, 70, 229, 0.16);
+  --selector-glow-b: rgba(192, 38, 211, 0.13);
+  --selector-a: #0891b2;
+  --selector-b: #4f46e5;
+  --selector-c: #c026d3;
+  --selector-dots-opacity: 0.45;
+}
+
+:root {
   font-family: 'Inter', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  background: #020408;
-  color: #e2e8f0;
+  background: var(--app-bg);
+  color: var(--app-text);
 }
 
 * {
@@ -24,9 +81,9 @@ body,
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top, rgba(99, 102, 241, 0.12), transparent 20%),
-    #020408;
-  color: #e2e8f0;
+    radial-gradient(circle at top, var(--app-glow), transparent 20%),
+    var(--app-bg);
+  color: var(--app-text);
 }
 
 html.android-app {
@@ -54,10 +111,10 @@ div {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1f2937;
+  background: var(--scroll-thumb);
   border-radius: 999px;
 }
 
 ::selection {
-  background: rgba(99, 102, 241, 0.45);
+  background: var(--selection);
 }
