@@ -14,6 +14,14 @@ histórico de mudanças está em `CHANGELOG.md`.
 Ao abrir, o app pergunta qual variação usar: **OBI Quest** (treino para a OBI) ou
 **Pensa Comigo** (palestras sobre estudar com IA). A escolha vale para a aba
 aberta e pode ser trocada a qualquer momento pelo botão "Trocar de modo".
+As duas variações têm tema claro e escuro (botão de sol e lua); o escuro é o
+padrão e a escolha fica salva no aparelho. O Pensa Comigo tem paleta própria,
+em violeta e magenta, com fundo hexagonal.
+
+O tema claro inverte as escalas de cor do Tailwind e fica em
+`src/themeLight.css`. Depois de atualizar o Tailwind, gere o arquivo de novo com
+`node scripts/generate-light-theme.mjs`; um teste avisa quando ele está
+desatualizado.
 
 - **Início:** perfil local, progresso resumido e atalhos para os módulos.
 - **Iniciação:** questões objetivas de lógica e interpretação, com faixa,
