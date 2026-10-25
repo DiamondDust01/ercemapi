@@ -231,8 +231,8 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
   const header = (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div>
-        <div className="text-xs font-mono uppercase tracking-[0.3em] text-fuchsia-300">Variação</div>
-        <h1 className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-3xl font-black tracking-tight text-transparent sm:text-4xl">Pensa Comigo</h1>
+        <div className="text-xs font-mono uppercase tracking-[0.3em] text-amber-300">Variação</div>
+        <h1 className="bg-gradient-to-r from-amber-300 to-orange-500 bg-clip-text text-3xl font-black tracking-tight text-transparent sm:text-4xl">Pensa Comigo</h1>
       </div>
       <div className="flex flex-wrap gap-2">
         <ThemeToggle variant="label" className={buttonSecondary} />
@@ -258,19 +258,19 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
           </ul>
         </Card>
         <div className="grid gap-4 md:grid-cols-3">
-          <Card>
+          <Card className="flex flex-col">
             <h2 className="text-xl font-bold text-white">Sou estudante</h2>
-            <p className="mt-1 text-sm text-slate-400">Entre com o código do telão. Sem cadastro e sem nome.</p>
+            <p className="mt-1 flex-1 text-sm text-slate-400">Entre com o código do telão. Sem cadastro e sem nome.</p>
             <button type="button" className={`${buttonPrimary} mt-4 w-full`} onClick={() => setView('join')}>Entrar numa sala</button>
           </Card>
-          <Card>
+          <Card className="flex flex-col">
             <h2 className="text-xl font-bold text-white">Sou palestrante</h2>
-            <p className="mt-1 text-sm text-slate-400">Abra a sala, projete o telão e conduza as etapas.</p>
+            <p className="mt-1 flex-1 text-sm text-slate-400">Abra a sala, projete o telão e conduza as etapas.</p>
             <button type="button" className={`${buttonPrimary} mt-4 w-full`} onClick={() => setView('create')}>Abrir sala</button>
           </Card>
-          <Card>
+          <Card className="flex flex-col">
             <h2 className="text-xl font-bold text-white">Praticar sozinho</h2>
-            <p className="mt-1 text-sm text-slate-400">Escolha um desafio e estude com o tutor.</p>
+            <p className="mt-1 flex-1 text-sm text-slate-400">Escolha um desafio e estude com o tutor.</p>
             <button type="button" className={`${buttonSecondary} mt-4 w-full`} onClick={() => setView('solo')}>Escolha seu desafio</button>
           </Card>
         </div>
@@ -296,7 +296,7 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
         <div className="mt-4">
           <div className="text-sm font-semibold text-slate-200">Seu apelido (sorteado)</div>
           <div className="mt-1 flex flex-wrap items-center gap-3">
-            <span className="rounded-xl border border-violet-500/50 bg-violet-500/10 px-4 py-2 text-xl font-bold text-white" aria-live="polite">{formatParticipantName(nickname, kind)}</span>
+            <span className="rounded-xl border border-orange-500/50 bg-orange-500/10 px-4 py-2 text-xl font-bold text-white" aria-live="polite">{formatParticipantName(nickname, kind)}</span>
             <button type="button" className={buttonSecondary} onClick={() => setNickname(drawNickname(Math.random, nickname))}>Sortear outro</button>
           </div>
           <p className="mt-1 text-xs text-slate-500">Ninguém digita nome aqui. Assim ninguém fica identificado.</p>
@@ -305,7 +305,7 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
           <legend className="text-sm font-semibold text-slate-200">Neste aparelho</legend>
           <div className="mt-1 flex flex-wrap gap-2">
             {[['solo', 'Sou uma pessoa'], ['dupla', 'Somos uma dupla']].map(([value, label]) => (
-              <button key={value} type="button" aria-pressed={kind === value} onClick={() => setKind(value)} className={`${buttonSecondary} ${kind === value ? 'border-violet-400 text-violet-100' : ''}`}>{label}</button>
+              <button key={value} type="button" aria-pressed={kind === value} onClick={() => setKind(value)} className={`${buttonSecondary} ${kind === value ? 'border-orange-400 text-orange-100' : ''}`}>{label}</button>
             ))}
           </div>
         </fieldset>
@@ -399,7 +399,7 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
           {freePlay && (
             <div className="mt-3 flex gap-2" role="tablist" aria-label="Seções">
               {[['atividade', 'Atividade da palestra'], ['desafio', 'Escolha seu desafio']].map(([id, label]) => (
-                <button key={id} type="button" role="tab" aria-selected={(student.tab || 'atividade') === id} onClick={() => setStudent((previous) => ({ ...previous, tab: id }))} className={`${buttonSecondary} ${(student.tab || 'atividade') === id ? 'border-violet-400 text-violet-100' : ''}`}>{label}</button>
+                <button key={id} type="button" role="tab" aria-selected={(student.tab || 'atividade') === id} onClick={() => setStudent((previous) => ({ ...previous, tab: id }))} className={`${buttonSecondary} ${(student.tab || 'atividade') === id ? 'border-orange-400 text-orange-100' : ''}`}>{label}</button>
               ))}
             </div>
           )}

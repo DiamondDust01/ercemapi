@@ -6,7 +6,7 @@ de programação, recursos de reflexão pedagógica e salas demonstrativas de
 competição. **Não é um serviço oficial da OBI, não substitui uma prova oficial e
 não executa um juiz de programação real.**
 
-Versão atual do código: **1.6.0**. A fonte da numeração é `package.json`; o
+Versão atual do código: **1.6.1**. A fonte da numeração é `package.json`; o
 histórico de mudanças está em `CHANGELOG.md`.
 
 ## O que o aplicativo oferece
@@ -16,7 +16,7 @@ Ao abrir, o app pergunta qual variação usar: **OBI Quest** (treino para a OBI)
 aberta e pode ser trocada a qualquer momento pelo botão "Trocar de modo".
 As duas variações têm tema claro e escuro (botão de sol e lua); o escuro é o
 padrão e a escolha fica salva no aparelho. O Pensa Comigo tem paleta própria,
-em violeta e magenta, com fundo hexagonal.
+em âmbar e laranja, com fundo hexagonal.
 
 O tema claro inverte as escalas de cor do Tailwind e fica em
 `src/themeLight.css`. Depois de atualizar o Tailwind, gere o arquivo de novo com

@@ -67,7 +67,7 @@ export default function TutorItem({ item, mode = 'ativo', onDone, requireCheckli
   return (
     <article className="space-y-4">
       <header>
-        <div className="flex flex-wrap items-center gap-2 text-xs font-mono uppercase tracking-widest text-violet-300">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-mono uppercase tracking-widest text-orange-300">
           <span>{item.title}</span>
           {item.generated && showReviewTag && <span className="rounded bg-amber-500/20 px-2 py-0.5 text-amber-200">{REVIEW_LABEL}</span>}
         </div>
@@ -89,7 +89,7 @@ export default function TutorItem({ item, mode = 'ativo', onDone, requireCheckli
             const showCorrect = finished && index === item.correct;
             const tone = showCorrect
               ? 'border-emerald-400 bg-emerald-500/15 text-emerald-50'
-              : chosen ? 'border-rose-400 bg-rose-500/10 text-rose-50' : 'border-slate-700 bg-slate-950 text-slate-100 hover:border-violet-400';
+              : chosen ? 'border-rose-400 bg-rose-500/10 text-rose-50' : 'border-slate-700 bg-slate-950 text-slate-100 hover:border-orange-400';
             return (
               <button key={option} type="button" disabled={finished} onClick={() => choose(index)} aria-pressed={chosen} className={`min-h-12 rounded-xl border px-4 py-3 text-left font-mono text-base transition disabled:cursor-default ${tone}`}>
                 <span className="mr-1 font-bold">{OPTION_LETTERS[index]})</span>{' '}{option}
@@ -103,7 +103,7 @@ export default function TutorItem({ item, mode = 'ativo', onDone, requireCheckli
         <div className="space-y-2">
           <div className="flex gap-2" role="group" aria-label="Linguagem">
             {['python', 'cpp'].map((language) => (
-              <button key={language} type="button" aria-pressed={codeLanguage === language} onClick={() => setCodeLanguage(language)} className={`${buttonSecondary} ${codeLanguage === language ? 'border-violet-400 text-violet-200' : ''}`}>{language === 'cpp' ? 'C++' : 'Python'}</button>
+              <button key={language} type="button" aria-pressed={codeLanguage === language} onClick={() => setCodeLanguage(language)} className={`${buttonSecondary} ${codeLanguage === language ? 'border-orange-400 text-orange-200' : ''}`}>{language === 'cpp' ? 'C++' : 'Python'}</button>
             ))}
           </div>
           <textarea value={code} onChange={(event) => setCode(event.target.value)} rows={6} spellCheck={false} aria-label="Seu código" className={`${inputClass} font-mono text-sm text-emerald-200`} />
@@ -126,7 +126,7 @@ export default function TutorItem({ item, mode = 'ativo', onDone, requireCheckli
 
       {!isCopy && (
         <div className="space-y-3 rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-          <p className="text-sm text-violet-100">{tutorMessage(state)}</p>
+          <p className="text-sm text-orange-100">{tutorMessage(state)}</p>
           {requireChecklist && state.hintsShown === 0 && !finished && (
             <fieldset className="space-y-2">
               <legend className="text-xs font-bold uppercase tracking-widest text-slate-400">Antes da primeira dica</legend>

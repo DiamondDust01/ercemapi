@@ -2,7 +2,7 @@ import React from 'react';
 
 // Fundo da tela de escolha: a ponte entre as duas variações. Uma malha de pontos com
 // gradiente que vai das cores do OBI Quest (índigo e ciano, à esquerda) às do Pensa
-// Comigo (violeta e magenta, à direita), com um brilho atrás de cada lado. É diferente
+// Comigo (âmbar e laranja, à direita), com um brilho atrás de cada lado. É diferente
 // da grade quadrada do OBI Quest e dos hexágonos do Pensa Comigo.
 // Os pontos são uma máscara sobre um retângulo em gradiente, para o gradiente
 // atravessar a tela inteira em vez de se repetir a cada ponto.

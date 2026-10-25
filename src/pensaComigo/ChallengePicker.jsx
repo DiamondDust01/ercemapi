@@ -62,7 +62,7 @@ export default function ChallengePicker({ programming, unlocks = {}, excludeSour
       <p className="mt-1 text-slate-300">Desafios extras do OBI Quest. O tutor pede sua tentativa antes de qualquer dica.</p>
       <div className="mt-3 flex flex-wrap gap-2">
         {advancedAllowed && (
-          <button type="button" aria-pressed={showAdvanced} className={`${buttonSecondary} ${showAdvanced ? 'border-violet-400 text-violet-200' : ''}`} onClick={() => setShowAdvanced(!showAdvanced)}>
+          <button type="button" aria-pressed={showAdvanced} className={`${buttonSecondary} ${showAdvanced ? 'border-orange-400 text-orange-200' : ''}`} onClick={() => setShowAdvanced(!showAdvanced)}>
             {showAdvanced ? 'Esconder desafios avançados' : 'Mostrar desafios avançados'}
           </button>
         )}
@@ -78,7 +78,7 @@ export default function ChallengePicker({ programming, unlocks = {}, excludeSour
             <ul className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {groupItems.map((item) => (
                 <li key={item.id}>
-                  <button type="button" onClick={() => setSelectedId(item.id)} className="flex min-h-14 w-full items-center justify-between gap-2 rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-left text-slate-100 hover:border-violet-400">
+                  <button type="button" onClick={() => setSelectedId(item.id)} className="flex min-h-14 w-full items-center justify-between gap-2 rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-left text-slate-100 hover:border-orange-400">
                     <span className="min-w-0">
                       <span className="block font-semibold">{item.title}</span>
                       <span className="block text-xs text-slate-400">{item.level}</span>
