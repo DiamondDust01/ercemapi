@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { hexCenters, hexPolygon, digitFor } from './hexGrid.js';
+import useViewportSize from '../useViewportSize.js';
 
 // Fundo próprio do Pensa Comigo: malha hexagonal (no lugar da grade quadrada do
 // OBI Quest) com um zero ou um no centro de cada hexágono, em gradiente violeta →
@@ -7,28 +8,8 @@ import { hexCenters, hexPolygon, digitFor } from './hexGrid.js';
 // do mesmo SVG, então ficam sempre alinhados. As cores vêm das variáveis --pensa-*.
 const SIDE = 22;
 
-const readViewport = () => ({
-  width: typeof window !== 'undefined' ? window.innerWidth : 1366,
-  height: typeof window !== 'undefined' ? window.innerHeight : 768
-});
-
 export default function PensaBackdrop() {
-  const [viewport, setViewport] = useState(readViewport);
-
-  useEffect(() => {
-    let frame = 0;
-    const onResize = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => setViewport(readViewport()));
-    };
-    window.addEventListener('resize', onResize);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', onResize);
-    };
-  }, []);
-
-  const { width, height } = viewport;
+  const { width, height } = useViewportSize();
   const centers = useMemo(() => hexCenters(width, height, SIDE), [width, height]);
   const outline = useMemo(() => centers.map(({ x, y }) => `M${hexPolygon(x, y, SIDE).replaceAll(' ', 'L')}Z`).join(''), [centers]);
   const fontSize = width < 768 ? 9 : 11;

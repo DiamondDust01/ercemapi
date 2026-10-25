@@ -28,6 +28,7 @@ import { readLocalConnectionQuality } from './localConnection.js';
 import { parseRoomParam } from './pensaComigo/session.js';
 import { readAppMode, writeAppMode } from './appMode.js';
 import ModeSelector from './ModeSelector.jsx';
+import BinaryBackdrop from './BinaryBackdrop.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 import PensaBackdrop from './pensaComigo/PensaBackdrop.jsx';
 import {
@@ -380,30 +381,6 @@ const INITIAL_PEDAGOGY_DATA = {
   classroomCode: '',
   classroomAlias: '',
   classroomData: null
-};
-
-const BinaryBackdrop = () => {
-  const columns = 28;
-  const rows = 16;
-  const cells = Array.from({ length: columns * rows }, (_, index) => (index % 2 === 0 ? '0' : '1'));
-
-  return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-      <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at top, var(--backdrop-glow), transparent 35%), linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg-end) 100%)' }} />
-      <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(var(--backdrop-grid) 1px, transparent 1px), linear-gradient(90deg, var(--backdrop-grid) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-      <div
-        className="android-binary-decoration absolute inset-0 p-3 md:p-6 grid gap-1 md:gap-2 text-[8px] md:text-[10px] font-mono text-cyan-300/30"
-        style={{
-          gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-          gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
-        }}
-      >
-        {cells.map((cell, index) => (
-          <div key={index} className="text-center select-none">{cell}</div>
-        ))}
-      </div>
-    </div>
-  );
 };
 
 const AudioEngine = {
