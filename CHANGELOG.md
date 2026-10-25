@@ -39,6 +39,12 @@ a numeração das versões consistente entre o código e os próximos lançament
 - O sorteio dos grupos continua funcionando quando o palestrante ensaia a visão
   do aluno na mesma aba.
 
+### Corrigido
+
+- Os zeros e uns do fundo do OBI Quest ficam no centro dos quadrados da grade;
+  antes caíam sobre as linhas. O fundo do Pensa Comigo usa a mesma técnica, com
+  um dígito no centro de cada hexágono.
+
 ## 1.5.0 - 2026-10-25
 
 ### Adicionado
