@@ -16,6 +16,8 @@ por pessoas.
    conectividade local e pareamento WebRTC.
 4. `04-plataformas-e-limites.ignore` — web, Android, Windows, branches, pacotes,
    instalação e limitações conhecidas.
+6. `06-pensa-comigo.ignore` — modo Pensa Comigo (1.5.0): palestras em escolas,
+   experimento copiar × estudar ativamente, privacidade e o que não afirmar.
 
 Os documentos podem ser carregados todos juntos ou individualmente. Para uma
 apresentação, comece pelos arquivos 01 e 02; para perguntas técnicas, acrescente

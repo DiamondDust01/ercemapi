@@ -1,0 +1,65 @@
+rules_version = '2';
+
+// Regras sugeridas para o OBI Quest 1.5.0. Revise antes de publicar no seu projeto.
+// - Salas de competição, sinalização P2P e turmas do Professor: comportamento da 1.4.2,
+//   exigindo autenticação (o app usa login anônimo).
+// - Pensa Comigo (novo): o palestrante é o único que escreve o estado da sala; cada aluno
+//   escreve só o próprio registro; só o palestrante lê os registros da turma (agregados no telão).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    match /artifacts/{appId} {
+      match /users/{uid} {
+        allow read, write: if signedIn() && request.auth.uid == uid;
+      }
+
+      match /rooms/{code} {
+        allow read, write: if signedIn();
+        match /peerSignals/{pairId} {
+          allow read, write: if signedIn();
+        }
+      }
+
+      match /classrooms/{code} {
+        function classroom() {
+          return get(/databases/$(database)/documents/artifacts/$(appId)/classrooms/$(code)).data;
+        }
+        function isHost() {
+          return signedIn() && classroom().get('hostUid', '') == request.auth.uid;
+        }
+
+        allow read: if signedIn();
+        // Quem cria uma sala Pensa Comigo precisa ser o próprio hostUid.
+        allow create: if signedIn()
+          && (!('hostUid' in request.resource.data) || request.resource.data.hostUid == request.auth.uid);
+        // Estudantes do Professor gravam o próprio apelido no mapa participants (1.4.2);
+        // ninguém troca o dono nem o modo da sala.
+        allow update: if signedIn()
+          && request.resource.data.get('hostUid', null) == resource.data.get('hostUid', null)
+          && request.resource.data.get('mode', null) == resource.data.get('mode', null);
+        allow delete: if false;
+
+        // Estado da palestra: etapa, grupos, liberações e contagens manuais.
+        match /pensaComigo/{docId} {
+          allow read: if signedIn();
+          allow write: if isHost();
+        }
+
+        // Registro de cada aparelho: apelido sorteado e resultados, sem texto livre.
+        match /pensaComigoParticipants/{uid} {
+          allow read: if signedIn() && (request.auth.uid == uid || isHost());
+          allow create, update: if signedIn()
+            && request.auth.uid == uid
+            && request.resource.data.keys().hasOnly(['nickname', 'kind', 'joinedAt', 'updatedAt', 'group', 'returnCode', 'poll', 'missions', 'experiment', 'retest'])
+            && request.resource.data.get('nickname', '') is string
+            && request.resource.data.get('nickname', '').size() <= 40
+            && request.resource.data.get('kind', 'solo') in ['solo', 'dupla'];
+          allow delete: if signedIn() && request.auth.uid == uid;
+        }
+      }
+    }
+  }
+}

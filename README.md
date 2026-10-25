@@ -6,10 +6,14 @@ de programação, recursos de reflexão pedagógica e salas demonstrativas de
 competição. **Não é um serviço oficial da OBI, não substitui uma prova oficial e
 não executa um juiz de programação real.**
 
-Versão atual do código: **1.4.2**. A fonte da numeração é `package.json`; o
+Versão atual do código: **1.5.0**. A fonte da numeração é `package.json`; o
 histórico de mudanças está em `CHANGELOG.md`.
 
 ## O que o aplicativo oferece
+
+Ao abrir, o app pergunta qual variação usar: **OBI Quest** (treino para a OBI) ou
+**Pensa Comigo** (palestras sobre estudar com IA). A escolha vale para a aba
+aberta e pode ser trocada a qualquer momento pelo botão "Trocar de modo".
 
 - **Início:** perfil local, progresso resumido e atalhos para os módulos.
 - **Iniciação:** questões objetivas de lógica e interpretação, com faixa,
@@ -21,6 +25,11 @@ histórico de mudanças está em `CHANGELOG.md`.
 - **Regras:** material educativo sobre as modalidades e preparação.
 - **Competição:** cronômetro e salas com duração configurável, confirmação dos
   parâmetros, quantidade mínima para iniciar e limite máximo de 16 participantes.
+- **Pensa Comigo (1.5.0):** modo de palestra para turmas de 11 a 14 anos que
+  mostra a IA como tutor, e não como copiador. Tem sala com telão, entrada por
+  código ou QR sem cadastro, quatro missões, o experimento "copiar × estudar
+  ativamente", modos em duplas e sem celular, kit impresso e "Escolha seu
+  desafio". Detalhes na seção própria abaixo.
 
 As abas usam um painel comum de rolagem. Ao navegar para outra aba, o painel
 retorna ao início em web, Android e desktop.
@@ -35,6 +44,8 @@ retorna ao início em web, Android e desktop.
   programa está correto.
 - As regras e os rankings exibidos são educativos/demonstrativos, não material ou
   classificação oficial da OBI.
+- No Pensa Comigo, o experimento é uma demonstração com uma turma, não uma prova
+  científica; o tutor segue regras fixas e não é uma IA generativa.
 
 ## Conexão, partidas e dados
 
@@ -60,6 +71,59 @@ há multiplayer entre dispositivos.
 O perfil, preferências, atividades pedagógicas e recordes locais usam
 `localStorage`. Esses dados não sincronizam automaticamente entre navegador,
 Android e Windows.
+
+## Modo Pensa Comigo
+
+O Pensa Comigo é escolhido na tela inicial, como variação própria do app, com
+cabeçalho e navegação próprios. Também abre pelo cartão do Início do OBI Quest,
+pela seção Professor da Mentoria ou direto por um link `?sala=CÓDIGO` (o QR do
+telão aponta para esse link). O palestrante cria a
+sala, projeta o telão e conduz as etapas: abertura com enquete anônima, quatro
+missões (Tente primeiro, Remix de prompt, Me teste, Detetive de erros),
+experimento, quiz sem IA, resultado, fechamento e re-teste.
+
+- **Alunos:** entram por código ou QR, recebem um apelido sorteado e não digitam
+  nome. Um aparelho pode ser uma dupla. Os dados do modo ficam em
+  `sessionStorage` e o botão "Encerrar neste aparelho" apaga tudo. O texto livre
+  (tentativas e remix) não sai do aparelho; só pontuações e acertos vão para a sala.
+- **Experimento:** cada aluno faz um tema copiando a resposta pronta e o outro
+  estudando com o tutor, com grupos alternados pela ordem de entrada. O telão
+  compara acertos na atividade, acertos no quiz sem IA e "seguros que erraram".
+- **Sem rede ou sem celular:** todo o conteúdo vai no build. O palestrante pode
+  contar cartões A/B/C/D, lançar no painel os números das folhas e baixar o kit
+  impresso. Sem Firebase, a sala é uma demonstração local neste aparelho.
+- **Tutor:** local por padrão. `VITE_ENABLE_LLM_TUTOR` fica desligada; esta
+  versão não inclui o backend que o tutor generativo exigiria, então nada é
+  enviado a provedores de IA mesmo com a flag ligada.
+
+### Firebase, regras e hospedagem
+
+Os dados do modo ficam em subcoleções da turma:
+`artifacts/{appId}/classrooms/{código}/pensaComigo/state` (só o palestrante
+escreve) e `.../pensaComigoParticipants/{uid}` (cada aluno escreve o próprio
+registro; só o palestrante lê a turma). As regras sugeridas estão em
+`firestore.rules` e mantêm o comportamento das salas, `peerSignals` e turmas do
+Professor.
+
+Para o QR funcionar nos celulares, publique o `dist/` (por exemplo, no Firebase
+Hosting configurado em `firebase.json`) e compile com `VITE_PUBLIC_APP_URL`
+apontando para o endereço HTTPS publicado. No app Android e no Windows, os
+alunos entram pelo código.
+
+```bash
+npm run build
+npx firebase-tools deploy --only hosting,firestore:rules --project SEU-PROJETO
+```
+
+| Variável | Uso |
+|---|---|
+| `VITE_FIREBASE_CONFIG` | JSON do Firebase; sem ela, salas e Pensa Comigo são locais |
+| `VITE_APP_ID` | prefixo dos caminhos do Firestore (padrão `obi-quest-v1`) |
+| `VITE_PUBLIC_APP_URL` | endereço HTTPS publicado, usado no QR |
+| `VITE_ENABLE_LLM_TUTOR` | desligada; reservada para um tutor generativo com backend |
+| `VITE_FIREBASE_EMULATORS` | `1` liga auth e Firestore aos emuladores, só em `npm run dev` |
+
+Guia completo, com o que não afirmar: `docs/06-pensa-comigo.ignore`.
 
 ## Desenvolvimento web
 
@@ -102,7 +166,6 @@ empacotamento.
 ```bash
 npm run app:windows
 npm run app:windows:package
-npm run app:windows:installer
 ```
 
 `app:windows:package` gera a aplicação portátil completa em
@@ -150,6 +213,10 @@ arquivos `.ignore` da pasta `docs/`.
 ## Estrutura do projeto
 
 - `src/App.jsx`: interface, telas e fluxos principais.
+- `src/content/obiContent.js`: banco de Iniciação, textos do mentor, pares e
+  templates, compartilhados com o Pensa Comigo.
+- `src/pensaComigo/`: modo Pensa Comigo (telas, conteúdo, regras puras e testes).
+- `firestore.rules` e `firebase.json`: regras sugeridas e hospedagem do `dist/`.
 - `src/competitionRooms.js`: regras e validação das salas.
 - `src/peerPairing.js`: pareamento P2P e resumo das medições recentes.
 - `src/localConnection.js`: indicadores locais de conectividade.
