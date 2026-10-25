@@ -33,7 +33,7 @@ A Parte II confere com o código na maior parte. Divergências encontradas:
 | D6 Cronômetro obrigatório | Mantém na Iniciação | No modo, as etapas do palestrante substituem o cronômetro. No "Escolha seu desafio", o cronômetro é opcional. |
 | D7 localStorage | Adapta só no modo | Tudo do modo em `sessionStorage` com prefixo `obi-quest-pensa-comigo:`. "Encerrar neste aparelho" apaga as chaves. Testado: zero chaves do modo em `localStorage`. |
 | D8 Juízes externos | Mantém | Fora da tela do aluno no modo. |
-| D9 Identidade escura | Mantém | O escuro segue como padrão. Por pedido do autor, o app inteiro ganhou tema claro opcional, e o telão usa o mesmo botão. O Pensa Comigo tem paleta própria (violeta, magenta e fundo hexagonal). |
+| D9 Identidade escura | Mantém | O escuro segue como padrão. Por pedido do autor, o app inteiro ganhou tema claro opcional, e o telão usa o mesmo botão. O Pensa Comigo tem paleta própria (âmbar, laranja e fundo hexagonal); o magenta ficou reservado ao "modo copiar". |
 | D10 Barra com 5 itens | Mantém | A barra do OBI Quest segue com 5 itens. Por pedido do autor, o app abre numa tela de escolha entre OBI Quest e Pensa Comigo; o Pensa Comigo virou variação com casca própria. Também há entrada pelo Início, pelo Professor e por `?sala=`. |
 | D11 Inconsistências | Corrige | Itens 1 a 8 tratados (tabela acima). |
 | D12 Backend para LLM | Não criado | Cloud Functions exigem o plano Blaze, pago por uso. Sem backend, a flag fica sem efeito. |
