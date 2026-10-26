@@ -1,6 +1,6 @@
 # Notas de versão
 
-Este arquivo registra as mudanças do OBI Quest e serve como referência para manter
+Este arquivo registra as mudanças do ERCEMAPI (até a 1.6.1 chamado OBI Quest) e serve como referência para manter
 a numeração das versões consistente entre o código e os próximos lançamentos.
 
 ## Como manter as versões
@@ -8,7 +8,9 @@ a numeração das versões consistente entre o código e os próximos lançament
 - A versão oficial do aplicativo fica em `package.json`; a interface a exibe
   automaticamente. Não mantenha outro número de versão manualmente no código.
 - Registre mudanças novas em **Não lançado** enquanto ainda não fizerem parte de
-  uma versão publicada.
+  uma versão publicada. Comece cada item com a data da mudança (DD/MM/AAAA).
+- A cada mudança, atualize também a documentação afetada (README, `docs/` e
+  guias de instalação) e a data de atualização no topo de cada fonte.
 - Ao preparar uma publicação, mova as notas para uma seção com a versão e a data,
   atualize `package.json` e `package-lock.json` juntos e limpe a seção **Não
   lançado**.
@@ -19,6 +21,42 @@ a numeração das versões consistente entre o código e os próximos lançament
   mudanças incompatíveis, quando aplicável.
 
 ## Não lançado
+
+## 1.7.0 - 2026-10-26
+
+### Melhorado
+
+- 26/10/2026: o app passou a se chamar **ERCEMAPI**: título da página e da janela,
+  descrição da página, nome no Android, tela de carregamento, tela de escolha,
+  cabeçalho, mensagens, kit impresso e documentação. "OBI Quest" continua como
+  nome da variação de treino. Os identificadores técnicos não mudaram, então as
+  instalações existentes recebem a atualização e os dados do Firebase ficam
+  onde estavam.
+- 26/10/2026: fundo do OBI Quest em malha hexagonal azul, com os zeros e uns no
+  centro de cada hexágono. Uma grade diagonal foi testada antes e trocada no mesmo
+  dia.
+- 26/10/2026: o Pensa Comigo passou a ser verde. O fundo hexagonal foi trocado por uma
+  chuva de frases no estilo do filme Matrix: frases motivacionais, pensamentos
+  filosóficos e citações caem em colunas, letra por letra. As citações levam o
+  nome do autor e só usam autoria bem documentada. Com "reduzir movimento"
+  ligado no sistema, o fundo fica parado.
+- 26/10/2026: no experimento, "Estudando ativamente" passou a ser azul-claro, para
+  não se confundir com o verde do tema, e a resposta da "IA" no Detetive de
+  erros usa um tom neutro, para não parecer certa de antemão.
+- 26/10/2026: a tela de escolha vai do azul do OBI Quest ao verde do Pensa Comigo.
+- 26/10/2026: a documentação passou a trazer a data da última atualização e uma seção
+  de atualizações por data em cada fonte de estudo.
+- 26/10/2026: tema claro revisto. Cartões brancos com sombra leve sobre fundo
+  cinza-azulado, contornos suaves e botões de cor sólida com texto branco. Antes,
+  o tema claro invertia todas as cores, o que deixava botões em tom pastel,
+  contornos fortes e cartões quase da cor do fundo.
+
+### Corrigido
+
+- 26/10/2026: as frases do fundo do Pensa Comigo aparecem sempre inteiras. Elas são
+  divididas em colunas sem cortar palavras, ficam completas por alguns segundos e
+  só então apagam; antes começavam fora da tela, rolavam para fora ou apagavam as
+  primeiras letras antes do fim.
 
 ## 1.6.1 - 2026-10-25
 

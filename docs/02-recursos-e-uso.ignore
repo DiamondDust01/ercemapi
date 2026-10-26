@@ -1,5 +1,29 @@
 FONTE DE ESTUDO: MODULOS, FLUXOS E EXPERIENCIA DE USO
-Atualizada para a versao 1.4.2 em 11/10/2026.
+Atualizada em 26/10/2026. O texto principal descreve os modulos da variacao OBI
+Quest na versao 1.4.2; as mudancas posteriores estao na secao abaixo.
+
+ATUALIZACOES DESDE A VERSAO 1.4.2
+
+- 25/10/2026, versao 1.5.0: o app passou a abrir numa tela de escolha entre duas
+  variacoes, OBI Quest (o treino descrito nesta fonte) e Pensa Comigo (palestras
+  sobre estudar com IA sem copiar). Gabaritos das questoes 110, 112, 122 e 123
+  corrigidos; o desafio 7 aceita as duas aspas no "\n".
+- 25/10/2026, versao 1.6.0: temas claro e escuro em todas as telas (o escuro e o
+  padrao); fundos com os digitos alinhados as celulas.
+- 25/10/2026, versao 1.6.1: rodape da tela de escolha citando a ERCEMAPI; botoes
+  dos cartoes alinhados; cabecalho sem sobreposicao entre 768 e 1023 px.
+- 26/10/2026, versao 1.7.0: o app passou a se chamar ERCEMAPI (OBI Quest segue
+  como nome da variacao de treino); fundo do OBI Quest em malha hexagonal azul;
+  Pensa Comigo em verde, com chuva de citacoes no estilo Matrix, sempre com as
+  frases inteiras; tema claro revisto (cartoes brancos, contornos suaves, botoes
+  de cor solida).
+
+NO USO, ISSO SIGNIFICA:
+- Ao abrir, escolha "Entrar no OBI Quest" para os modulos desta fonte. O botao
+  de setas no cabecalho volta para a escolha.
+- O botao de sol e lua troca entre os temas claro e escuro; a escolha fica salva
+  no aparelho.
+- O Pensa Comigo tem fonte propria: 06-pensa-comigo.ignore.
 
 INICIACAO
 

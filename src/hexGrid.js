@@ -1,4 +1,4 @@
-// Geometria da malha hexagonal do fundo do Pensa Comigo.
+// Geometria da malha hexagonal do fundo do OBI Quest.
 // Hexágonos de topo plano com lado `side`: largura 2·side e altura √3·side.
 // Colunas vizinhas ficam a 1,5·side uma da outra, e as colunas ímpares descem
 // meia altura. Os contornos e os dígitos usam as mesmas contas, então cada

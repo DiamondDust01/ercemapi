@@ -91,6 +91,6 @@ h1{font-size:22px}h2{font-size:20px;margin:0 0 8px}h3{font-size:16px;margin:16px
 .ready{background:#eee;padding:6px}.fold{border-top:2px dashed #111;padding-top:4px;font-size:12px}.hints{font-size:12px}.small{font-size:12px;color:#333}
 table{border-collapse:collapse;width:100%}th,td{border:1px solid #333;padding:6px;text-align:left;vertical-align:top}td:empty{height:28px}
 .check{list-style:none;padding:0}.check li{margin:6px 0}
-</style></head><body><h1>${escapeHtml(title)}${roomCode ? ` · sala ${escapeHtml(roomCode)}` : ''}</h1><p class="small">Kit gerado pelo OBI Quest (modo Pensa Comigo). Imprima em A4. Não há dados de alunos neste arquivo.</p>${sections.join('\n')}</body></html>`;
+</style></head><body><h1>${escapeHtml(title)}${roomCode ? ` · sala ${escapeHtml(roomCode)}` : ''}</h1><p class="small">Kit gerado pelo ERCEMAPI (Pensa Comigo). Imprima em A4. Não há dados de alunos neste arquivo.</p>${sections.join('\n')}</body></html>`;
   return { html, sectionCount: sections.length };
 };
