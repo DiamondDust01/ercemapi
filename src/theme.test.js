@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {
   readStoredTheme, writeStoredTheme, normalizeTheme, oppositeTheme, applyTheme, THEME_KEY, DEFAULT_THEME
 } from './theme.js';
-import { readPalette, buildLightTheme, mirrorShade } from '../scripts/generate-light-theme.mjs';
+import { readPalette, buildLightTheme, lightSourceFor, LIGHT_SURFACE } from '../scripts/generate-light-theme.mjs';
 
 const memoryStorage = () => {
   const map = new Map();
@@ -30,15 +30,20 @@ test('guarda a escolha do aparelho e alterna entre claro e escuro', () => {
   assert.equal(root.dataset.theme, 'light');
 });
 
-test('tema claro espelha as escalas do Tailwind', () => {
-  assert.equal(mirrorShade(50), 950);
-  assert.equal(mirrorShade(300), 700);
-  assert.equal(mirrorShade(500), 500);
-  const palette = readPalette('--color-slate-50: A; --color-slate-100: B; --color-slate-200: C; --color-slate-300: D; --color-slate-400: E; --color-slate-500: F; --color-slate-600: G; --color-slate-700: H; --color-slate-800: I; --color-slate-900: J; --color-slate-950: K;');
-  const css = buildLightTheme(palette);
-  assert.match(css, /--color-slate-50: K;/);
-  assert.match(css, /--color-slate-950: A;/);
-  assert.match(css, /--color-slate-500: F;/);
+test('tema claro: cartões brancos, texto escuro e botões saturados', () => {
+  assert.equal(lightSourceFor('slate', 900), LIGHT_SURFACE);
+  assert.equal(lightSourceFor('slate', 300), 700);
+  assert.equal(lightSourceFor('indigo', 300), 700);
+  assert.equal(lightSourceFor('indigo', 600), 600);
+  assert.equal(lightSourceFor('cyan', 900), 100);
+  const scale = (hue) => Object.fromEntries([50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((shade) => [`--color-${hue}-${shade}`, `${hue}${shade}`]));
+  const css = buildLightTheme(readPalette(Object.entries({ ...scale('slate'), ...scale('indigo') }).map(([key, value]) => `${key}: ${value};`).join(' ')));
+  assert.match(css, /--color-slate-900: #ffffff;/);
+  assert.match(css, /--color-slate-300: slate700;/);
+  assert.match(css, /--color-indigo-600: indigo600;/);
+  assert.match(css, /--color-indigo-900: indigo100;/);
+  assert.match(css, /.bg-indigo-600.text-white/);
+  assert.doesNotMatch(css, /.bg-slate-600.text-white/);
 });
 
 test('o CSS versionado está em dia com o Tailwind instalado', () => {

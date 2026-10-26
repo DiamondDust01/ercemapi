@@ -1,6 +1,6 @@
 {
   "appId": "com.obique.quest",
-  "appName": "OBI Quest",
+  "appName": "ERCEMAPI",
   "webDir": "dist",
   "bundledWebRuntime": false
 }
