@@ -1,10 +1,16 @@
-# OBI Quest para Android
+# ERCEMAPI para Android
 
-Este é o pacote de teste Android 1.6.1. O arquivo
-[`OBI-Quest-1.6.1-android.apk`](OBI-Quest-1.6.1-android.apk) é um APK instalável
-(`applicationId` `com.obique.quest`, `versionCode` 11, `versionName` `1.6.1`).
-Tamanho: 4.507.673 bytes. SHA-256:
-`D5467D77B430B58D3D81592BB2707F99F3A23D2498D5C3DF5306CD94C84D7CFA`.
+Atualizado em 26/10/2026.
+
+Este é o pacote de teste Android 1.7.0. O arquivo
+[`OBI-Quest-1.7.0-android.apk`](OBI-Quest-1.7.0-android.apk) é um APK instalável
+(`applicationId` `com.obique.quest`, `versionCode` 12, `versionName` `1.7.0`).
+Tamanho: 4.510.065 bytes. SHA-256:
+`73296177D58A659FF3E6E3FB1DA12F7711CD143AED13DE3F63B34F6D9EDBAE4A`.
+
+Desde a 1.7.0, o app aparece no aparelho como **ERCEMAPI**. O arquivo e o
+`applicationId` mantêm o nome antigo, para quem já instalou receber a
+atualização por cima da versão anterior.
 
 Ao abrir, o app pergunta qual variação usar: OBI Quest ou Pensa Comigo. No
 Android, os alunos entram numa sala do Pensa Comigo digitando o código; o QR
