@@ -1,6 +1,6 @@
 # Relatório da adaptação — OBI Quest 1.5.0 com o modo Pensa Comigo
 
-> Registro histórico da versão 1.5.0. Desde 26/10/2026 o app se chama **ERCEMAPI** (ainda não lançado); "OBI Quest" segue como nome da variação de treino.
+> Registro histórico da versão 1.5.0. Desde a versão 1.7.0, de 26/10/2026, o app se chama **ERCEMAPI**; "OBI Quest" segue como nome da variação de treino.
 
 Desenvolvido na branch `feat/pensa-comigo`, a partir de `main` (642315f), e
 integrado em `test` e `main`. As branches `app-mobile` e `app-pc` receberam a
