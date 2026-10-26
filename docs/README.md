@@ -1,6 +1,6 @@
 # Fontes explicativos para estudo e NotebookLM
 
-Esta pasta contém materiais de apoio do OBI Quest. Os arquivos com extensão
+Esta pasta contém materiais de apoio do ERCEMAPI (antes chamado OBI Quest; "OBI Quest" segue como nome da variação de treino). Os arquivos com extensão
 `.ignore` foram escritos como documentos de texto simples em UTF-8 para poderem
 ser usados como fontes temáticas no NotebookLM. Apesar da extensão incomum, não
 são regras do Git nem arquivos que devam ser executados: são explicações legíveis
@@ -28,9 +28,10 @@ um arquivo `.txt` ou cole o texto como fonte.
 
 - São materiais explicativos, não especificações legais da Olimpíada Brasileira
   de Informática nem documentação oficial da OBI.
-- Descrevem a versão 1.4.2 do aplicativo e as distribuições preparadas em
-  11/10/2026. A versão oficial do código está em `package.json`; alterações
-  posteriores podem tornar números, arquivos e estados de publicação obsoletos.
+- Cada fonte traz no topo a data da última atualização (a mais recente é
+  26/10/2026). As fontes 01 a 03 e os guias longos descrevem em detalhe a versão
+  1.4.2 e listam, numa seção de atualizações, o que mudou depois e quando. A
+  versão oficial do código está em `package.json`.
 - Os instaladores ficam nas branches `app-mobile` e `app-pc`, não nesta cópia
   de `main`; os links de download estão no README principal e em cada fonte
   temática.
