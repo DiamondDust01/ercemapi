@@ -1,5 +1,5 @@
 FONTE DE ESTUDO: PLATAFORMAS, PACOTES E LIMITES DE DISTRIBUICAO
-Atualizada em 26/10/2026. Pacotes publicados: versao 1.6.1, de 25/10/2026.
+Atualizada em 26/10/2026. Pacotes publicados: versao 1.7.0, de 26/10/2026.
 
 26/10/2026, versao 1.7.0: o nome visivel passou a ser ERCEMAPI no titulo da
 janela e no Android (nome do app). O executavel OBI Quest.exe, o nome no Menu
@@ -8,9 +8,9 @@ mudaram, para as instalacoes existentes receberem as atualizacoes.
 
 VERSAO E FONTES DE VERDADE
 
-A versao da aplicacao documentada aqui e 1.6.1. package.json e package-lock.json
+A versao da aplicacao documentada aqui e 1.7.0. package.json e package-lock.json
 controlam a versao do cliente; android/app/build.gradle tambem registra
-versionName 1.6.1 e versionCode 11 para o Android. CHANGELOG.md registra as
+versionName 1.7.0 e versionCode 12 para o Android. CHANGELOG.md registra as
 alteracoes. Se uma branch ou futura release divergir, confirme os arquivos e
 commits dessa branch; este documento descreve o estado de 25/10/2026.
 
@@ -32,8 +32,8 @@ Capacitor empacota dist/ em uma WebView. npm run android:sync compila web e
 sincroniza o projeto nativo; npm run android:open abre o projeto no Android
 Studio; npm run android:apk gera APK debug quando JDK e SDK estao configurados.
 
-Foi preparado o APK 1.6.1, versionCode 11, na branch app-mobile:
-installers/android/OBI-Quest-1.6.1-android.apk. O arquivo e assinado com chave
+Foi preparado o APK 1.7.0, versionCode 12, na branch app-mobile:
+installers/android/OBI-Quest-1.7.0-android.apk. O arquivo e assinado com chave
 de depuracao, apropriado para teste, nao e assinatura de release para Play
 Store. A assinatura debug nao deve ser tratada como identidade confiavel do
 publicador. A compilacao foi validada; nao havia aparelho fisico conectado para
@@ -46,8 +46,8 @@ npm run app:windows:package cria um diretorio portatil completo; npm run
 app:windows:installer esta configurado para gerar um instalador NSIS assistido
 x64 em release/windows/.
 
-O pacote Windows 1.6.1 preparado para distribuicao esta na branch app-pc:
-installers/windows/OBI-Quest-1.6.1-Windows-x64.7z. Para usar, baixe o arquivo,
+O pacote Windows 1.7.0 preparado para distribuicao esta na branch app-pc:
+installers/windows/OBI-Quest-1.7.0-Windows-x64.7z. Para usar, baixe o arquivo,
 extraia com 7-Zip ou NanaZip e inicie OBI Quest.exe na pasta extraida. O
 executavel precisa permanecer com os outros recursos; nao distribua apenas esse
 arquivo isolado.
@@ -56,12 +56,12 @@ O pacote foi verificado como arquivo 7z integro e contem o executavel, app.asar
 e recursos Electron para ingles dos EUA e portugues do Brasil. Tem cerca de
 95,30 MiB, abaixo do limite tecnico de 100 MiB por arquivo no GitHub, mas acima
 da recomendacao de 50 MB. Uma distribuicao maior deve usar Git LFS ou GitHub
-Releases. O pacote portatil 1.6.1 foi aberto num teste automatizado.
+Releases. O pacote portatil 1.7.0 foi aberto num teste automatizado.
 
-A branch app-pc tambem tem o Setup NSIS 1.6.1
-(installers/windows/OBI-Quest-Setup-1.6.1.exe, cerca de 110 MB), guardado com
+A branch app-pc tambem tem o Setup NSIS 1.7.0
+(installers/windows/OBI-Quest-Setup-1.7.0.exe, cerca de 110 MB), guardado com
 Git LFS por passar de 100 MiB. O script npm run app:windows:installer existe
-apenas na branch app-pc. O Setup 1.6.1 foi compilado, mas nao foi executado; o
+apenas na branch app-pc. O Setup 1.7.0 foi compilado, mas nao foi executado; o
 Setup 1.4.2 anterior foi instalado, aberto e desinstalado num teste isolado.
 
 ASSINATURAS E AVISOS DO SISTEMA
