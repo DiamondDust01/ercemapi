@@ -55,7 +55,7 @@ function TelaoContent({ state, participants, joinUrl, code }) {
         </div>
         <div className="space-y-5">
           <h2 className="text-4xl font-black leading-tight sm:text-5xl">{OPENING_POLL.question}</h2>
-          {poll.options.map((option, index) => <Bar key={option.id} large label={`${CARD_LETTERS[index]} · ${option.label} (${option.count})`} value={option.pct} color="bg-orange-400" />)}
+          {poll.options.map((option, index) => <Bar key={option.id} large label={`${CARD_LETTERS[index]} · ${option.label} (${option.count})`} value={option.pct} color="bg-green-400" />)}
           <p className={`text-xl ${muted}`}>{poll.total} resposta(s) anônima(s)</p>
         </div>
       </div>
@@ -68,7 +68,7 @@ function TelaoContent({ state, participants, joinUrl, code }) {
         <h2 className="text-5xl font-black">Tente primeiro</h2>
         <Progress />
         <Bar large label="Acertaram" value={missions.tente.correctPct} color="bg-emerald-400" />
-        <Bar large label="Acertaram sem nenhuma dica" value={missions.tente.done ? Math.round((100 * missions.tente.withoutHint) / missions.tente.done) : null} color="bg-orange-400" />
+        <Bar large label="Acertaram sem nenhuma dica" value={missions.tente.done ? Math.round((100 * missions.tente.withoutHint) / missions.tente.done) : null} color="bg-green-400" />
         <p className="text-3xl">Média de dicas: <strong className="font-mono">{missions.tente.averageHints}</strong> de 3</p>
         {cards}
       </div>
@@ -80,7 +80,7 @@ function TelaoContent({ state, participants, joinUrl, code }) {
       <div className="space-y-6">
         <h2 className="text-5xl font-black">Remix de prompt</h2>
         <Progress />
-        <Bar large label="Pontuação média" value={missions.remix.averageScore} max={3} suffix=" de 3" color="bg-orange-400" />
+        <Bar large label="Pontuação média" value={missions.remix.averageScore} max={3} suffix=" de 3" color="bg-green-400" />
         <p className="text-3xl">{missions.remix.perfect} remix(es) com 3 de 3</p>
         <p className="text-3xl">{missions.remix.stillAsksAnswer} ainda pedem a resposta pronta</p>
         <p className={`text-xl ${muted}`}>Os textos ficam nos aparelhos. O telão recebe só a pontuação.</p>
@@ -108,7 +108,7 @@ function TelaoContent({ state, participants, joinUrl, code }) {
         <Progress />
         {missions.detective.cases.map((caseData) => {
           const source = getDetectiveCase(DETECTIVE_CASES.find((entry) => entry.id === caseData.id));
-          return <Bar key={caseData.id} large label={`${source.title} · ${source.hasError ? 'tinha erro' : 'estava certa'}`} value={caseData.pct} color={source.hasError ? 'bg-orange-400' : 'bg-emerald-400'} />;
+          return <Bar key={caseData.id} large label={`${source.title} · ${source.hasError ? 'tinha erro' : 'estava certa'}`} value={caseData.pct} color={source.hasError ? 'bg-green-400' : 'bg-emerald-400'} />;
         })}
         <p className={`text-xl ${muted}`}>% da turma que julgou certo cada resposta da "IA".</p>
         {cards}
@@ -146,17 +146,17 @@ function TelaoContent({ state, participants, joinUrl, code }) {
           {MODES.map((mode) => {
             const stats = metrics[mode];
             return (
-              <div key={mode} className={`space-y-5 rounded-2xl border-2 p-5 ${mode === 'copiar' ? 'border-fuchsia-400' : 'border-emerald-400'}`}>
+              <div key={mode} className={`space-y-5 rounded-2xl border-2 p-5 ${mode === 'copiar' ? 'border-fuchsia-400' : 'border-sky-400'}`}>
                 <div className="text-3xl font-black">{MODE_LABELS[mode]}</div>
                 {isRetest ? (
                   <>
-                    <Bar large label="Quiz no dia da palestra" value={stats.quizPct} color="bg-orange-400" />
-                    <Bar large label="Re-teste" value={stats.retestPct} color={mode === 'copiar' ? 'bg-fuchsia-400' : 'bg-emerald-400'} />
+                    <Bar large label="Quiz no dia da palestra" value={stats.quizPct} color="bg-green-400" />
+                    <Bar large label="Re-teste" value={stats.retestPct} color={mode === 'copiar' ? 'bg-fuchsia-400' : 'bg-sky-400'} />
                   </>
                 ) : (
                   <>
-                    <Bar large label="1. Acertos na atividade (com IA)" value={stats.activityPct} color="bg-orange-400" />
-                    <Bar large label="2. Acertos no quiz sem IA" value={stats.quizPct} color={mode === 'copiar' ? 'bg-fuchsia-400' : 'bg-emerald-400'} />
+                    <Bar large label="1. Acertos na atividade (com IA)" value={stats.activityPct} color="bg-green-400" />
+                    <Bar large label="2. Acertos no quiz sem IA" value={stats.quizPct} color={mode === 'copiar' ? 'bg-fuchsia-400' : 'bg-sky-400'} />
                     <p className={`text-xl ${muted}`}>Pergunta igual: {stats.identicalPct ?? '—'}% · pergunta parecida: {stats.similarPct ?? '—'}%</p>
                     <Bar large label="3. Estavam seguros e erraram" value={stats.sureWrongPct} color="bg-amber-400" />
                     <p className={`text-xl ${muted}`}>{stats.confidence.sureWrong} de {stats.confidence.sure} respostas "Tenho certeza"</p>
@@ -181,7 +181,7 @@ function TelaoContent({ state, participants, joinUrl, code }) {
         <ol className="space-y-4 text-3xl">
           {WEEKLY_CHALLENGE.map((item, index) => <li key={item.text}><strong>{index + 1}.</strong> {item.text}</li>)}
         </ol>
-        <p className="text-3xl font-bold text-orange-400">Anote no caderno o código de retorno que aparece no seu aparelho.</p>
+        <p className="text-3xl font-bold text-green-400">Anote no caderno o código de retorno que aparece no seu aparelho.</p>
       </div>
     );
   }
@@ -206,14 +206,14 @@ function Telao({ state, participants, joinUrl, code, onClose }) {
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-8">
         <header className={`mb-8 flex flex-wrap items-center justify-between gap-4 border-b-2 pb-4 border-slate-700`}>
           <div>
-            <div className="text-xl font-bold uppercase tracking-widest text-orange-500">Pensa Comigo · {getStage(state.stage).label}</div>
+            <div className="text-xl font-bold uppercase tracking-widest text-green-500">Pensa Comigo · {getStage(state.stage).label}</div>
             <div className="text-2xl">Sala <span className="font-mono font-black tracking-widest">{code}</span> · {counts.devices} aparelho(s){counts.duplas ? ` · ${counts.duplas} dupla(s)` : ''}</div>
             {simulated > 0 && <div className="text-xl font-bold text-amber-500">Inclui {simulated} participante(s) simulado(s) para ensaio</div>}
           </div>
           <div className="flex flex-wrap gap-2">
             <ThemeToggle variant="label" className="inline-flex min-h-11 items-center gap-2 rounded-xl border-2 border-slate-500 px-4 text-lg font-bold" />
             <button type="button" onClick={fullscreen} className={`min-h-11 rounded-xl border-2 px-4 text-lg font-bold border-slate-500`}>Tela cheia</button>
-            <button type="button" onClick={onClose} className="min-h-11 rounded-xl bg-orange-700 px-4 text-lg font-bold text-white">Voltar ao painel</button>
+            <button type="button" onClick={onClose} className="min-h-11 rounded-xl bg-green-700 px-4 text-lg font-bold text-white">Voltar ao painel</button>
           </div>
         </header>
         <TelaoContent state={state} participants={participants} joinUrl={joinUrl} code={code} />
@@ -331,11 +331,11 @@ export default function HostView({ transport, code, title, state, participants, 
       <Card>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
-            <div className="text-xs font-mono uppercase tracking-widest text-amber-300">Painel do palestrante</div>
+            <div className="text-xs font-mono uppercase tracking-widest text-green-300">Painel do palestrante</div>
             <h2 className="mt-1 text-2xl font-black text-white">{title}</h2>
             <div className="mt-2 font-mono text-4xl font-black tracking-[0.25em] text-white">{code}</div>
             <p className="mt-1 text-sm text-slate-400">{isLocal ? 'Demonstração local: só neste aparelho (e em outras abas deste navegador). Configure o Firebase para receber os celulares da turma.' : 'Sala sincronizada pelo Firestore. Sem conexão direta entre aparelhos.'}</p>
-            {joinUrl && <p className="mt-1 break-all text-sm text-orange-200">{joinUrl}</p>}
+            {joinUrl && <p className="mt-1 break-all text-sm text-green-200">{joinUrl}</p>}
             {joinBase.warning && <div className="mt-2"><Notice tone="warn">{joinBase.warning}</Notice></div>}
           </div>
           {joinUrl && <QrCode value={joinUrl} size={160} />}
@@ -358,7 +358,7 @@ export default function HostView({ transport, code, title, state, participants, 
         <ol className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
           {STAGES.map((item, index) => (
             <li key={item.id}>
-              <button type="button" aria-current={item.id === state.stage ? 'step' : undefined} onClick={() => setStage(item.id)} className={`flex min-h-11 w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-sm ${item.id === state.stage ? 'border-orange-400 bg-orange-500/15 text-white' : 'border-slate-700 text-slate-300 hover:border-slate-500'}`}>
+              <button type="button" aria-current={item.id === state.stage ? 'step' : undefined} onClick={() => setStage(item.id)} className={`flex min-h-11 w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-sm ${item.id === state.stage ? 'border-green-400 bg-green-500/15 text-white' : 'border-slate-700 text-slate-300 hover:border-slate-500'}`}>
                 <span>{index + 1}. {item.label}</span>
                 <span className="font-mono text-xs text-slate-400">{countStageProgress(participants, item.id)}</span>
               </button>
