@@ -17,7 +17,7 @@ const Waiting = ({ children }) => (
 
 const MissionHeader = ({ mission }) => (
   <header className="mb-4">
-    <div className="text-xs font-mono uppercase tracking-widest text-amber-300">Técnica: {mission.technique}</div>
+    <div className="text-xs font-mono uppercase tracking-widest text-green-300">Técnica: {mission.technique}</div>
     <h2 className="mt-1 text-2xl font-black text-white">{mission.title}</h2>
     <p className="mt-1 text-slate-300">{mission.goal}</p>
   </header>
@@ -27,13 +27,13 @@ const MissionHeader = ({ mission }) => (
 export function PollStage({ record, save }) {
   return (
     <Card>
-      <div className="text-xs font-mono uppercase tracking-widest text-orange-300">Enquete anônima</div>
+      <div className="text-xs font-mono uppercase tracking-widest text-green-300">Enquete anônima</div>
       <h2 className="mt-1 text-2xl font-black text-white">{OPENING_POLL.question}</h2>
       <p className="mt-1 text-sm text-slate-400">Ninguém vê o seu voto. O telão mostra só o total da turma.</p>
       <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
         {OPENING_POLL.options.map((option, index) => (
-          <button key={option.id} type="button" aria-pressed={record.poll === option.id} onClick={() => save({ poll: option.id })} className={`min-h-14 rounded-xl border px-4 py-3 text-left text-lg font-semibold transition ${record.poll === option.id ? 'border-orange-300 bg-orange-500/20 text-white' : 'border-slate-700 bg-slate-950 text-slate-200 hover:border-orange-400'}`}>
-            <span className="mr-2 font-mono text-orange-300">{OPTION_LETTERS[index]}</span>{option.label}
+          <button key={option.id} type="button" aria-pressed={record.poll === option.id} onClick={() => save({ poll: option.id })} className={`min-h-14 rounded-xl border px-4 py-3 text-left text-lg font-semibold transition ${record.poll === option.id ? 'border-green-300 bg-green-500/20 text-white' : 'border-slate-700 bg-slate-950 text-slate-200 hover:border-green-400'}`}>
+            <span className="mr-2 font-mono text-green-300">{OPTION_LETTERS[index]}</span>{option.label}
           </button>
         ))}
       </div>
@@ -83,7 +83,7 @@ export function RemixStage({ record, save }) {
       <fieldset className="space-y-2">
         <legend className="text-sm font-bold text-slate-200">1. Escolha um pedido "copiador"</legend>
         {REMIX_PROMPTS.map((prompt) => (
-          <label key={prompt.id} className={`flex cursor-pointer items-start gap-2 rounded-xl border p-3 text-slate-200 ${promptId === prompt.id ? 'border-orange-400 bg-orange-500/10' : 'border-slate-700'}`}>
+          <label key={prompt.id} className={`flex cursor-pointer items-start gap-2 rounded-xl border p-3 text-slate-200 ${promptId === prompt.id ? 'border-green-400 bg-green-500/10' : 'border-slate-700'}`}>
             <input type="radio" name="remix" className="mt-1" checked={promptId === prompt.id} onChange={() => setPromptId(prompt.id)} />
             “{prompt.text}”
           </label>
@@ -178,7 +178,7 @@ export function MeTesteStage({ record, save }) {
                     <input value={explanations[item.id] || ''} onChange={(event) => setExplanations((previous) => ({ ...previous, [item.id]: event.target.value }))} className={`${inputClass} mt-1`} />
                   </label>
                   <button type="button" onClick={() => explain(item)} className={buttonSecondary}>Receber retorno</button>
-                  {feedback[item.id] && <p className="text-sm text-orange-100">{feedback[item.id]}</p>}
+                  {feedback[item.id] && <p className="text-sm text-green-100">{feedback[item.id]}</p>}
                 </div>
               )}
             </article>
@@ -217,10 +217,10 @@ export function DetectiveStage({ record, save }) {
       <MissionHeader mission={mission} />
       <div className="text-xs font-mono text-slate-400">Caso {index + 1} de {cases.length}</div>
       <p className="mt-2 text-lg text-white">{current.question}</p>
-      <div className="mt-3 rounded-xl border border-orange-500/50 bg-orange-500/10 p-4">
-        <div className="text-xs font-bold uppercase tracking-widest text-orange-200">A "IA" respondeu</div>
+      <div className="mt-3 rounded-xl border border-sky-500/50 bg-sky-500/10 p-4">
+        <div className="text-xs font-bold uppercase tracking-widest text-sky-200">A "IA" respondeu</div>
         <p className="mt-1 text-lg font-bold text-white">{OPTION_LETTERS[current.aiAnswerIndex]}) {current.options[current.aiAnswerIndex]}</p>
-        <p className="text-sm text-orange-100">{current.aiExplanation}</p>
+        <p className="text-sm text-sky-100">{current.aiExplanation}</p>
       </div>
       {verdict === null && (
         <div className="mt-3 flex flex-wrap gap-2">
@@ -233,7 +233,7 @@ export function DetectiveStage({ record, save }) {
           <p className="text-sm text-slate-200">Qual é a resposta certa?</p>
           <div className="mt-2 grid grid-cols-2 gap-2">
             {current.options.map((option, optionIndex) => (
-              <button key={option} type="button" onClick={() => setFix(optionIndex)} className="min-h-11 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-left font-mono text-slate-100 hover:border-orange-400">{OPTION_LETTERS[optionIndex]}) {option}</button>
+              <button key={option} type="button" onClick={() => setFix(optionIndex)} className="min-h-11 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-left font-mono text-slate-100 hover:border-green-400">{OPTION_LETTERS[optionIndex]}) {option}</button>
             ))}
           </div>
         </div>
@@ -282,9 +282,9 @@ export function ExperimentStage({ record, save, group }) {
   return (
     <Card>
       <header className="mb-4">
-        <div className="text-xs font-mono uppercase tracking-widest text-orange-300">{GROUP_LABELS[group]} · Tema {theme.id} de 2</div>
+        <div className="text-xs font-mono uppercase tracking-widest text-green-300">{GROUP_LABELS[group]} · Tema {theme.id} de 2</div>
         <h2 className="mt-1 text-2xl font-black text-white">{theme.title}</h2>
-        <div className={`mt-2 inline-block rounded-full px-3 py-1 text-sm font-bold ${mode === 'copiar' ? 'bg-fuchsia-500/20 text-fuchsia-100' : 'bg-emerald-500/20 text-emerald-100'}`}>
+        <div className={`mt-2 inline-block rounded-full px-3 py-1 text-sm font-bold ${mode === 'copiar' ? 'bg-fuchsia-500/20 text-fuchsia-100' : 'bg-sky-500/20 text-sky-100'}`}>
           {MODE_LABELS[mode]}
         </div>
         <p className="mt-2 text-sm text-slate-300">
@@ -366,7 +366,7 @@ function ConfidenceQuiz({ group, onSubmit, title, intro }) {
               <p className="text-lg text-white"><strong>{number + 1}.</strong> {item.question}</p>
               <div className="grid grid-cols-2 gap-2" role="group" aria-label={`Alternativas da questão ${number + 1}`}>
                 {item.options.map((option, index) => (
-                  <button key={option} type="button" aria-pressed={answers[quizItem.itemId] === index} onClick={() => setAnswers((previous) => ({ ...previous, [quizItem.itemId]: index }))} className={`min-h-11 rounded-xl border px-3 py-2 text-left font-mono text-slate-100 ${answers[quizItem.itemId] === index ? 'border-orange-300 bg-orange-500/20' : 'border-slate-700 bg-slate-950'}`}>
+                  <button key={option} type="button" aria-pressed={answers[quizItem.itemId] === index} onClick={() => setAnswers((previous) => ({ ...previous, [quizItem.itemId]: index }))} className={`min-h-11 rounded-xl border px-3 py-2 text-left font-mono text-slate-100 ${answers[quizItem.itemId] === index ? 'border-green-300 bg-green-500/20' : 'border-slate-700 bg-slate-950'}`}>
                     {OPTION_LETTERS[index]}) {option}
                   </button>
                 ))}
@@ -437,8 +437,8 @@ export function ClosingStage({ returnCode }) {
         ))}
       </ul>
       {returnCode && (
-        <div className="mt-6 rounded-2xl border-2 border-orange-400 bg-orange-500/10 p-4 text-center">
-          <div className="text-sm font-bold uppercase tracking-widest text-orange-200">Anote no caderno: seu código de retorno</div>
+        <div className="mt-6 rounded-2xl border-2 border-green-400 bg-green-500/10 p-4 text-center">
+          <div className="text-sm font-bold uppercase tracking-widest text-green-200">Anote no caderno: seu código de retorno</div>
           <div className="mt-2 font-mono text-4xl font-black tracking-[0.2em] text-white sm:text-5xl">{formatReturnCode(returnCode)}</div>
           <p className="mt-2 text-sm text-slate-300">Ele não tem seu nome. Você vai usar no re-teste surpresa daqui a alguns dias.</p>
         </div>

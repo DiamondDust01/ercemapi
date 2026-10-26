@@ -247,7 +247,7 @@ export const DEMO_SCRIPT = [
 export const HONESTY_NOTES = [
   'O experimento é uma demonstração com esta turma, não uma prova científica.',
   'O tutor do app segue regras fixas escritas pela equipe; ele não é uma IA generativa.',
-  'O Pensa Comigo é um modo do OBI Quest e não é um serviço oficial da OBI.'
+  'O Pensa Comigo é uma variação do ERCEMAPI e não é um serviço oficial da OBI.'
 ];
 
 // Formato único usado pelo componente do tutor (itens do banco, gerados ou do catálogo).

@@ -145,7 +145,7 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
     setNickname(drawNickname());
     setJoinCode('');
     setView('landing');
-    setMessage(`Pronto: os dados do Pensa Comigo foram apagados deste aparelho (${removed} registro(s)). O restante do OBI Quest não foi alterado.`);
+    setMessage(`Pronto: os dados do Pensa Comigo foram apagados deste aparelho (${removed} registro(s)). O restante do ERCEMAPI não foi alterado.`);
   };
 
   const requireUid = () => {
@@ -231,8 +231,8 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
   const header = (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div>
-        <div className="text-xs font-mono uppercase tracking-[0.3em] text-amber-300">Variação</div>
-        <h1 className="bg-gradient-to-r from-amber-300 to-orange-500 bg-clip-text text-3xl font-black tracking-tight text-transparent sm:text-4xl">Pensa Comigo</h1>
+        <div className="text-xs font-mono uppercase tracking-[0.3em] text-green-300">Variação</div>
+        <h1 className="bg-gradient-to-r from-lime-300 to-green-500 bg-clip-text text-3xl font-black tracking-tight text-transparent sm:text-4xl">Pensa Comigo</h1>
       </div>
       <div className="flex flex-wrap gap-2">
         <ThemeToggle variant="label" className={buttonSecondary} />
@@ -296,7 +296,7 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
         <div className="mt-4">
           <div className="text-sm font-semibold text-slate-200">Seu apelido (sorteado)</div>
           <div className="mt-1 flex flex-wrap items-center gap-3">
-            <span className="rounded-xl border border-orange-500/50 bg-orange-500/10 px-4 py-2 text-xl font-bold text-white" aria-live="polite">{formatParticipantName(nickname, kind)}</span>
+            <span className="rounded-xl border border-green-500/50 bg-green-500/10 px-4 py-2 text-xl font-bold text-white" aria-live="polite">{formatParticipantName(nickname, kind)}</span>
             <button type="button" className={buttonSecondary} onClick={() => setNickname(drawNickname(Math.random, nickname))}>Sortear outro</button>
           </div>
           <p className="mt-1 text-xs text-slate-500">Ninguém digita nome aqui. Assim ninguém fica identificado.</p>
@@ -305,7 +305,7 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
           <legend className="text-sm font-semibold text-slate-200">Neste aparelho</legend>
           <div className="mt-1 flex flex-wrap gap-2">
             {[['solo', 'Sou uma pessoa'], ['dupla', 'Somos uma dupla']].map(([value, label]) => (
-              <button key={value} type="button" aria-pressed={kind === value} onClick={() => setKind(value)} className={`${buttonSecondary} ${kind === value ? 'border-orange-400 text-orange-100' : ''}`}>{label}</button>
+              <button key={value} type="button" aria-pressed={kind === value} onClick={() => setKind(value)} className={`${buttonSecondary} ${kind === value ? 'border-green-400 text-green-100' : ''}`}>{label}</button>
             ))}
           </div>
         </fieldset>
@@ -399,7 +399,7 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
           {freePlay && (
             <div className="mt-3 flex gap-2" role="tablist" aria-label="Seções">
               {[['atividade', 'Atividade da palestra'], ['desafio', 'Escolha seu desafio']].map(([id, label]) => (
-                <button key={id} type="button" role="tab" aria-selected={(student.tab || 'atividade') === id} onClick={() => setStudent((previous) => ({ ...previous, tab: id }))} className={`${buttonSecondary} ${(student.tab || 'atividade') === id ? 'border-orange-400 text-orange-100' : ''}`}>{label}</button>
+                <button key={id} type="button" role="tab" aria-selected={(student.tab || 'atividade') === id} onClick={() => setStudent((previous) => ({ ...previous, tab: id }))} className={`${buttonSecondary} ${(student.tab || 'atividade') === id ? 'border-green-400 text-green-100' : ''}`}>{label}</button>
               ))}
             </div>
           )}
