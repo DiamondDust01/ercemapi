@@ -1,5 +1,12 @@
 # OBI Quest: funções e mecânicas
 
+> **Atualizado em 26/10/2026.** O texto descreve a variação OBI Quest na versão 1.4.2. Depois disso:
+>
+> - **25/10/2026 (1.5.0):** tela de escolha entre OBI Quest e Pensa Comigo; gabaritos das questões 110, 112, 122 e 123 corrigidos.
+> - **25/10/2026 (1.6.0):** temas claro e escuro em todas as telas.
+> - **25/10/2026 (1.6.1):** rodapé citando a ERCEMAPI e botões dos cartões alinhados.
+> - **26/10/2026 (em desenvolvimento):** o app passou a se chamar **ERCEMAPI** ("OBI Quest" segue como nome da variação de treino); fundo do OBI Quest em malha hexagonal azul; Pensa Comigo em verde com chuva de citações sempre inteiras; tema claro revisto, com cartões brancos e botões de cor sólida.
+
 ## Visão geral
 
 OBI Quest é uma aplicação de treino em React e Vite. A interface principal e as regras do produto ficam concentradas em `src/App.jsx`; `src/main.jsx` monta a aplicação e `src/styles.css` fornece os estilos. O Firebase é usado quando há configuração disponível. Preferências, progresso e registros pedagógicos são mantidos no navegador.

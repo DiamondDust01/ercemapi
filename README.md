@@ -1,12 +1,27 @@
-# OBI Quest
+# ERCEMAPI
 
-O OBI Quest é uma plataforma de treino educacional inspirada nas modalidades da
-Olimpíada Brasileira de Informática (OBI). Reúne Iniciação, desafios introdutórios
-de programação, recursos de reflexão pedagógica e salas demonstrativas de
-competição. **Não é um serviço oficial da OBI, não substitui uma prova oficial e
-não executa um juiz de programação real.**
+O ERCEMAPI é um app educacional com duas variações, preparado para a ERCEMAPI
+(Escola Regional de Computação Ceará, Maranhão e Piauí):
 
-Versão atual do código: **1.6.1**. A fonte da numeração é `package.json`; o
+- **OBI Quest:** plataforma de treino inspirada nas modalidades da Olimpíada
+  Brasileira de Informática (OBI), com Iniciação, desafios introdutórios de
+  programação, recursos de reflexão pedagógica e salas demonstrativas de
+  competição.
+- **Pensa Comigo:** modo de palestra para turmas de 11 a 14 anos sobre usar a IA
+  como tutor, e não como copiador.
+
+**Não é um serviço oficial da OBI, não substitui uma prova oficial e não executa
+um juiz de programação real.**
+
+O nome visível é ERCEMAPI desde 26/10/2026 (ainda não lançado; os pacotes 1.6.1
+publicados usam o nome antigo). Os identificadores técnicos
+continuam com o nome antigo, para que as instalações existentes recebam as
+atualizações e os dados do Firebase continuem no mesmo lugar: pacote
+`obi-quest-v1`, `appId` `com.obique.quest` no Android, `appId`
+`obi-quest-v1` no Firestore, chaves `obi-quest-*` no armazenamento local,
+executável `OBI Quest.exe` e arquivos `OBI-Quest-*` dos instaladores.
+
+Documentação atualizada em 26/10/2026. Versão atual do código: **1.6.1**. A fonte da numeração é `package.json`; o
 histórico de mudanças está em `CHANGELOG.md`.
 
 ## O que o aplicativo oferece
@@ -15,10 +30,12 @@ Ao abrir, o app pergunta qual variação usar: **OBI Quest** (treino para a OBI)
 **Pensa Comigo** (palestras sobre estudar com IA). A escolha vale para a aba
 aberta e pode ser trocada a qualquer momento pelo botão "Trocar de modo".
 As duas variações têm tema claro e escuro (botão de sol e lua); o escuro é o
-padrão e a escolha fica salva no aparelho. O Pensa Comigo tem paleta própria,
-em âmbar e laranja, com fundo hexagonal.
+padrão e a escolha fica salva no aparelho. O OBI Quest usa uma malha
+hexagonal azul ao fundo. O Pensa Comigo é verde, com frases e citações caindo letra por
+letra, no estilo do filme Matrix (parado quando o sistema pede menos movimento).
 
-O tema claro inverte as escalas de cor do Tailwind e fica em
+O tema claro dá a cada tom da paleta do Tailwind o valor adequado ao seu papel
+(cartões brancos, texto escuro, contornos suaves, botões saturados) e fica em
 `src/themeLight.css`. Depois de atualizar o Tailwind, gere o arquivo de novo com
 `node scripts/generate-light-theme.mjs`; um teste avisa quando ele está
 desatualizado.
