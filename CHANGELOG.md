@@ -22,6 +22,8 @@ a numeração das versões consistente entre o código e os próximos lançament
 
 ## Não lançado
 
+## 1.7.0 - 2026-10-26
+
 ### Melhorado
 
 - 26/10/2026: o app passou a se chamar **ERCEMAPI**: título da página e da janela,

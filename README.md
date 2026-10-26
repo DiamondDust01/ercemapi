@@ -13,15 +13,14 @@ O ERCEMAPI é um app educacional com duas variações, preparado para a ERCEMAPI
 **Não é um serviço oficial da OBI, não substitui uma prova oficial e não executa
 um juiz de programação real.**
 
-O nome visível é ERCEMAPI desde 26/10/2026 (ainda não lançado; os pacotes 1.6.1
-publicados usam o nome antigo). Os identificadores técnicos
+O nome visível é ERCEMAPI desde a versão 1.7.0, de 26/10/2026. Os identificadores técnicos
 continuam com o nome antigo, para que as instalações existentes recebam as
 atualizações e os dados do Firebase continuem no mesmo lugar: pacote
 `obi-quest-v1`, `appId` `com.obique.quest` no Android, `appId`
 `obi-quest-v1` no Firestore, chaves `obi-quest-*` no armazenamento local,
 executável `OBI Quest.exe` e arquivos `OBI-Quest-*` dos instaladores.
 
-Documentação atualizada em 26/10/2026. Versão atual do código: **1.6.1**. A fonte da numeração é `package.json`; o
+Documentação atualizada em 26/10/2026. Versão atual do código: **1.7.0**. A fonte da numeração é `package.json`; o
 histórico de mudanças está em `CHANGELOG.md`.
 
 ## O que o aplicativo oferece
