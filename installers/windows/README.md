@@ -1,20 +1,24 @@
-# OBI Quest para Windows
+# ERCEMAPI para Windows
 
-Esta branch contém o pacote portátil x64 do OBI Quest 1.6.1:
-[`OBI-Quest-1.6.1-Windows-x64.7z`](OBI-Quest-1.6.1-Windows-x64.7z). O arquivo
-tem 99.929.891 bytes (95,30 MiB), contém o aplicativo Electron completo e foi
+Atualizado em 26/10/2026. Desde a 1.7.0, a janela do app mostra o nome **ERCEMAPI**.
+O executável `OBI Quest.exe`, o atalho do Menu Iniciar e os nomes dos arquivos
+mantêm o nome antigo, para as instalações existentes receberem as atualizações.
+
+Esta branch contém o pacote portátil x64 do OBI Quest 1.7.0:
+[`OBI-Quest-1.7.0-Windows-x64.7z`](OBI-Quest-1.7.0-Windows-x64.7z). O arquivo
+tem 99.932.220 bytes (95,30 MiB), contém o aplicativo Electron completo e foi
 verificado com 7-Zip. Ele ultrapassa a recomendação de 50 MB do GitHub e está
 perto do limite de 100 MiB por arquivo; se os pacotes crescerem, use uma GitHub
 Release ou Git LFS.
 
-SHA-256: `E0634431D0D08A6C5348D28B10CD49B4E798756C7BB4BFAF44AFEB5D9980B0E2`.
+SHA-256: `7673103EE42018A34140A9F895A7B375B128E12D8E798CEEA1F159B7B17B13C7`.
 
 Ao abrir, o app pergunta qual variação usar: OBI Quest ou Pensa Comigo. No app
 para Windows, os alunos entram numa sala do Pensa Comigo digitando o código; o
 QR aponta para a versão web publicada. O botão de sol e lua alterna entre os
 temas claro e escuro.
 
-O pacote portátil 1.6.1 foi aberto num teste automatizado nesta máquina: a
+O pacote portátil 1.7.0 foi aberto num teste automatizado nesta máquina: a
 tela de escolha apareceu, o Pensa Comigo criou uma sala de demonstração e a
 troca para o OBI Quest funcionou. O tema escolhido continuou salvo ao fechar e
 abrir o app.
@@ -42,7 +46,7 @@ npm run app:windows:installer
 ```
 
 O resultado esperado é
-`release/windows/OBI-Quest-Setup-1.6.1.exe`. Ele permite selecionar uma pasta de
+`release/windows/OBI-Quest-Setup-1.7.0.exe`. Ele permite selecionar uma pasta de
 instalação, cria atalhos no menu Iniciar e na área de trabalho, e grava um
 desinstalador no diretório escolhido. Se um instalador com esse nome já existir,
 o script interrompe a operação em vez de sobrescrevê-lo. O build não executa o
@@ -54,8 +58,8 @@ bloqueada pela política de Controle de Aplicativos do Windows. Não desative
 proteções do sistema nem tente contornar esses bloqueios; use um ambiente de
 build aprovado pela organização.
 
-O Setup 1.6.1 tem 110.167.454 bytes. SHA-256:
-`D8187E50C4E390532879FCBFB08A008438771A6F7A389DB9687C5519E7E4213A`.
+O Setup 1.7.0 tem 110.149.997 bytes. SHA-256:
+`ABBE1091370EDB3AB873158798C6A9D01F68940D9A2CC70FCCCF1ED77D8F3A79`.
 Ele foi compilado, mas **não foi executado** nesta rodada: instale-o primeiro
 numa máquina ou pasta de teste. O Setup 1.4.2 anterior foi instalado, aberto e
 desinstalado com sucesso num teste isolado. O arquivo não é assinado.
@@ -71,7 +75,7 @@ git lfs pull
 ```
 
 Também é possível baixar o
-[Setup OBI Quest 1.6.1 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-Setup-1.6.1.exe)
+[Setup OBI Quest 1.7.0 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-Setup-1.7.0.exe)
 diretamente. A versão portátil continua disponível no arquivo `.7z` acima.
 
 Para mais detalhes, consulte o
