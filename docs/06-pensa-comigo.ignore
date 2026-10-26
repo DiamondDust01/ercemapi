@@ -1,6 +1,8 @@
-OBI QUEST 1.5.0 — MODO PENSA COMIGO
+ERCEMAPI — PENSA COMIGO
+Atualizada em 26/10/2026.
 
-Fonte de estudo em texto simples. Descreve o modo Pensa Comigo do OBI Quest 1.5.0.
+Fonte de estudo em texto simples. Descreve o Pensa Comigo, variação do app
+ERCEMAPI (antes chamado OBI Quest), criada na versão 1.5.0.
 Para detalhes que possam mudar, confira o código em src/pensaComigo/.
 
 1. PARA QUE SERVE
@@ -16,8 +18,9 @@ O modo ensina quatro técnicas:
 - pedir que a IA faça perguntas para testar o que foi aprendido;
 - conferir as informações recebidas.
 
-"Pensa Comigo" é o nome do modo na interface. O aplicativo continua se chamando
-OBI Quest. Nenhum identificador técnico mudou: pacote, appId do Capacitor
+"Pensa Comigo" é o nome do modo na interface. Desde 26/10/2026 o aplicativo
+se chama ERCEMAPI; até a 1.6.1 se chamava OBI Quest, nome que segue na variação
+de treino. Nenhum identificador técnico mudou: pacote, appId do Capacitor
 (com.obique.quest), appId do Firestore (obi-quest-v1) e chaves de localStorage.
 
 2. COMO ENTRAR
@@ -35,10 +38,20 @@ Outras entradas:
 
 A barra inferior do OBI Quest continua com cinco itens.
 
-Visual: o Pensa Comigo usa âmbar e laranja nos destaques e um fundo com malha
-hexagonal, com um zero ou um em gradiente no centro de cada hexágono, para se
-distinguir da grade quadrada do
-OBI Quest. As duas variações e o telão têm tema claro e escuro; o escuro é o
+Visual (atualizado em 26/10/2026): o Pensa Comigo é verde. No fundo, frases
+motivacionais, pensamentos filosóficos e citações caem em colunas, letra por letra,
+no estilo do filme Matrix. As citações levam o nome do autor e só usam autoria bem
+documentada; as frases sem autor são do próprio app e repetem as quatro técnicas.
+Com "reduzir movimento" ligado no sistema, o fundo fica parado. No experimento,
+"Estudando ativamente" aparece em azul-claro e "Com a resposta pronta" em magenta.
+As frases aparecem sempre inteiras: são divididas em colunas sem cortar palavras,
+ficam completas por alguns segundos e só então apagam. Atrás dos cartões, o
+conteúdo cobre o fundo de propósito, para não atrapalhar a leitura. O OBI Quest
+usa uma malha hexagonal azul.
+
+Histórico do visual: 25/10/2026 (1.5.0) violeta e ciano; 25/10/2026 (1.6.0) violeta e
+magenta com fundo hexagonal; 25/10/2026 (1.6.1) âmbar e laranja; 26/10/2026 verde com
+chuva de citações, e no mesmo dia as frases passaram a aparecer sempre inteiras. As duas variações e o telão têm tema claro e escuro; o escuro é o
 padrão e a escolha fica salva no aparelho.
 
 3. PAPÉIS

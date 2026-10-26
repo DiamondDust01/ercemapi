@@ -1,5 +1,12 @@
 # OBI Quest: guia de estudo e apresentação
 
+> **Atualizado em 26/10/2026.** O texto descreve a variação OBI Quest na versão 1.4.2. Depois disso:
+>
+> - **25/10/2026 (1.5.0):** tela de escolha entre OBI Quest e Pensa Comigo; gabaritos das questões 110, 112, 122 e 123 corrigidos.
+> - **25/10/2026 (1.6.0):** temas claro e escuro em todas as telas.
+> - **25/10/2026 (1.6.1):** rodapé citando a ERCEMAPI e botões dos cartões alinhados.
+> - **26/10/2026 (em desenvolvimento):** o app passou a se chamar **ERCEMAPI** ("OBI Quest" segue como nome da variação de treino); fundo do OBI Quest em malha hexagonal azul; Pensa Comigo em verde com chuva de citações sempre inteiras; tema claro revisto, com cartões brancos e botões de cor sólida.
+
 ## Para que serve este material
 
 Este guia foi feito para quem precisa estudar o projeto, demonstrá-lo e responder perguntas sem ter participado da programação. Ele explica o propósito, as telas, os fluxos de uso, o que acontece por trás da interface, como a aplicação guarda dados e quais são os limites da versão atual.

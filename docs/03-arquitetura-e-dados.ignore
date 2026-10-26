@@ -1,5 +1,38 @@
 FONTE DE ESTUDO: ARQUITETURA, ARMAZENAMENTO E REDE
-Atualizada para a versao 1.4.2 em 11/10/2026.
+Atualizada em 26/10/2026. O texto principal descreve a versao 1.4.2; as mudancas
+posteriores estao na secao abaixo.
+
+ATUALIZACOES DESDE A VERSAO 1.4.2
+
+- 25/10/2026, versao 1.5.0: o app passou a abrir numa tela de escolha entre duas
+  variacoes, OBI Quest (o treino descrito nesta fonte) e Pensa Comigo (palestras
+  sobre estudar com IA sem copiar). Gabaritos das questoes 110, 112, 122 e 123
+  corrigidos; o desafio 7 aceita as duas aspas no "\n".
+- 25/10/2026, versao 1.6.0: temas claro e escuro em todas as telas (o escuro e o
+  padrao); fundos com os digitos alinhados as celulas.
+- 25/10/2026, versao 1.6.1: rodape da tela de escolha citando a ERCEMAPI; botoes
+  dos cartoes alinhados; cabecalho sem sobreposicao entre 768 e 1023 px.
+- 26/10/2026, em desenvolvimento: o app passou a se chamar ERCEMAPI (OBI Quest segue
+  como nome da variacao de treino); fundo do OBI Quest em malha hexagonal azul;
+  Pensa Comigo em verde, com chuva de citacoes no estilo Matrix, sempre com as
+  frases inteiras; tema claro revisto (cartoes brancos, contornos suaves, botoes
+  de cor solida).
+
+NA ARQUITETURA, ISSO SIGNIFICA:
+- Conteudo pedagogico compartilhado em src/content/obiContent.js; o Pensa Comigo
+  fica em src/pensaComigo/ (regras puras com testes node:test).
+- Escolha de variacao em sessionStorage (obi-quest-app-mode) e tema em
+  localStorage (obi-quest-theme). Os dados do Pensa Comigo ficam so em
+  sessionStorage, com o prefixo obi-quest-pensa-comigo:.
+- Firestore: as turmas ganharam as subcolecoes pensaComigo/state e
+  pensaComigoParticipants/{uid}; regras sugeridas em firestore.rules.
+- O tema claro e gerado da paleta do Tailwind (src/themeLight.css, por
+  scripts/generate-light-theme.mjs): cada tom recebe o valor do seu papel nas
+  telas (cartoes brancos, texto escuro, botoes de cor solida com texto branco).
+- Os fundos usam SVG (OBI Quest, malha hexagonal) e canvas (Pensa Comigo, chuva de
+  citacoes, limitada a 30 quadros por segundo).
+- Os identificadores tecnicos seguem com o nome antigo (obi-quest-v1,
+  com.obique.quest) mesmo com o nome visivel ERCEMAPI.
 
 ARQUITETURA DO CLIENTE
 
