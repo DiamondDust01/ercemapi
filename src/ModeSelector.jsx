@@ -35,11 +35,11 @@ const MODES = [
     ],
     action: 'Entrar no Pensa Comigo',
     tone: {
-      card: 'border-orange-500/40 hover:border-orange-400 focus-within:border-orange-400',
-      icon: 'bg-orange-500/15 text-amber-300',
-      title: 'from-amber-300 to-orange-500',
-      button: 'bg-orange-700 hover:bg-orange-600 focus-visible:outline-amber-300',
-      bullet: 'text-orange-300'
+      card: 'border-green-500/40 hover:border-green-400 focus-within:border-green-400',
+      icon: 'bg-green-500/15 text-green-300',
+      title: 'from-lime-300 to-green-500',
+      button: 'bg-green-700 hover:bg-green-600 focus-visible:outline-green-300',
+      bullet: 'text-green-300'
     }
   }
 ];
@@ -53,7 +53,7 @@ export default function ModeSelector({ onSelect, version, backdrop = <SelectorBa
         <div className="absolute right-3 top-3 z-20 sm:right-5 sm:top-5"><ThemeToggle /></div>
         <div className="mx-auto flex min-h-full max-w-5xl flex-col justify-center px-4 py-5 md:py-16">
           <div className="mb-5 text-center md:mb-8">
-            <div className="text-xs font-mono uppercase tracking-[0.3em] text-cyan-300">Bem-vindo</div>
+            <div className="text-xs font-mono uppercase tracking-[0.3em] text-cyan-300">Bem-vindo ao ERCEMAPI</div>
             <h1 className="mt-2 text-2xl font-black leading-tight tracking-tight text-white sm:text-5xl">Como você quer usar o app hoje?</h1>
             <p className="mx-auto mt-2 max-w-2xl text-sm text-slate-400 sm:text-lg">Escolha uma das duas variações. Você pode trocar de modo a qualquer momento.</p>
           </div>
