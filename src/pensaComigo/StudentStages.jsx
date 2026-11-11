@@ -2,10 +2,12 @@ import React, { useMemo, useState } from 'react';
 import { IA_PROMPT_LIBRARY } from '../content/obiContent.js';
 import TutorItem from './TutorItem.jsx';
 import {
-  OPENING_POLL, MISSIONS, REMIX_PROMPTS, REMIX_EXAMPLE, DETECTIVE_CASES, getDetectiveCase, toTutorItem,
+  OPENING_POLL, MISSIONS, REMIX_PROMPTS, REMIX_EXAMPLE, getDetectiveCase, toTutorItem,
   EXPERIMENT_THEMES, THEME_ORDER, QUIZ_ITEMS, CONFIDENCE_LEVELS, MODE_LABELS, WEEKLY_CHALLENGE, getItem
 } from './content.js';
 import { evaluateRemix, REMIX_CRITERIA } from './remix.js';
+import { normalizeConfig, pollQuestionFor, detectiveCasesFor } from './quickConfig.js';
+import { getMinicursoProblem, toTutorProblem, STARTER_CODE } from './minicurso.js';
 import { modeFor, GROUP_LABELS } from './assignment.js';
 import { formatReturnCode, parseReturnCode } from './returnCode.js';
 import { OPTION_LETTERS } from './tutor.js';
@@ -24,11 +26,11 @@ const MissionHeader = ({ mission }) => (
 );
 
 // ---------------------------------------------------------------------------
-export function PollStage({ record, save }) {
+export function PollStage({ record, save, config }) {
   return (
     <Card>
       <div className="text-xs font-mono uppercase tracking-widest text-green-300">Enquete anônima</div>
-      <h2 className="mt-1 text-2xl font-black text-white">{OPENING_POLL.question}</h2>
+      <h2 className="mt-1 text-2xl font-black text-white">{pollQuestionFor(config)}</h2>
       <p className="mt-1 text-sm text-slate-400">Ninguém vê o seu voto. O telão mostra só o total da turma.</p>
       <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
         {OPENING_POLL.options.map((option, index) => (
@@ -43,10 +45,11 @@ export function PollStage({ record, save }) {
 }
 
 // ---------------------------------------------------------------------------
-export function TenteStage({ record, save }) {
+export function TenteStage({ record, save, config }) {
   const mission = MISSIONS['tente-primeiro'];
   const result = record.missions?.['tente-primeiro'];
-  const item = useMemo(() => toTutorItem(mission.itemId), [mission.itemId]);
+  const itemId = normalizeConfig(config).tenteItemId;
+  const item = useMemo(() => toTutorItem(itemId), [itemId]);
   return (
     <Card>
       <MissionHeader mission={mission} />
@@ -98,13 +101,14 @@ export function RemixStage({ record, save }) {
       {evaluation && (
         <div className="mt-4 space-y-2">
           <div className="text-xl font-black text-white">{evaluation.score} de 3</div>
-          <ul className="space-y-1">
+          {/* Texto curto demais: só o aviso abaixo, sem critérios vazios. */}
+          {!evaluation.tooShort && <ul className="space-y-1">
             {REMIX_CRITERIA.map((criterion, index) => (
               <li key={criterion.id} className={`text-sm ${evaluation.criteria[criterion.id] ? 'text-emerald-200' : 'text-amber-200'}`}>
                 {evaluation.criteria[criterion.id] ? '✔' : '•'} {criterion.label}: {evaluation.feedback[index]}
               </li>
             ))}
-          </ul>
+          </ul>}
           {evaluation.tooShort && <Notice tone="warn">{evaluation.feedback[0]}</Notice>}
         </div>
       )}
@@ -121,14 +125,14 @@ export function RemixStage({ record, save }) {
 // ---------------------------------------------------------------------------
 const EXPLANATION_KEYWORDS = /\b(porque|pois|primeiro|depois|entao|somei|subtrai|multipliquei|dividi|contei|calculei|conta|vezes|mais|menos)\b/;
 
-export function MeTesteStage({ record, save }) {
+export function MeTesteStage({ record, save, config }) {
   const mission = MISSIONS['me-teste'];
   const saved = record.missions?.['me-teste'];
   const [answers, setAnswers] = useState({});
   const [peeked, setPeeked] = useState({});
   const [explanations, setExplanations] = useState({});
   const [feedback, setFeedback] = useState({});
-  const items = mission.itemIds.map((id) => getItem(id));
+  const items = normalizeConfig(config).meTesteItemIds.map((id) => getItem(id)).filter(Boolean);
   const finished = items.every((item) => answers[item.id] !== undefined || peeked[item.id]);
 
   const finish = () => {
@@ -191,9 +195,11 @@ export function MeTesteStage({ record, save }) {
 }
 
 // ---------------------------------------------------------------------------
-export function DetectiveStage({ record, save }) {
+export function DetectiveStage({ record, save, config }) {
   const mission = MISSIONS.detetive;
-  const cases = useMemo(() => DETECTIVE_CASES.map(getDetectiveCase), []);
+  const caseKey = normalizeConfig(config).detectiveCaseIds.join(',');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const cases = useMemo(() => detectiveCasesFor(config).map(getDetectiveCase), [caseKey]);
   const saved = record.missions?.detetive;
   const [index, setIndex] = useState(() => Object.keys(saved?.results || {}).length);
   const [verdict, setVerdict] = useState(null);
@@ -212,6 +218,9 @@ export function DetectiveStage({ record, save }) {
   }
 
   const revealed = verdict === false || (verdict === true && fix !== null);
+  const judgedRight = verdict === current.hasError;
+  // Achar o erro não basta: a correção escolhida também precisa estar certa.
+  const fixedRight = !(current.hasError && verdict === true) || fix === current.correct;
   return (
     <Card>
       <MissionHeader mission={mission} />
@@ -240,8 +249,8 @@ export function DetectiveStage({ record, save }) {
       )}
       {revealed && (
         <div className="mt-3 space-y-3">
-          <Notice tone={verdict === current.hasError ? 'success' : 'warn'}>
-            {verdict === current.hasError ? 'Boa investigação! ' : 'Olha de novo! '}
+          <Notice tone={judgedRight && fixedRight ? 'success' : 'warn'}>
+            {!judgedRight ? 'Olha de novo! ' : fixedRight ? 'Boa investigação! ' : 'Você achou o erro, mas a correção não é essa. '}
             {current.errorNote} Resposta certa: {OPTION_LETTERS[current.correct]}) {current.options[current.correct]}.
           </Notice>
           <button type="button" className={buttonPrimary} onClick={() => { storeCase(current, verdict, fix); setIndex(index + 1); setVerdict(null); setFix(null); }}>
@@ -420,8 +429,10 @@ export function ResultStage({ record }) {
 }
 
 // ---------------------------------------------------------------------------
-export function ClosingStage({ returnCode }) {
+export function ClosingStage({ returnCode, config }) {
   const [checked, setChecked] = useState(WEEKLY_CHALLENGE.map(() => false));
+  // O código de retorno só serve para o re-teste; sem re-teste na palestra, não aparece.
+  const showReturnCode = Boolean(returnCode) && normalizeConfig(config).stages.reteste;
   return (
     <Card>
       <h2 className="text-2xl font-black text-white">Desafio da semana</h2>
@@ -436,7 +447,7 @@ export function ClosingStage({ returnCode }) {
           </li>
         ))}
       </ul>
-      {returnCode && (
+      {showReturnCode && (
         <div className="mt-6 rounded-2xl border-2 border-green-400 bg-green-500/10 p-4 text-center">
           <div className="text-sm font-bold uppercase tracking-widest text-green-200">Anote no caderno: seu código de retorno</div>
           <div className="mt-2 font-mono text-4xl font-black tracking-[0.2em] text-white sm:text-5xl">{formatReturnCode(returnCode)}</div>
@@ -471,4 +482,131 @@ export function RetestStage({ record, save, returnCode }) {
       onSubmit={(answers) => save({ retest: { returnCode: parsed.code, group: parsed.group, answers, done: true } })}
     />
   );
+}
+
+// ---------------------------------------------------------------------------
+// Minicurso: Problema A (sem IA) e Problema B (com o tutor).
+const ProblemStatement = ({ problem }) => (
+  <div className="space-y-4 text-slate-200">
+    <p className="text-lg leading-relaxed text-white">{problem.statement}</p>
+    <section>
+      <h3 className="text-sm font-bold uppercase tracking-widest text-green-300">Entrada</h3>
+      <p className="mt-1 text-sm leading-relaxed">{problem.input}</p>
+    </section>
+    <section>
+      <h3 className="text-sm font-bold uppercase tracking-widest text-green-300">Saída</h3>
+      <p className="mt-1 text-sm leading-relaxed">{problem.output}</p>
+    </section>
+    <section>
+      <h3 className="text-sm font-bold uppercase tracking-widest text-green-300">Restrições</h3>
+      <ul className="mt-1 list-disc pl-5 text-sm">{problem.constraints.map((item) => <li key={item}>{item}</li>)}</ul>
+    </section>
+    <section>
+      <h3 className="text-sm font-bold uppercase tracking-widest text-green-300">Exemplo</h3>
+      <div className="mt-1 grid grid-cols-2 overflow-hidden rounded-xl border border-slate-700 text-sm">
+        <div className="border-r border-slate-700 p-3"><div className="text-xs font-bold text-slate-400">ENTRADA</div><pre className="mt-1 whitespace-pre-wrap font-mono text-white">{problem.exampleInput}</pre></div>
+        <div className="p-3"><div className="text-xs font-bold text-slate-400">SAÍDA</div><pre className="mt-1 whitespace-pre-wrap font-mono text-white">{problem.exampleOutput}</pre></div>
+      </div>
+      <p className="mt-2 text-sm leading-relaxed text-slate-300">{problem.exampleExplanation}</p>
+    </section>
+  </div>
+);
+
+const CheckList = ({ result }) => (
+  <div className="space-y-2">
+    <ul className="space-y-1">
+      {result.checks.map((item) => (
+        <li key={item.label} className={`text-sm ${item.ok ? 'text-emerald-200' : 'text-amber-200'}`}>
+          {item.ok ? '✔' : '•'} {item.label}{item.ok ? '' : `: ${item.tip}`}
+        </li>
+      ))}
+    </ul>
+    {result.warnings.map((warning) => <Notice key={warning} tone="warn">{warning}</Notice>)}
+  </div>
+);
+
+// Etapa sem IA: editor, verificação local e nenhuma dica.
+function SoloProblem({ problem, onDone }) {
+  const [language, setLanguage] = useState('python');
+  const [code, setCode] = useState(STARTER_CODE.python);
+  const [result, setResult] = useState(null);
+  const [attempts, setAttempts] = useState(0);
+  const [passed, setPassed] = useState(false);
+
+  const switchLanguage = (next) => {
+    if (next === language) return;
+    // Troca o modelo inicial só se o código ainda não foi mexido.
+    if (code === STARTER_CODE[language]) setCode(STARTER_CODE[next]);
+    setLanguage(next);
+  };
+
+  const verify = () => {
+    const outcome = problem.validate(code, language);
+    setResult(outcome);
+    setAttempts((value) => value + 1);
+    if (outcome.ok) setPassed(true);
+  };
+
+  return (
+    <div className="space-y-3">
+      <Notice tone="warn">Etapa sem IA: resolva com o que você já sabe. Nesta etapa o tutor não dá dicas.</Notice>
+      <div className="flex gap-2" role="group" aria-label="Linguagem">
+        {['python', 'cpp'].map((item) => (
+          <button key={item} type="button" aria-pressed={language === item} onClick={() => switchLanguage(item)} className={`${buttonSecondary} ${language === item ? 'border-green-400 text-green-200' : ''}`}>{item === 'cpp' ? 'C++' : 'Python'}</button>
+        ))}
+      </div>
+      <textarea value={code} onChange={(event) => setCode(event.target.value)} rows={12} spellCheck={false} aria-label="Seu código" className={`${inputClass} font-mono text-sm text-emerald-200`} />
+      <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={verify} className={buttonPrimary}>Verificar meu código</button>
+        <button type="button" disabled={!attempts} onClick={() => onDone({ accepted: passed, attempts })} className={buttonSecondary}>Concluir etapa</button>
+      </div>
+      <p className="text-xs text-slate-500">A verificação procura padrões no código (leitura, ordenação, busca binária e saída). Ela não compila nem executa o programa. Teste também com o exemplo no seu computador ou no juiz.</p>
+      {result && (
+        <div className="space-y-2">
+          <Notice tone={result.ok ? 'success' : 'info'}>{result.ok ? 'A verificação local encontrou todos os passos esperados.' : 'Ainda faltam passos. Veja a lista abaixo.'}</Notice>
+          <CheckList result={result} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProblemStage({ stageId, record, save }) {
+  const problem = getMinicursoProblem(stageId);
+  const saved = record.missions?.[stageId];
+  const item = useMemo(() => toTutorProblem(problem), [problem]);
+  const finish = (summary) => save({ missions: { [stageId]: { done: true, accepted: Boolean(summary.accepted), attempts: Number(summary.attempts) || 0, hints: Number(summary.hints) || 0 } } });
+
+  return (
+    <Card>
+      <header className="mb-4">
+        <div className="text-xs font-mono uppercase tracking-widest text-green-300">{problem.stageLabel} · {problem.withAi ? 'com IA (tutor do app)' : 'sem IA'}</div>
+        <h2 className="mt-1 text-2xl font-black text-white">Problema {problem.letter} · {problem.title}</h2>
+      </header>
+      <ProblemStatement problem={problem} />
+      <div className="mt-6 border-t border-slate-800 pt-4">
+        {saved?.done ? (
+          <div className="space-y-3">
+            <Notice tone="success">
+              Etapa concluída {saved.accepted ? 'com a verificação local completa' : 'sem completar a verificação local'}
+              {problem.withAi ? ` e ${saved.hints} dica(s)` : ''}. Espere o palestrante.
+            </Notice>
+            {!problem.withAi && <Notice tone="info"><strong>Ideia de solução:</strong> {problem.explanation}</Notice>}
+          </div>
+        ) : problem.withAi ? (
+          <TutorItem item={item} mode="ativo" doneLabel="Concluir etapa" onDone={(summary) => finish({ accepted: summary.correct, attempts: summary.attempts, hints: summary.hints })} />
+        ) : (
+          <SoloProblem problem={problem} onDone={finish} />
+        )}
+      </div>
+    </Card>
+  );
+}
+
+export function ProblemAStage(props) {
+  return <ProblemStage stageId="problema-a" {...props} />;
+}
+
+export function ProblemBStage(props) {
+  return <ProblemStage stageId="problema-b" {...props} />;
 }

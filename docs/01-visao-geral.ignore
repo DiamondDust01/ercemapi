@@ -1,5 +1,5 @@
 FONTE DE ESTUDO: VISAO GERAL DO ERCEMAPI (VARIACAO OBI QUEST)
-Atualizada em 26/10/2026. O texto principal descreve a versao 1.4.2; as mudancas
+Atualizada em 11/11/2026. O texto principal descreve a versao 1.4.2; as mudancas
 posteriores estao na secao abaixo.
 
 ATUALIZACOES DESDE A VERSAO 1.4.2
@@ -17,6 +17,14 @@ ATUALIZACOES DESDE A VERSAO 1.4.2
   Pensa Comigo em verde, com chuva de citacoes no estilo Matrix, sempre com as
   frases inteiras; tema claro revisto (cartoes brancos, contornos suaves, botoes
   de cor solida).
+- 11/11/2026, versao 1.8.0: botao "?" ao lado do botao de tema abre um
+  tutorial guiado: contorna cada funcao da tela e mostra um balao explicando. No Pensa
+  Comigo, configuracao rapida e opcional do palestrante: formato da palestra,
+  etapas, questoes das missoes e pergunta da enquete.
+- 11/11/2026, versao 1.8.0: formato "Minicurso: Problemas A e B" (Problema A
+  sem IA e Problema B com o tutor). Correcoes: SUBMIT liberado no modo Desafios,
+  pontos guardados no aparelho sem Firebase, codigos de sala sempre com 6
+  caracteres e "Resposta incorreta." na Iniciacao com correcao imediata.
 
 O QUE E O PROJETO
 

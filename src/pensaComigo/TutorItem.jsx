@@ -20,6 +20,7 @@ export default function TutorItem({ item, mode = 'ativo', onDone, requireCheckli
   const [codeLanguage, setCodeLanguage] = useState('python');
   const [code, setCode] = useState(item.initialCode || '');
   const [feedback, setFeedback] = useState('');
+  const [codeCheck, setCodeCheck] = useState(null);
   const [checklist, setChecklist] = useState(KID_PRE_HINT_CHECKLIST.map(() => !requireChecklist));
   const isCopy = mode === 'copiar';
   const ready = isCopy ? copyModeAnswer(item) : null;
@@ -43,9 +44,13 @@ export default function TutorItem({ item, mode = 'ativo', onDone, requireCheckli
     if (item.type === 'codigo') {
       text = code;
       try {
-        explicit = Boolean(item.validate?.(code, codeLanguage === 'cpp' ? 'cpp' : 'python')?.ok);
+        const outcome = item.validate?.(code, codeLanguage === 'cpp' ? 'cpp' : 'python');
+        explicit = Boolean(outcome?.ok);
+        // Validadores com lista de passos (minicurso) mostram o que falta.
+        setCodeCheck(Array.isArray(outcome?.checks) ? outcome : null);
       } catch {
         explicit = false;
+        setCodeCheck(null);
       }
     }
     const result = registerAttempt(state, { text, correct: explicit }, item);
@@ -103,7 +108,12 @@ export default function TutorItem({ item, mode = 'ativo', onDone, requireCheckli
         <div className="space-y-2">
           <div className="flex gap-2" role="group" aria-label="Linguagem">
             {['python', 'cpp'].map((language) => (
-              <button key={language} type="button" aria-pressed={codeLanguage === language} onClick={() => setCodeLanguage(language)} className={`${buttonSecondary} ${codeLanguage === language ? 'border-green-400 text-green-200' : ''}`}>{language === 'cpp' ? 'C++' : 'Python'}</button>
+              <button key={language} type="button" aria-pressed={codeLanguage === language} onClick={() => {
+                if (language === codeLanguage) return;
+                // Com modelos por linguagem, troca o modelo se o código ainda não foi mexido.
+                if (item.starterCode && code === item.starterCode[codeLanguage]) setCode(item.starterCode[language]);
+                setCodeLanguage(language);
+              }} className={`${buttonSecondary} ${codeLanguage === language ? 'border-green-400 text-green-200' : ''}`}>{language === 'cpp' ? 'C++' : 'Python'}</button>
             ))}
           </div>
           <textarea value={code} onChange={(event) => setCode(event.target.value)} rows={6} spellCheck={false} aria-label="Seu código" className={`${inputClass} font-mono text-sm text-emerald-200`} />
@@ -123,10 +133,20 @@ export default function TutorItem({ item, mode = 'ativo', onDone, requireCheckli
       )}
 
       {feedback && <Notice tone={state.solved ? 'success' : 'info'}>{feedback}</Notice>}
+      {codeCheck && !finished && (
+        <div className="space-y-2">
+          <ul className="space-y-1">
+            {codeCheck.checks.map((entry) => (
+              <li key={entry.label} className={`text-sm ${entry.ok ? 'text-emerald-200' : 'text-amber-200'}`}>{entry.ok ? '✔' : '•'} {entry.label}</li>
+            ))}
+          </ul>
+          {codeCheck.warnings?.map((warning) => <Notice key={warning} tone="warn">{warning}</Notice>)}
+        </div>
+      )}
 
       {!isCopy && (
         <div className="space-y-3 rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-          <p className="text-sm text-green-100">{tutorMessage(state)}</p>
+          <p className="text-sm text-green-100">{tutorMessage(state, item)}</p>
           {requireChecklist && state.hintsShown === 0 && !finished && (
             <fieldset className="space-y-2">
               <legend className="text-xs font-bold uppercase tracking-widest text-slate-400">Antes da primeira dica</legend>

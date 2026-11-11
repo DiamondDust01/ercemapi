@@ -60,24 +60,33 @@ const answerKey = () => {
 <h3>O que não afirmar</h3><ul>${HONESTY_NOTES.map((note) => `<li>${escapeHtml(note)}</li>`).join('')}</ul></section>`;
 };
 
-const tallySheet = () => {
+const tallySheet = (pollQuestion, experiment) => {
   const pollRows = OPENING_POLL.options.map((option, index) => `<tr><td>${OPTION_LETTERS[index]}</td><td>${escapeHtml(option.label)}</td><td></td></tr>`).join('');
   const modeRows = Object.entries(MODE_LABELS).map(([, label]) => `<tr><td>${escapeHtml(label)}</td><td></td><td></td><td></td><td></td></tr>`).join('');
-  return `<section class="page" data-section="contagem"><h2>Folha de contagem do palestrante</h2><h3>${escapeHtml(OPENING_POLL.question)}</h3><table><thead><tr><th>Cartão</th><th>Opção</th><th>Contagem</th></tr></thead><tbody>${pollRows}</tbody></table>
-<h3>Experimento</h3><table><thead><tr><th>Modo</th><th>Participantes</th><th>Acertos na atividade</th><th>Acertos no quiz</th><th>Seguros que erraram</th></tr></thead><tbody>${modeRows}</tbody></table></section>`;
+  return `<section class="page" data-section="contagem"><h2>Folha de contagem do palestrante</h2><h3>${escapeHtml(pollQuestion || OPENING_POLL.question)}</h3><table><thead><tr><th>Cartão</th><th>Opção</th><th>Contagem</th></tr></thead><tbody>${pollRows}</tbody></table>
+${experiment ? `<h3>Experimento</h3><table><thead><tr><th>Modo</th><th>Participantes</th><th>Acertos na atividade</th><th>Acertos no quiz</th><th>Seguros que erraram</th></tr></thead><tbody>${modeRows}</tbody></table>` : ''}</section>`;
 };
 
-const closingSheet = () => `<section class="page" data-section="fechamento"><h2>Desafio da semana</h2><ul class="check">${WEEKLY_CHALLENGE.map((item) => `<li><span class="box"></span> ${escapeHtml(item.text)}</li>`).join('')}</ul><p>No re-teste, use a folha do seu grupo. O grupo já vem impresso.</p></section>`;
+// Minicurso: enunciados completos dos problemas ligados, para o plano B sem celular.
+const problemSheet = (problem) => `<section class="page" data-section="${escapeHtml(problem.id)}"><h2>${escapeHtml(problem.stageLabel)} · ${problem.withAi ? 'com IA' : 'sem IA'}</h2><h3>Problema ${escapeHtml(problem.letter)} · ${escapeHtml(problem.title)}</h3>
+<p>${escapeHtml(problem.statement)}</p><h3>Entrada</h3><p>${escapeHtml(problem.input)}</p><h3>Saída</h3><p>${escapeHtml(problem.output)}</p>
+<h3>Restrições</h3><ul>${problem.constraints.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+<h3>Exemplo</h3><table><thead><tr><th>Entrada</th><th>Saída</th></tr></thead><tbody><tr><td><pre>${escapeHtml(problem.exampleInput)}</pre></td><td><pre>${escapeHtml(problem.exampleOutput)}</pre></td></tr></tbody></table>
+<p class="small">${escapeHtml(problem.exampleExplanation)}</p></section>`;
 
-export const buildPrintKit = ({ title = 'Palestra Pensa Comigo', roomCode = '' } = {}) => {
+const closingSheet = (experiment) => `<section class="page" data-section="fechamento"><h2>Desafio da semana</h2><ul class="check">${WEEKLY_CHALLENGE.map((item) => `<li><span class="box"></span> ${escapeHtml(item.text)}</li>`).join('')}</ul>${experiment ? '<p>No re-teste, use a folha do seu grupo. O grupo já vem impresso.</p>' : ''}</section>`;
+
+export const buildPrintKit = ({ title = 'Palestra Pensa Comigo', roomCode = '', pollQuestion = '', problems = [], experiment = true } = {}) => {
   const sections = [
     cardsPages(),
-    ...GROUPS.map(groupSheet),
-    ...GROUPS.map((group) => quizSheet(group, 'Quiz sem IA', 'quiz')),
-    ...GROUPS.map((group) => quizSheet(group, 'Re-teste surpresa', 'reteste')),
-    closingSheet(),
-    tallySheet(),
-    answerKey()
+    ...problems.map(problemSheet),
+    // Folhas do experimento só quando ele faz parte da palestra.
+    ...(experiment ? GROUPS.map(groupSheet) : []),
+    ...(experiment ? GROUPS.map((group) => quizSheet(group, 'Quiz sem IA', 'quiz')) : []),
+    ...(experiment ? GROUPS.map((group) => quizSheet(group, 'Re-teste surpresa', 'reteste')) : []),
+    closingSheet(experiment),
+    tallySheet(pollQuestion, experiment),
+    ...(experiment ? [answerKey()] : [])
   ];
   const html = `<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapeHtml(title)} — kit impresso</title>

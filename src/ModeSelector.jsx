@@ -1,6 +1,7 @@
 import React from 'react';
 import { Trophy, Lightbulb, ChevronRight } from 'lucide-react';
 import ThemeToggle from './ThemeToggle.jsx';
+import TutorialButton from './TutorialButton.jsx';
 import SelectorBackdrop from './SelectorBackdrop.jsx';
 
 const MODES = [
@@ -50,7 +51,7 @@ export default function ModeSelector({ onSelect, version, backdrop = <SelectorBa
     <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-[var(--app-bg)] font-sans text-slate-300">
       {backdrop}
       <main className="relative z-10 min-h-0 flex-1 overflow-y-auto">
-        <div className="absolute right-3 top-3 z-20 sm:right-5 sm:top-5"><ThemeToggle /></div>
+        <div className="absolute right-3 top-3 z-20 flex items-center gap-1 sm:right-5 sm:top-5"><TutorialButton context="selector" accent="indigo" /><ThemeToggle /></div>
         <div className="mx-auto flex min-h-full max-w-5xl flex-col justify-center px-4 py-5 md:py-16">
           <div className="mb-5 text-center md:mb-8">
             <div className="text-xs font-mono uppercase tracking-[0.3em] text-cyan-300">Bem-vindo ao ERCEMAPI</div>
@@ -62,7 +63,7 @@ export default function ModeSelector({ onSelect, version, backdrop = <SelectorBa
             {MODES.map((mode) => {
               const Icon = mode.icon;
               return (
-                <article key={mode.id} className={`flex flex-col rounded-[28px] border bg-slate-900/80 p-4 backdrop-blur-sm transition-colors sm:p-6 md:p-8 ${mode.tone.card}`}>
+                <article key={mode.id} data-tour={`mode-${mode.id}`} className={`flex flex-col rounded-[28px] border bg-slate-900/80 p-4 backdrop-blur-sm transition-colors sm:p-6 md:p-8 ${mode.tone.card}`}>
                   <div className={`flex h-10 w-10 items-center justify-center rounded-2xl sm:h-14 sm:w-14 ${mode.tone.icon}`}>
                     <Icon className="h-6 w-6 sm:h-7 sm:w-7" aria-hidden="true" />
                   </div>

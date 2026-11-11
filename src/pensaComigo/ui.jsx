@@ -6,8 +6,8 @@ export const buttonSecondary = 'inline-flex min-h-11 items-center justify-center
 export const buttonDanger = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-rose-500/60 px-4 py-2 text-sm font-semibold text-rose-200 transition hover:bg-rose-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-300';
 export const inputClass = 'block w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-3 text-base text-white placeholder:text-slate-500 focus:border-green-400 focus:outline-none';
 
-export const Card = ({ children, className = '' }) => (
-  <section className={`rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-6 ${className}`}>{children}</section>
+export const Card = ({ children, className = '', tour }) => (
+  <section data-tour={tour} className={`rounded-2xl border border-slate-800 bg-slate-900/80 p-4 sm:p-6 ${className}`}>{children}</section>
 );
 
 export const Notice = ({ tone = 'info', children, role = 'status' }) => {

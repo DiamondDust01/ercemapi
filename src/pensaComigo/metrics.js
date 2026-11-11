@@ -177,6 +177,22 @@ export const summarizeMissions = (participants = []) => {
   };
 };
 
+// Minicurso: quantos concluíram cada problema, quantos completaram a verificação local e
+// a média de dicas (só o Problema B tem dicas).
+export const summarizeProblem = (participants = [], stageId) => {
+  const done = participants.filter((participant) => participant?.missions?.[stageId]?.done).map((participant) => participant.missions[stageId]);
+  const accepted = done.filter((entry) => entry.accepted).length;
+  const hints = done.reduce((sum, entry) => sum + toNumber(entry.hints), 0);
+  const attempts = done.reduce((sum, entry) => sum + toNumber(entry.attempts), 0);
+  return {
+    done: done.length,
+    accepted,
+    acceptedPct: percent(accepted, done.length),
+    averageHints: done.length ? Number((hints / done.length).toFixed(1)) : 0,
+    averageAttempts: done.length ? Number((attempts / done.length).toFixed(1)) : 0
+  };
+};
+
 export const summarizeCards = (cards = {}) => {
   const total = CARD_LETTERS.reduce((sum, letter) => sum + toNumber(cards?.[letter]), 0);
   return CARD_LETTERS.map((letter) => ({ letter, count: toNumber(cards?.[letter]), pct: percent(toNumber(cards?.[letter]), total) }));
@@ -204,7 +220,8 @@ export const buildParticipantsCsvRows = (participants = []) => {
     'apelido_sorteado', 'tipo', 'grupo', 'enquete',
     'atividade_copiar_acertos', 'atividade_copiar_total', 'atividade_ativo_acertos', 'atividade_ativo_total', 'dicas_modo_ativo',
     'quiz_copiar_acertos', 'quiz_copiar_total', 'quiz_ativo_acertos', 'quiz_ativo_total', 'seguros_que_erraram',
-    'reteste_acertos', 'reteste_total', 'remix_pontos', 'detetive_acertos'
+    'reteste_acertos', 'reteste_total', 'remix_pontos', 'detetive_acertos',
+    'problema_a_verificado', 'problema_b_verificado', 'problema_b_dicas'
   ];
   const rows = participants.map((participant) => {
     const per = { copiar: { a: 0, t: 0, q: 0, qt: 0 }, ativo: { a: 0, t: 0, q: 0, qt: 0 } };
@@ -226,12 +243,16 @@ export const buildParticipantsCsvRows = (participants = []) => {
     });
     const retest = Object.values(participant?.retest?.answers || {});
     const detective = Object.values(participant?.missions?.detetive?.results || {});
+    const problemA = participant?.missions?.['problema-a'];
+    const problemB = participant?.missions?.['problema-b'];
+    const yesNo = (entry) => (entry?.done ? (entry.accepted ? 'sim' : 'nao') : '');
     return [
       participant?.nickname || '', participant?.kind || 'solo', participant?.group || '', participant?.poll || '',
       per.copiar.a, per.copiar.t, per.ativo.a, per.ativo.t, hints,
       per.copiar.q, per.copiar.qt, per.ativo.q, per.ativo.qt, sureWrong,
       retest.filter((answer) => answer.correct).length, retest.length,
-      participant?.missions?.remix?.score ?? '', detective.filter((result) => result?.judgedCorrectly).length
+      participant?.missions?.remix?.score ?? '', detective.filter((result) => result?.judgedCorrectly).length,
+      yesNo(problemA), yesNo(problemB), problemB?.done ? toNumber(problemB.hints) : ''
     ];
   });
   return [header, ...rows];

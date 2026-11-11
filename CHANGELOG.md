@@ -22,6 +22,93 @@ a numeração das versões consistente entre o código e os próximos lançament
 
 ## Não lançado
 
+## 1.8.0 - 2026-11-11
+
+### Adicionado
+
+- 11/11/2026: botão de **tutorial guiado** (ícone "?") ao lado do botão de
+  tema, na tela de escolha, no cabeçalho do OBI Quest e no do Pensa Comigo. Cada
+  etapa escurece a tela, contorna uma função (cartões, abas, botões do cabeçalho,
+  painel do palestrante) e mostra um balão de explicação ao lado dela, abaixo ou
+  acima conforme o espaço. Etapas cujo elemento não está na tela são puladas: no
+  celular, por exemplo, as abas apontam para a barra de baixo. Próximo/Anterior,
+  setas do teclado, "Pular tutorial" e Esc. Não grava nada no aparelho
+  (`src/TutorialButton.jsx` e `src/tour.js`, com testes).
+- 11/11/2026: **configuração rápida do palestrante** no Pensa Comigo, opcional,
+  na tela "Abrir sala" e no painel (botão "Editar"). Escolhe o formato (palestra
+  completa, curta, só as missões ou só o experimento), liga e desliga etapas,
+  escolhe a questão do Tente primeiro, as do Me teste (1 a 3) e os casos do
+  Detetive, troca a pergunta da enquete e pode liberar "Escolha seu desafio"
+  desde o início. A lista de questões exclui as do experimento e do Detetive,
+  para nenhuma missão adiantar o quiz. "Próxima etapa" e "Etapa anterior" pulam
+  as etapas desligadas. Sem configuração, a palestra é a mesma de antes. A
+  escolha fica em `state.config` da sala (`src/pensaComigo/quickConfig.js`, com
+  testes). O kit impresso continua com o conteúdo padrão.
+- 11/11/2026: formato **Minicurso: Problemas A e B** na configuração rápida,
+  com os dois problemas da atividade prática do minicurso "IA como assistente
+  no treinamento para maratonas e olimpíadas" (XIV ERCEMAPI 2026, IFCE Campus
+  Crato). Etapas: Abertura, Etapa 1 · Problema A "Brinquedos do parque" (sem
+  IA e sem dicas), Etapa 2 · Problema B "Orçamento" (com o tutor e 3 dicas
+  graduais, liberadas depois da primeira tentativa) e Fechamento. Cada problema
+  traz enunciado, entrada, saída, restrições e exemplo; o aluno escreve em C++
+  ou Python e a verificação local confere leitura, ordenação, busca binária e
+  saída, avisa sobre laços aninhados (TLE) e sobre `lower_bound`/`bisect_left`
+  no lugar errado. Ela não compila nem executa o código. O telão mostra quantos
+  concluíram, quantos completaram a verificação, a média de tentativas e de
+  dicas; a exportação CSV ganhou três colunas. A ficha de registro da folha não
+  entra no app (`src/pensaComigo/minicurso.js`, com testes).
+
+### Corrigido
+
+- 11/11/2026: Programação, modo Desafios: o botão SUBMIT só funcionava com o
+  cronômetro da Competição rodando, e esse cronômetro nem aparece no modo
+  Desafios. Agora o envio é livre no treino e só depende do cronômetro no modo
+  Competição.
+- 11/11/2026: sem Firebase, um Accepted não somava pontos nem marcava o
+  problema como concluído, e o placar ficava sempre em 0. O progresso agora fica
+  no aparelho (`localStorage`, chave `obi-quest-progress`); com Firebase, nada
+  mudou.
+- 11/11/2026: códigos de sala da Competição e de turma do Professor podiam sair
+  curtos ou vazios (`Math.random().toString(36)`). Agora têm sempre 6
+  caracteres, sem letras ambíguas, como os do Pensa Comigo. Códigos antigos
+  continuam aceitos.
+- 11/11/2026: Iniciação com correção imediata: a resposta errada aparecia como
+  "Resposta registrada."; agora diz "Resposta incorreta.". Revisão da partida
+  mostra "1 jogador" no singular.
+- 11/11/2026: Pensa Comigo: no Detetive, achar o erro mas escolher a correção
+  errada dava "Boa investigação!"; agora avisa que a correção não é essa. O
+  tutor deixou de pedir "escolha uma alternativa" em questões sem alternativas
+  (código e resposta curta). O Remix com texto curto demais não mostra mais
+  critérios vazios. "Ensaiar como aluno nesta aba" retoma o mesmo aluno de
+  ensaio, sem apagar as respostas nem trocar o código de retorno. O resumo da
+  configuração só cita as etapas ligadas.
+- 11/11/2026, revisão completa do código: Competição: retomar uma partida
+  pausada voltava o cronômetro para a duração cheia; agora continua do tempo
+  que faltava. O mesmo problema somava 100 pontos na sala a cada novo envio;
+  agora conta uma vez por sala. Na sala de demonstração local o placar ficava
+  em 0 e passou a ser atualizado. Pausa e reinício avisam quando não
+  sincronizam.
+- 11/11/2026: validadores da Programação: o Problema 9 aceitava `if (a > b)`
+  sem o `else` e recusava `max(a, b)`; o Problema 10 aceitava o laço sem
+  imprimir nada; o Problema 7 recusava `endl`. Todos corrigidos.
+- 11/11/2026: perfil local (nome, avatar, recordes, checklist e oficina) não
+  derruba mais o app quando o navegador bloqueia o armazenamento, e os recordes
+  são lidos já ao abrir. As exportações da Mentoria liberam o arquivo só depois
+  do download começar (antes podiam falhar no app desktop). Métricas do aluno
+  na turma do Professor são publicadas assim que o login anônimo termina. O
+  botão de recomeçar o código ganhou nome acessível.
+- 11/11/2026: Pensa Comigo: o kit impresso usa a pergunta da enquete
+  configurada, traz os enunciados dos Problemas A e B no formato Minicurso e só
+  inclui as folhas do experimento quando ele faz parte da palestra. O código de
+  retorno só aparece no Fechamento (aluno e telão) quando o re-teste está
+  ligado.
+- 11/11/2026: limpeza: 56 ícones importados e nunca usados, um componente e
+  três variáveis sem uso foram removidos do `App.jsx`.
+- 11/11/2026: na configuração rápida, a opção "Liberar 'Escolha seu desafio'
+  desde o início" ganhou uma explicação curta embaixo: o que é a aba extra de
+  desafios, quando as questões do experimento aparecem nela e onde liberar ou
+  fechar a aba durante a palestra.
+
 ## 1.7.0 - 2026-10-26
 
 ### Melhorado

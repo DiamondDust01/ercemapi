@@ -2,6 +2,9 @@
 
 export const STAGES = [
   { id: 'abertura', label: 'Abertura', short: 'Enquete', kind: 'abertura' },
+  // Etapas do formato "Minicurso: Problemas A e B" (desligadas nos outros formatos).
+  { id: 'problema-a', label: 'Etapa 1 · Problema A (sem IA)', short: 'Problema A', kind: 'minicurso' },
+  { id: 'problema-b', label: 'Etapa 2 · Problema B (com IA)', short: 'Problema B', kind: 'minicurso' },
   { id: 'tente-primeiro', label: 'Missão 1 · Tente primeiro', short: 'Tente primeiro', kind: 'missao' },
   { id: 'remix', label: 'Missão 2 · Remix de prompt', short: 'Remix', kind: 'missao' },
   { id: 'me-teste', label: 'Missão 3 · Me teste', short: 'Me teste', kind: 'missao' },
