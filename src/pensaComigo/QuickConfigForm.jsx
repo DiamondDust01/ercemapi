@@ -129,7 +129,12 @@ export default function QuickConfigForm({ value, onChange }) {
         </label>
         <label className="flex items-start gap-2 text-sm text-slate-200">
           <input type="checkbox" className="mt-1 h-4 w-4" checked={config.freePlay} onChange={() => onChange({ ...config, freePlay: !config.freePlay })} />
-          Liberar "Escolha seu desafio" desde o início
+          <span>
+            Liberar "Escolha seu desafio" desde o início
+            <span className="mt-0.5 block text-xs text-slate-500">
+              Mostra aos alunos uma aba extra com desafios do OBI Quest para treinar com o tutor, no próprio ritmo, além da atividade da palestra. As questões do experimento só aparecem nela depois do resultado. Também dá para liberar ou fechar a aba durante a palestra, em "Liberações".
+            </span>
+          </span>
         </label>
       </fieldset>
 

@@ -80,6 +80,10 @@ a numeração das versões consistente entre o código e os próximos lançament
   critérios vazios. "Ensaiar como aluno nesta aba" retoma o mesmo aluno de
   ensaio, sem apagar as respostas nem trocar o código de retorno. O resumo da
   configuração só cita as etapas ligadas.
+- 11/11/2026: na configuração rápida, a opção "Liberar 'Escolha seu desafio'
+  desde o início" ganhou uma explicação curta embaixo: o que é a aba extra de
+  desafios, quando as questões do experimento aparecem nela e onde liberar ou
+  fechar a aba durante a palestra.
 
 ## 1.7.0 - 2026-10-26
 
