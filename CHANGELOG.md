@@ -82,6 +82,28 @@ a numeração das versões consistente entre o código e os próximos lançament
   critérios vazios. "Ensaiar como aluno nesta aba" retoma o mesmo aluno de
   ensaio, sem apagar as respostas nem trocar o código de retorno. O resumo da
   configuração só cita as etapas ligadas.
+- 11/11/2026, revisão completa do código: Competição: retomar uma partida
+  pausada voltava o cronômetro para a duração cheia; agora continua do tempo
+  que faltava. O mesmo problema somava 100 pontos na sala a cada novo envio;
+  agora conta uma vez por sala. Na sala de demonstração local o placar ficava
+  em 0 e passou a ser atualizado. Pausa e reinício avisam quando não
+  sincronizam.
+- 11/11/2026: validadores da Programação: o Problema 9 aceitava `if (a > b)`
+  sem o `else` e recusava `max(a, b)`; o Problema 10 aceitava o laço sem
+  imprimir nada; o Problema 7 recusava `endl`. Todos corrigidos.
+- 11/11/2026: perfil local (nome, avatar, recordes, checklist e oficina) não
+  derruba mais o app quando o navegador bloqueia o armazenamento, e os recordes
+  são lidos já ao abrir. As exportações da Mentoria liberam o arquivo só depois
+  do download começar (antes podiam falhar no app desktop). Métricas do aluno
+  na turma do Professor são publicadas assim que o login anônimo termina. O
+  botão de recomeçar o código ganhou nome acessível.
+- 11/11/2026: Pensa Comigo: o kit impresso usa a pergunta da enquete
+  configurada, traz os enunciados dos Problemas A e B no formato Minicurso e só
+  inclui as folhas do experimento quando ele faz parte da palestra. O código de
+  retorno só aparece no Fechamento (aluno e telão) quando o re-teste está
+  ligado.
+- 11/11/2026: limpeza: 56 ícones importados e nunca usados, um componente e
+  três variáveis sem uso foram removidos do `App.jsx`.
 - 11/11/2026: na configuração rápida, a opção "Liberar 'Escolha seu desafio'
   desde o início" ganhou uma explicação curta embaixo: o que é a aba extra de
   desafios, quando as questões do experimento aparecem nela e onde liberar ou

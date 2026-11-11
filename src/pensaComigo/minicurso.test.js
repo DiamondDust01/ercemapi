@@ -168,3 +168,23 @@ test('resumo da configuração só cita etapas ligadas', async () => {
   assert.ok(!minicurso.includes('Me teste') && !minicurso.includes('Detetive'));
   assert.ok(describeConfig(DEFAULT_CONFIG).includes('Detetive'));
 });
+
+test('kit impresso segue a configuração da sala', async () => {
+  const { buildPrintKit } = await import('./printKit.js');
+  const padrao = buildPrintKit({ roomCode: 'ABC234' });
+  assert.ok(padrao.html.includes('Gabarito do palestrante'));
+  assert.ok(!padrao.html.includes('Brinquedos do parque'));
+  const mini = buildPrintKit({
+    roomCode: 'ABC234',
+    pollQuestion: 'Você já usou IA para estudar?',
+    problems: Object.values(MINICURSO_PROBLEMS),
+    experiment: false
+  });
+  assert.ok(mini.html.includes('Você já usou IA para estudar?'));
+  assert.ok(mini.html.includes('Brinquedos do parque') && mini.html.includes('Orçamento'));
+  assert.ok(mini.html.includes('170 150 180 160 150'));
+  assert.ok(!mini.html.includes('Gabarito do palestrante'));
+  assert.ok(!mini.html.includes('No re-teste, use a folha'));
+  assert.ok(!mini.html.includes('<h3>Experimento</h3>'));
+  assert.ok(!/<script/i.test(mini.html));
+});

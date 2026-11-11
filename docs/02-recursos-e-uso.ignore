@@ -37,6 +37,8 @@ NO USO, ISSO SIGNIFICA:
 - Programacao, modo Desafios: o SUBMIT funciona sem cronometro (11/11/2026). No
   modo Competicao, o envio continua dependendo do cronometro da partida.
 - Sem Firebase, os pontos e os problemas concluidos ficam salvos no aparelho.
+- Competicao (11/11/2026): Pausar e depois Iniciar continua do tempo que
+  faltava; cada problema pontua uma vez por sala.
 - O Pensa Comigo tem fonte propria: 06-pensa-comigo.ignore.
 
 INICIACAO

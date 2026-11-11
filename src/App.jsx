@@ -10,19 +10,10 @@ import {
   validateRoomSettings
 } from './competitionRooms.js';
 import {
-  Terminal, Shield, Sword, Code, Cpu, Sparkles, ArrowLeftRight,
-  ArrowRight, BookOpen, Crosshair, Coins, Glasses, Bot, BrainCircuit,
-  Volume2, VolumeX, Activity, Trophy, Lightbulb, Target as TargetIcon,
-  Home, Play, Book, History, Save, Layout, ChevronRight, Lock, Unlock,
-  Star, Zap, Loader2, RotateCcw, Database, Binary, Network, Layers, Clock3, Pause,
-  Trash2, Box, Hash, Infinity as InfinityIcon, Share2, GitBranch, GitMerge,
-  MousePointer2, Key, ChevronLeft, Search, ListPlus, Combine, Info,
-  BookMarked, HelpCircle, FileJson, Layers3, MoveRight, Music, CheckSquare,
-  Skull, Flame, AlertTriangle, Radio, Percent, Parentheses, Calculator,
-  FastForward, CircleDashed, Fingerprint, Microchip, HardDrive, Unlink,
-  GitPullRequest, Waypoints, TreeDeciduous, TerminalSquare, MemoryStick,
-  Cloud, Download, Upload, Copy, GraduationCap, Map as MapIcon, Compass, Wifi, WifiOff,
-  Plus, Repeat2
+  Code, Cpu, ArrowLeftRight, BookOpen, Bot, Volume2, VolumeX, Activity, Trophy, Lightbulb,
+  Target as TargetIcon, Home, Play, ChevronRight, Zap, Loader2, RotateCcw, Database,
+  Clock3, Pause, GitBranch, Search, ListPlus, Info, CheckSquare, Flame, TerminalSquare,
+  Download, GraduationCap, Wifi, WifiOff, Plus, Repeat2
 } from 'lucide-react';
 import { readLocalConnectionQuality } from './localConnection.js';
 import { parseRoomParam, createRoomCode } from './pensaComigo/session.js';
@@ -51,6 +42,32 @@ if (app && import.meta.env.DEV && import.meta.env.VITE_FIREBASE_EMULATORS === '1
   connectFirestoreEmulator(db, '127.0.0.1', 8080);
 }
 const appId = typeof __app_id !== 'undefined' ? __app_id : import.meta.env.VITE_APP_ID || 'obi-quest-v1';
+// Acesso protegido ao localStorage: em janela privada ou com armazenamento bloqueado,
+// getItem/setItem lançam erro, e o app precisa continuar funcionando sem salvar.
+const readStored = (key, fallback = null) => {
+  try {
+    const value = window.localStorage.getItem(key);
+    return value === null ? fallback : value;
+  } catch {
+    return fallback;
+  }
+};
+const writeStored = (key, value) => {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // Sem armazenamento: a preferência vale só nesta sessão.
+  }
+};
+const readStoredJson = (key, fallback) => {
+  try {
+    const value = readStored(key);
+    return value === null ? fallback : JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+};
+
 // Progresso do treino sem Firebase: fica no aparelho, como o restante do perfil local.
 const LOCAL_PROGRESS_KEY = 'obi-quest-progress';
 const EMPTY_PROGRESS = { completedLevels: [], score: 0, iniciacaoSolved: [] };
@@ -203,12 +220,6 @@ function PeerConnectionIndicator({ roomCode, peers, players }) {
   );
 }
 
-const Filter = ({ className }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-  </svg>
-);
-
 const LEVELS = [
   {
     id: 1, title: "Hello OBI", modality: "programacao", category: "I/O", bossName: "Juiz Automático", bossIcon: TerminalSquare, bossColor: "text-slate-100", bgColor: "from-slate-950 via-slate-900 to-black",
@@ -316,7 +327,7 @@ const LEVELS = [
     initialCodePython: "n = 5\n# Conte de 1 até n\n",
     validate: (code, lang) => {
       if (lang === 'cpp') {
-        return /for\s*\(\s*int\s+i\s*=\s*1\s*;\s*i\s*<=\s*n\s*;\s*i\+\+\s*\)/.test(code) && /cout\s*<<\s*i\s*<<\s*(?:"\\n"|'\\n')/.test(code) ? { ok: true, msg: "Loop correto." } : { ok: false, roast: "Você precisa percorrer de 1 até n.", hint: "for (int i = 1; i <= n; i++) { cout << i << '\\n'; }" };
+        return /for\s*\(\s*int\s+i\s*=\s*1\s*;\s*i\s*<=\s*n\s*;\s*i\+\+\s*\)/.test(code) && /cout\s*<<\s*i\s*<<\s*(?:"\\n"|'\\n'|endl)/.test(code) ? { ok: true, msg: "Loop correto." } : { ok: false, roast: "Você precisa percorrer de 1 até n.", hint: "for (int i = 1; i <= n; i++) { cout << i << '\\n'; }" };
       } else {
         return /for\s+i\s+in\s+range\s*\(\s*1\s*,\s*n\s*\+\s*1\s*\)\s*:/.test(code) && /print\s*\(\s*i\s*\)/.test(code) ? { ok: true, msg: "Laço Python correto." } : { ok: false, roast: "Use range(1, n + 1) e print(i).", hint: "for i in range(1, n + 1): print(i)" };
       }
@@ -348,9 +359,12 @@ const LEVELS = [
     initialCodePython: "a, b = 5, 9\n# Imprima o maior\n",
     validate: (code, lang) => {
       if (lang === 'cpp') {
-        return /if\s*\(\s*a\s*>\s*b\s*\)/.test(code) && /cout\s*<<\s*a\s*;/.test(code) ? { ok: true, msg: "Comparação correta." } : { ok: false, roast: "Compare a e b e escolha o maior.", hint: "if (a > b) cout << a; else cout << b;" };
+        // Os dois ramos precisam imprimir (a e b), ou max(a, b) direto.
+        const usesMax = /cout\s*<<\s*max\s*\(\s*(?:a\s*,\s*b|b\s*,\s*a)\s*\)/.test(code);
+        const usesIfElse = /if\s*\(\s*a\s*>=?\s*b\s*\)/.test(code) && /cout\s*<<\s*a\s*;/.test(code) && /\belse\b/.test(code) && /cout\s*<<\s*b\s*;/.test(code);
+        return usesMax || usesIfElse ? { ok: true, msg: "Comparação correta." } : { ok: false, roast: "Compare a e b e escolha o maior.", hint: "if (a > b) cout << a; else cout << b;" };
       } else {
-        return /print\s*\(\s*a\s+if\s+a\s*>\s*b\s+else\s+b\s*\)/.test(code) ? { ok: true, msg: "Expressão Python válida." } : { ok: false, roast: "Use condição ternária para escolher o maior.", hint: "print(a if a > b else b)" };
+        return /print\s*\(\s*a\s+if\s+a\s*>=?\s*b\s+else\s+b\s*\)/.test(code) || /print\s*\(\s*max\s*\(\s*(?:a\s*,\s*b|b\s*,\s*a)\s*\)\s*\)/.test(code) ? { ok: true, msg: "Expressão Python válida." } : { ok: false, roast: "Use condição ternária para escolher o maior.", hint: "print(a if a > b else b)" };
       }
     }
   },
@@ -364,9 +378,9 @@ const LEVELS = [
     initialCodePython: "# Imprima múltiplos de 2 até 10\n",
     validate: (code, lang) => {
       if (lang === 'cpp') {
-        return /for\s*\(\s*int\s+i\s*=\s*2\s*;\s*i\s*<=\s*10\s*;\s*i\s*\+=\s*2\s*\)/.test(code) ? { ok: true, msg: "Sequência correta." } : { ok: false, roast: "Use um loop com passo 2.", hint: "for (int i = 2; i <= 10; i += 2) cout << i << '\\n';" };
+        return /for\s*\(\s*int\s+i\s*=\s*2\s*;\s*i\s*<=\s*10\s*;\s*i\s*\+=\s*2\s*\)/.test(code) && /cout\s*<<\s*i/.test(code) ? { ok: true, msg: "Sequência correta." } : { ok: false, roast: "Use um loop com passo 2.", hint: "for (int i = 2; i <= 10; i += 2) cout << i << '\\n';" };
       } else {
-        return /for\s+i\s+in\s+range\s*\(\s*2\s*,\s*11\s*,\s*2\s*\)\s*:/.test(code) ? { ok: true, msg: "Loop com passo 2 válido." } : { ok: false, roast: "Use range(2, 11, 2).", hint: "for i in range(2, 11, 2): print(i)" };
+        return /for\s+i\s+in\s+range\s*\(\s*2\s*,\s*11\s*,\s*2\s*\)\s*:/.test(code) && /print\s*\(\s*i\s*\)/.test(code) ? { ok: true, msg: "Loop com passo 2 válido." } : { ok: false, roast: "Use range(2, 11, 2).", hint: "for i in range(2, 11, 2): print(i)" };
       }
     }
   }
@@ -553,7 +567,7 @@ const CodeEditor = memo(({ initialValueCpp, initialValuePython, language, onRun,
           </div>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => { setLocalCode(language === 'cpp' ? initialValueCpp : initialValuePython); onReset(); }} className="p-2 text-slate-400 hover:text-rose-400 rounded-lg">
+          <button type="button" aria-label="Recomeçar o código" title="Recomeçar o código" onClick={() => { setLocalCode(language === 'cpp' ? initialValueCpp : initialValuePython); onReset(); }} className="p-2 text-slate-400 hover:text-rose-400 rounded-lg">
             <RotateCcw className="w-4 h-4" />
           </button>
           <button
@@ -618,7 +632,6 @@ export default function App() {
   const [selectedIniciacaoAnswers, setSelectedIniciacaoAnswers] = useState({});
   const [selectedAno, setSelectedAno] = useState(1);
   const [selectedDifficulty, setSelectedDifficulty] = useState('todos');
-  const [selectedMode, setSelectedMode] = useState('mista');
   const [programSubTab, setProgramSubTab] = useState('desafios');
   const [iniciacaoMinutes, setIniciacaoMinutes] = useState(20);
   const [iniciacaoCustomSelected, setIniciacaoCustomSelected] = useState(false);
@@ -644,8 +657,10 @@ export default function App() {
   const [timerAlert, setTimerAlert] = useState(false);
   const [roomCodeInput, setRoomCodeInput] = useState('');
   const [activeRoomCode, setActiveRoomCode] = useState('');
-  const [playerName, setPlayerName] = useState('');
-  const [playerAvatar, setPlayerAvatar] = useState('🧠');
+  // Perfil local carregado já no estado inicial (antes era num efeito, que em StrictMode
+  // rodava duas vezes e podia sobrescrever os recordes salvos com a lista vazia).
+  const [playerName, setPlayerName] = useState(() => readStored('obi-quest-player-name', ''));
+  const [playerAvatar, setPlayerAvatar] = useState(() => readStored('obi-quest-player-avatar', '🧠') || '🧠');
   const [roomInfo, setRoomInfo] = useState(null);
   const [roomMessage, setRoomMessage] = useState('');
   const [peerStatus, setPeerStatus] = useState({ state: 'waiting', peers: [], primaryUid: null, backupUid: null });
@@ -653,13 +668,19 @@ export default function App() {
   const roomInfoRef = useRef(null);
   const peerStatusRef = useRef(peerStatus);
   const pendingScoreRequestsRef = useRef(new Map());
-  const [records, setRecords] = useState([]);
-  const [bestRoomPlacement, setBestRoomPlacement] = useState(99);
-  const [bestRoomScore, setBestRoomScore] = useState(0);
-  const [homeChecklist, setHomeChecklist] = useState({
-    iniciacao: false,
-    programacao: false,
-    regulamento: false
+  // Problemas que já pontuaram em cada sala ("CÓDIGO:nível"): o mesmo AC não soma de novo.
+  const roomSolvedRef = useRef(new Set());
+  const [records, setRecords] = useState(() => {
+    const saved = readStoredJson('obi-quest-records', []);
+    return Array.isArray(saved) ? saved : [];
+  });
+  const [bestRoomPlacement, setBestRoomPlacement] = useState(() => Number(readStored('obi-quest-best-room-placement')) || 99);
+  const [bestRoomScore, setBestRoomScore] = useState(() => Number(readStored('obi-quest-best-room-score')) || 0);
+  const [homeChecklist, setHomeChecklist] = useState(() => {
+    const saved = readStoredJson('obi-quest-checklist', null);
+    return saved && typeof saved === 'object'
+      ? { iniciacao: false, programacao: false, regulamento: false, ...saved }
+      : { iniciacao: false, programacao: false, regulamento: false };
   });
   const [pedagogy, setPedagogy] = useState(() => {
     try {
@@ -713,7 +734,7 @@ export default function App() {
   }));
 
   useEffect(() => {
-    window.localStorage.setItem('obi-quest-pedagogy', JSON.stringify(pedagogy));
+    writeStored('obi-quest-pedagogy', JSON.stringify(pedagogy));
   }, [pedagogy]);
 
   useEffect(() => {
@@ -834,62 +855,27 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const savedName = window.localStorage.getItem('obi-quest-player-name');
-    const savedAvatar = window.localStorage.getItem('obi-quest-player-avatar');
-    const savedRecords = window.localStorage.getItem('obi-quest-records');
-    const savedBestPlacement = window.localStorage.getItem('obi-quest-best-room-placement');
-    const savedBestScore = window.localStorage.getItem('obi-quest-best-room-score');
-
-    if (savedName) setPlayerName(savedName);
-    if (savedAvatar) setPlayerAvatar(savedAvatar);
-    if (savedRecords) {
-      try {
-        setRecords(JSON.parse(savedRecords));
-      } catch {
-        setRecords([]);
-      }
-    }
-    if (savedBestPlacement) setBestRoomPlacement(Number(savedBestPlacement) || 99);
-    if (savedBestScore) setBestRoomScore(Number(savedBestScore) || 0);
-  }, []);
-
-  useEffect(() => {
-    if (playerName) {
-      window.localStorage.setItem('obi-quest-player-name', playerName);
-    }
+    if (playerName) writeStored('obi-quest-player-name', playerName);
   }, [playerName]);
 
   useEffect(() => {
-    if (playerAvatar) {
-      window.localStorage.setItem('obi-quest-player-avatar', playerAvatar);
-    }
+    if (playerAvatar) writeStored('obi-quest-player-avatar', playerAvatar);
   }, [playerAvatar]);
 
   useEffect(() => {
-    window.localStorage.setItem('obi-quest-records', JSON.stringify(records));
+    writeStored('obi-quest-records', JSON.stringify(records));
   }, [records]);
 
   useEffect(() => {
-    window.localStorage.setItem('obi-quest-best-room-placement', String(bestRoomPlacement));
+    writeStored('obi-quest-best-room-placement', String(bestRoomPlacement));
   }, [bestRoomPlacement]);
 
   useEffect(() => {
-    window.localStorage.setItem('obi-quest-best-room-score', String(bestRoomScore));
+    writeStored('obi-quest-best-room-score', String(bestRoomScore));
   }, [bestRoomScore]);
 
   useEffect(() => {
-    const storedChecklist = window.localStorage.getItem('obi-quest-checklist');
-    if (storedChecklist) {
-      try {
-        setHomeChecklist(JSON.parse(storedChecklist));
-      } catch (error) {
-        console.warn('Falha ao carregar checklist do localStorage', error);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    window.localStorage.setItem('obi-quest-checklist', JSON.stringify(homeChecklist));
+    writeStored('obi-quest-checklist', JSON.stringify(homeChecklist));
   }, [homeChecklist]);
 
   useEffect(() => {
@@ -1254,7 +1240,9 @@ export default function App() {
     link.href = url;
     link.download = filename;
     link.click();
-    URL.revokeObjectURL(url);
+    // Liberar o endereço só depois que o download começou (revogar na hora falha em
+    // alguns navegadores e no app desktop).
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const exportTrainingReport = () => {
@@ -1362,7 +1350,7 @@ export default function App() {
 
   useEffect(() => {
     publishStudentMetrics();
-  }, [pedagogy.hintCounts, pedagogy.sessions, pedagogy.classroomCode]);
+  }, [pedagogy.hintCounts, pedagogy.sessions, pedagogy.classroomCode, user?.uid]);
 
   const importExternalProblem = () => {
     try {
@@ -1537,11 +1525,6 @@ export default function App() {
 
   const avatarOptions = ['🧠', '⚡', '🎯', '💻', '🚀', '🔥', '😎'];
   const podiumClass = ['text-amber-300', 'text-slate-300', 'text-orange-300'];
-  const practiceModes = [
-    { id: 'papel', label: 'Prova de papel' },
-    { id: 'programacao', label: 'Programação' },
-    { id: 'mista', label: 'Mista' }
-  ];
   const programTabOptions = [
     { id: 'desafios', label: 'Desafios' },
     { id: 'competicao', label: 'Competição' }
@@ -1596,11 +1579,6 @@ export default function App() {
     minPlayers: roomSetupMinPlayers,
     maxPlayers: roomSetupMaxPlayers
   });
-  const timerStateLabel = timeLeft === 0
-    ? 'Tempo esgotado — você não pode responder enquanto o cronômetro estiver parado.'
-    : timerRunning
-      ? 'Cronômetro ativo — você pode responder às questões.'
-      : 'Cronômetro pausado — retome para poder responder.';
 
   const iniciacaoTimerTone = iniciacaoTimeLeft === 0 ? 'border-rose-500 bg-rose-500/10 text-rose-200' : iniciacaoTimerAlert ? 'border-amber-500 bg-amber-500/10 text-amber-100' : 'border-cyan-500/20 bg-cyan-500/10 text-cyan-100';
   const iniciacaoTimerAccent = iniciacaoTimeLeft === 0 ? 'text-rose-400' : iniciacaoTimerAlert ? 'text-amber-300' : 'text-cyan-300';
@@ -1788,7 +1766,11 @@ export default function App() {
     const durationMinutes = Number.isInteger(roomInfo.durationMinutes)
       ? roomInfo.durationMinutes
       : Math.ceil((roomInfo.timeLimit || competitionMinutes * 60) / 60);
-    const durationSeconds = durationMinutes * 60;
+    // Retomar uma partida pausada continua do tempo que faltava (gravado ao pausar).
+    const remainingAfterPause = (room, fullSeconds) => (room?.status === 'paused' && Number.isFinite(room.timeLimit) && room.timeLimit > 0
+      ? Math.min(room.timeLimit, fullSeconds)
+      : fullSeconds);
+    const durationSeconds = remainingAfterPause(roomInfo, durationMinutes * 60);
     let updatedRoom = {
       ...roomInfo,
       status: 'running',
@@ -1818,11 +1800,12 @@ export default function App() {
             ? latestRoom.durationMinutes
             : durationMinutes;
           const startedAt = new Date().toISOString();
+          const timeLimit = remainingAfterPause(latestRoom, latestDuration * 60);
           transaction.update(roomRef, {
             status: 'running',
             startedAt,
             durationMinutes: latestDuration,
-            timeLimit: latestDuration * 60
+            timeLimit
           });
           return {
             room: {
@@ -1830,7 +1813,7 @@ export default function App() {
               status: 'running',
               startedAt,
               durationMinutes: latestDuration,
-              timeLimit: latestDuration * 60
+              timeLimit
             }
           };
         });
@@ -1869,11 +1852,15 @@ export default function App() {
 
       if (db && user && roomInfo.code) {
         const roomRef = doc(db, 'artifacts', appId, 'rooms', roomInfo.code);
-        await updateDoc(roomRef, {
-          status: 'paused',
-          timeLimit: timeLeft,
-          startedAt: null
-        });
+        try {
+          await updateDoc(roomRef, {
+            status: 'paused',
+            timeLimit: timeLeft,
+            startedAt: null
+          });
+        } catch (error) {
+          setRoomMessage(`A pausa não foi sincronizada com a sala: ${error.message}`);
+        }
       }
     }
   };
@@ -1901,12 +1888,16 @@ export default function App() {
 
       if (db && user && roomInfo.code) {
         const roomRef = doc(db, 'artifacts', appId, 'rooms', roomInfo.code);
-        await updateDoc(roomRef, {
-          status: 'lobby',
-          startedAt: null,
-          durationMinutes: resetDurationMinutes,
-          timeLimit: resetDurationMinutes * 60
-        });
+        try {
+          await updateDoc(roomRef, {
+            status: 'lobby',
+            startedAt: null,
+            durationMinutes: resetDurationMinutes,
+            timeLimit: resetDurationMinutes * 60
+          });
+        } catch (error) {
+          setRoomMessage(`O reinício não foi sincronizado com a sala: ${error.message}`);
+        }
       }
     }
   };
@@ -1988,7 +1979,22 @@ export default function App() {
             }
           }
 
-          if (roomInfo?.code && user && roomInfo.players?.[user.uid]) {
+          const roomSolveKey = roomInfo?.code ? `${roomInfo.code}:${currentLevel.id}` : '';
+          const firstSolveInRoom = Boolean(roomSolveKey) && !roomSolvedRef.current.has(roomSolveKey);
+          if (firstSolveInRoom) roomSolvedRef.current.add(roomSolveKey);
+
+          if (firstSolveInRoom && !db && roomInfo.signal === 'local') {
+            // Demonstração local: o placar da sala é atualizado só neste aparelho.
+            const [localKey] = Object.keys(roomInfo.players || {});
+            const localPlayer = localKey ? roomInfo.players[localKey] : null;
+            if (localPlayer) {
+              const nextScore = (localPlayer.score || 0) + 100;
+              setRoomInfo((previous) => (previous?.players?.[localKey]
+                ? { ...previous, players: { ...previous.players, [localKey]: { ...previous.players[localKey], score: nextScore } } }
+                : previous));
+              saveRecord(localPlayer.name || 'Jogador', nextScore, roomInfo.code);
+            }
+          } else if (firstSolveInRoom && user && roomInfo.players?.[user.uid]) {
             const roomRef = doc(db, 'artifacts', appId, 'rooms', roomInfo.code);
             const playerData = roomInfo.players[user.uid];
             const nextScore = (playerData.score || 0) + 100;

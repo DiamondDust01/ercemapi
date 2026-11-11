@@ -7,7 +7,7 @@ import {
   computeExperimentMetrics, summarizePoll, summarizeMissions, countParticipants, countStageProgress,
   summarizeCards, buildParticipantsCsvRows, CARD_LETTERS, MODES, summarizeProblem
 } from './metrics.js';
-import { getMinicursoProblem } from './minicurso.js';
+import { getMinicursoProblem, MINICURSO_PROBLEMS } from './minicurso.js';
 import { countGroups, modeFor, GROUP_LABELS, GROUPS } from './assignment.js';
 import {
   OPENING_POLL, MODE_LABELS, SPEAKER_CHECKLIST, DEMO_SCRIPT, HONESTY_NOTES, WEEKLY_CHALLENGE,
@@ -204,7 +204,7 @@ function TelaoContent({ state, participants, joinUrl, code }) {
         <ol className="space-y-4 text-3xl">
           {WEEKLY_CHALLENGE.map((item, index) => <li key={item.text}><strong>{index + 1}.</strong> {item.text}</li>)}
         </ol>
-        <p className="text-3xl font-bold text-green-400">Anote no caderno o código de retorno que aparece no seu aparelho.</p>
+        {normalizeConfig(state.config).stages.reteste && <p className="text-3xl font-bold text-green-400">Anote no caderno o código de retorno que aparece no seu aparelho.</p>}
       </div>
     );
   }
@@ -353,7 +353,17 @@ export default function HostView({ transport, code, title, state, participants, 
   const manualExperiment = state.manual?.experiment || {};
 
   const exportCsv = () => downloadText('pensa-comigo-turma-anonimizado.csv', toCsv(buildParticipantsCsvRows(participants)), 'text/csv;charset=utf-8');
-  const downloadKit = () => downloadText('pensa-comigo-kit-impresso.html', buildPrintKit({ title, roomCode: code }).html, 'text/html;charset=utf-8');
+  const downloadKit = () => {
+    const config = normalizeConfig(state.config);
+    const kit = buildPrintKit({
+      title,
+      roomCode: code,
+      pollQuestion: pollQuestionFor(state.config),
+      problems: Object.values(MINICURSO_PROBLEMS).filter((problem) => config.stages[problem.id]),
+      experiment: config.stages.experimento
+    });
+    downloadText('pensa-comigo-kit-impresso.html', kit.html, 'text/html;charset=utf-8');
+  };
   const simulate = async () => {
     const simulatedParticipants = buildSimulatedParticipants(28, participants.length);
     await Promise.all(simulatedParticipants.map((participant) => transport.updateParticipant(code, participant.uid, participant.data)));

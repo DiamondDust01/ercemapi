@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { IA_PROMPT_LIBRARY } from '../content/obiContent.js';
 import TutorItem from './TutorItem.jsx';
 import {
-  OPENING_POLL, MISSIONS, REMIX_PROMPTS, REMIX_EXAMPLE, DETECTIVE_CASES, getDetectiveCase, toTutorItem,
+  OPENING_POLL, MISSIONS, REMIX_PROMPTS, REMIX_EXAMPLE, getDetectiveCase, toTutorItem,
   EXPERIMENT_THEMES, THEME_ORDER, QUIZ_ITEMS, CONFIDENCE_LEVELS, MODE_LABELS, WEEKLY_CHALLENGE, getItem
 } from './content.js';
 import { evaluateRemix, REMIX_CRITERIA } from './remix.js';
@@ -429,8 +429,10 @@ export function ResultStage({ record }) {
 }
 
 // ---------------------------------------------------------------------------
-export function ClosingStage({ returnCode }) {
+export function ClosingStage({ returnCode, config }) {
   const [checked, setChecked] = useState(WEEKLY_CHALLENGE.map(() => false));
+  // O código de retorno só serve para o re-teste; sem re-teste na palestra, não aparece.
+  const showReturnCode = Boolean(returnCode) && normalizeConfig(config).stages.reteste;
   return (
     <Card>
       <h2 className="text-2xl font-black text-white">Desafio da semana</h2>
@@ -445,7 +447,7 @@ export function ClosingStage({ returnCode }) {
           </li>
         ))}
       </ul>
-      {returnCode && (
+      {showReturnCode && (
         <div className="mt-6 rounded-2xl border-2 border-green-400 bg-green-500/10 p-4 text-center">
           <div className="text-sm font-bold uppercase tracking-widest text-green-200">Anote no caderno: seu código de retorno</div>
           <div className="mt-2 font-mono text-4xl font-black tracking-[0.2em] text-white sm:text-5xl">{formatReturnCode(returnCode)}</div>

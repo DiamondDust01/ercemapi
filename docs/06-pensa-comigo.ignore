@@ -128,6 +128,11 @@ Fechamento.
   na verificação, tentativas e dicas.
 - A ficha de registro da folha impressa não faz parte do app.
 
+O kit impresso acompanha a configuração (desde 11/11/2026): usa a pergunta da
+enquete escolhida, inclui os enunciados dos Problemas A e B no formato Minicurso
+e só traz as folhas do experimento quando ele está ligado. O código de retorno
+só aparece no Fechamento quando o re-teste faz parte da palestra.
+
 5. O EXPERIMENTO "COPIAR × ESTUDAR ATIVAMENTE"
 
 Desenho: cada aluno passa pelos dois modos, em temas diferentes.
