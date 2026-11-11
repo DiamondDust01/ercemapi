@@ -1,12 +1,12 @@
 # ERCEMAPI para Android
 
-Atualizado em 26/10/2026.
+Atualizado em 11/11/2026.
 
-Este é o pacote de teste Android 1.7.0. O arquivo
-[`OBI-Quest-1.7.0-android.apk`](OBI-Quest-1.7.0-android.apk) é um APK instalável
-(`applicationId` `com.obique.quest`, `versionCode` 12, `versionName` `1.7.0`).
-Tamanho: 4.510.065 bytes. SHA-256:
-`73296177D58A659FF3E6E3FB1DA12F7711CD143AED13DE3F63B34F6D9EDBAE4A`.
+Este é o pacote de teste Android 1.8.0. O arquivo
+[`OBI-Quest-1.8.0-android.apk`](OBI-Quest-1.8.0-android.apk) é um APK instalável
+(`applicationId` `com.obique.quest`, `versionCode` 13, `versionName` `1.8.0`).
+Tamanho: 4.855.519 bytes. SHA-256:
+`0F925600C0C387927CE2F8B831A806E2AFAE5F95217EAE65D543917478F22F45`.
 
 Desde a 1.7.0, o app aparece no aparelho como **ERCEMAPI**. O arquivo e o
 `applicationId` mantêm o nome antigo, para quem já instalou receber a
@@ -15,7 +15,8 @@ atualização por cima da versão anterior.
 Ao abrir, o app pergunta qual variação usar: OBI Quest ou Pensa Comigo. No
 Android, os alunos entram numa sala do Pensa Comigo digitando o código; o QR
 aponta para a versão web publicada. O botão de sol e lua alterna entre os
-temas claro e escuro.
+temas claro e escuro. Desde a 1.8.0, o botão "?" abre um tutorial guiado e o
+Pensa Comigo tem o formato "Minicurso: Problemas A e B".
 
 ## Instalação
 
@@ -25,8 +26,8 @@ temas claro e escuro.
    origem e confirme a instalação.
 
 O Android pode avisar que a origem não é conhecida. Instale o arquivo apenas se
-você confia na origem do download. Esta versão foi compilada, mas não foi
-verificada em um aparelho físico.
+você confia na origem do download. Esta versão foi compilada e o conteúdo do APK foi conferido (versão 1.8.0 e
+os arquivos web atuais), mas não foi verificada em um aparelho físico.
 
 ## Assinatura e Firebase
 
