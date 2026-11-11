@@ -37,8 +37,8 @@ Capacitor empacota dist/ em uma WebView. npm run android:sync compila web e
 sincroniza o projeto nativo; npm run android:open abre o projeto no Android
 Studio; npm run android:apk gera APK debug quando JDK e SDK estao configurados.
 
-Foi preparado o APK 1.7.0, versionCode 12, na branch app-mobile:
-installers/android/OBI-Quest-1.7.0-android.apk. O arquivo e assinado com chave
+Foi preparado o APK 1.8.0, versionCode 13, na branch app-mobile:
+installers/android/OBI-Quest-1.8.0-android.apk. O arquivo e assinado com chave
 de depuracao, apropriado para teste, nao e assinatura de release para Play
 Store. A assinatura debug nao deve ser tratada como identidade confiavel do
 publicador. A compilacao foi validada; nao havia aparelho fisico conectado para
@@ -51,22 +51,23 @@ npm run app:windows:package cria um diretorio portatil completo; npm run
 app:windows:installer esta configurado para gerar um instalador NSIS assistido
 x64 em release/windows/.
 
-O pacote Windows 1.7.0 preparado para distribuicao esta na branch app-pc:
-installers/windows/OBI-Quest-1.7.0-Windows-x64.7z. Para usar, baixe o arquivo,
+O pacote Windows 1.8.0 preparado para distribuicao esta na branch app-pc:
+installers/windows/OBI-Quest-1.8.0-Windows-x64.7z. Para usar, baixe o arquivo,
 extraia com 7-Zip ou NanaZip e inicie OBI Quest.exe na pasta extraida. O
 executavel precisa permanecer com os outros recursos; nao distribua apenas esse
 arquivo isolado.
 
 O pacote foi verificado como arquivo 7z integro e contem o executavel, app.asar
 e recursos Electron para ingles dos EUA e portugues do Brasil. Tem cerca de
-95,30 MiB, abaixo do limite tecnico de 100 MiB por arquivo no GitHub, mas acima
-da recomendacao de 50 MB. Uma distribuicao maior deve usar Git LFS ou GitHub
-Releases. O pacote portatil 1.7.0 foi aberto num teste automatizado.
+95,31 MiB, abaixo do limite tecnico de 100 MiB por arquivo no GitHub, mas acima
+da recomendacao de 50 MB. Desde a 1.8.0 ele e comprimido no nivel maximo do
+7-Zip (-mx=9); no nivel padrao passaria de 100 MiB. Uma distribuicao maior deve usar Git LFS ou GitHub
+Releases. O pacote portatil 1.8.0 foi aberto num teste automatizado em 11/11/2026.
 
-A branch app-pc tambem tem o Setup NSIS 1.7.0
-(installers/windows/OBI-Quest-Setup-1.7.0.exe, cerca de 110 MB), guardado com
+A branch app-pc tambem tem o Setup NSIS 1.8.0
+(installers/windows/OBI-Quest-Setup-1.8.0.exe, cerca de 110 MB), guardado com
 Git LFS por passar de 100 MiB. O script npm run app:windows:installer existe
-apenas na branch app-pc. O Setup 1.7.0 foi compilado, mas nao foi executado; o
+apenas na branch app-pc. O Setup 1.8.0 foi compilado, mas nao foi executado; o
 Setup 1.4.2 anterior foi instalado, aberto e desinstalado num teste isolado.
 
 ASSINATURAS E AVISOS DO SISTEMA
