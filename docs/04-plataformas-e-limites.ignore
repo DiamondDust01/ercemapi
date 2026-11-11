@@ -1,5 +1,10 @@
 FONTE DE ESTUDO: PLATAFORMAS, PACOTES E LIMITES DE DISTRIBUICAO
-Atualizada em 26/10/2026. Pacotes publicados: versao 1.7.0, de 26/10/2026.
+Atualizada em 11/11/2026. Pacotes publicados: versao 1.8.0, de 11/11/2026.
+
+11/11/2026, versao 1.8.0: tutorial guiado, configuracao rapida do palestrante,
+formato "Minicurso: Problemas A e B" e correcoes (SUBMIT no modo Desafios,
+pontos guardados sem Firebase, codigos de sala com 6 caracteres). Nada mudou
+nos identificadores tecnicos nem nos nomes dos pacotes.
 
 26/10/2026, versao 1.7.0: o nome visivel passou a ser ERCEMAPI no titulo da
 janela e no Android (nome do app). O executavel OBI Quest.exe, o nome no Menu
@@ -8,11 +13,11 @@ mudaram, para as instalacoes existentes receberem as atualizacoes.
 
 VERSAO E FONTES DE VERDADE
 
-A versao da aplicacao documentada aqui e 1.7.0. package.json e package-lock.json
+A versao da aplicacao documentada aqui e 1.8.0. package.json e package-lock.json
 controlam a versao do cliente; android/app/build.gradle tambem registra
-versionName 1.7.0 e versionCode 12 para o Android. CHANGELOG.md registra as
+versionName 1.8.0 e versionCode 13 para o Android. CHANGELOG.md registra as
 alteracoes. Se uma branch ou futura release divergir, confirme os arquivos e
-commits dessa branch; este documento descreve o estado de 25/10/2026.
+commits dessa branch; este documento descreve o estado de 11/11/2026.
 
 A partir da 1.5.0, o app abre numa tela de escolha entre as duas variacoes,
 OBI Quest e Pensa Comigo, em todas as plataformas. No Android e no Windows, os

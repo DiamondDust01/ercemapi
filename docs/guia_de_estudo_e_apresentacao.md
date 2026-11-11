@@ -6,8 +6,8 @@
 > - **25/10/2026 (1.6.0):** temas claro e escuro em todas as telas.
 > - **25/10/2026 (1.6.1):** rodapé citando a ERCEMAPI e botões dos cartões alinhados.
 > - **26/10/2026 (1.7.0):** o app passou a se chamar **ERCEMAPI** ("OBI Quest" segue como nome da variação de treino); fundo do OBI Quest em malha hexagonal azul; Pensa Comigo em verde com chuva de citações sempre inteiras; tema claro revisto, com cartões brancos e botões de cor sólida.
-> - **11/11/2026 (não lançado):** botão "?" ao lado do botão de tema abre um tutorial guiado que contorna cada função da tela e mostra um balão explicativo; no Pensa Comigo, configuração rápida e opcional do palestrante (formato, etapas, questões das missões e pergunta da enquete).
-> - **11/11/2026 (não lançado):** formato "Minicurso: Problemas A e B" no Pensa Comigo; no OBI Quest, SUBMIT liberado no modo Desafios, pontos salvos no aparelho sem Firebase, códigos de sala sempre com 6 caracteres e "Resposta incorreta." na Iniciação com correção imediata.
+> - **11/11/2026 (1.8.0):** botão "?" ao lado do botão de tema abre um tutorial guiado que contorna cada função da tela e mostra um balão explicativo; no Pensa Comigo, configuração rápida e opcional do palestrante (formato, etapas, questões das missões e pergunta da enquete).
+> - **11/11/2026 (1.8.0):** formato "Minicurso: Problemas A e B" no Pensa Comigo; no OBI Quest, SUBMIT liberado no modo Desafios, pontos salvos no aparelho sem Firebase, códigos de sala sempre com 6 caracteres e "Resposta incorreta." na Iniciação com correção imediata.
 
 ## Para que serve este material
 

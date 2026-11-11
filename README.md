@@ -20,7 +20,7 @@ atualizações e os dados do Firebase continuem no mesmo lugar: pacote
 `obi-quest-v1` no Firestore, chaves `obi-quest-*` no armazenamento local,
 executável `OBI Quest.exe` e arquivos `OBI-Quest-*` dos instaladores.
 
-Documentação atualizada em 11/11/2026. Versão atual do código: **1.7.0**. A fonte da numeração é `package.json`; o
+Documentação atualizada em 11/11/2026. Versão atual do código: **1.8.0**. A fonte da numeração é `package.json`; o
 histórico de mudanças está em `CHANGELOG.md`.
 
 ## O que o aplicativo oferece

@@ -22,6 +22,8 @@ a numeração das versões consistente entre o código e os próximos lançament
 
 ## Não lançado
 
+## 1.8.0 - 2026-11-11
+
 ### Adicionado
 
 - 11/11/2026: botão de **tutorial guiado** (ícone "?") ao lado do botão de
