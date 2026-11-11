@@ -9,13 +9,16 @@ import { drawNickname, formatParticipantName, isDrawnNickname } from './nickname
 import { createReturnCode } from './returnCode.js';
 import { EXPERIMENT_ITEM_IDS, HONESTY_NOTES } from './content.js';
 import HostView from './HostView.jsx';
+import QuickConfigForm from './QuickConfigForm.jsx';
+import { DEFAULT_CONFIG, finalizeConfig, normalizeConfig, describeConfig } from './quickConfig.js';
 import ChallengePicker from './ChallengePicker.jsx';
 import {
   PollStage, TenteStage, RemixStage, MeTesteStage, DetectiveStage, ExperimentStage, QuizStage, ResultStage,
-  ClosingStage, RetestStage
+  ClosingStage, RetestStage, ProblemAStage, ProblemBStage
 } from './StudentStages.jsx';
 import { buttonPrimary, buttonSecondary, buttonDanger, inputClass, Card, Notice } from './ui.jsx';
 import ThemeToggle from '../ThemeToggle.jsx';
+import TutorialButton from '../TutorialButton.jsx';
 
 const storage = typeof window !== 'undefined' ? window.sessionStorage : null;
 
@@ -42,6 +45,8 @@ const tutorEngine = resolveTutorEngine({
 
 const STAGE_COMPONENTS = {
   abertura: PollStage,
+  'problema-a': ProblemAStage,
+  'problema-b': ProblemBStage,
   'tente-primeiro': TenteStage,
   remix: RemixStage,
   'me-teste': MeTesteStage,
@@ -81,6 +86,8 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
   const [nickname, setNickname] = useState(() => drawNickname());
   const [kind, setKind] = useState('solo');
   const [hostTitle, setHostTitle] = useState('Palestra Pensa Comigo');
+  const [quickConfig, setQuickConfig] = useState(() => normalizeConfig(readSessionValue(storage, 'quick-config', DEFAULT_CONFIG)));
+  const [showQuickConfig, setShowQuickConfig] = useState(false);
   const [resumeCode, setResumeCode] = useState('');
 
   // Dados sincronizados
@@ -90,6 +97,7 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
 
   useEffect(() => { writeSessionValue(storage, 'host', host); }, [host]);
   useEffect(() => { writeSessionValue(storage, 'student', student); }, [student]);
+  useEffect(() => { writeSessionValue(storage, 'quick-config', quickConfig); }, [quickConfig]);
 
   useEffect(() => {
     if (!activeCode) return undefined;
@@ -194,7 +202,8 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
       let code = createRoomCode();
       for (let attempt = 0; attempt < 3 && (await transport.sessionInfo(code)).exists; attempt += 1) code = createRoomCode();
       const title = hostTitle.trim().slice(0, 80) || 'Palestra Pensa Comigo';
-      await transport.createSession({ code, title, hostUid: uid, state: INITIAL_STATE });
+      const config = finalizeConfig(quickConfig);
+      await transport.createSession({ code, title, hostUid: uid, state: { ...INITIAL_STATE, config, freePlay: config.freePlay } });
       setHost({ code, title });
       setView('host');
     } catch {
@@ -235,8 +244,9 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
         <h1 className="bg-gradient-to-r from-lime-300 to-green-500 bg-clip-text text-3xl font-black tracking-tight text-transparent sm:text-4xl">Pensa Comigo</h1>
       </div>
       <div className="flex flex-wrap gap-2">
+        <TutorialButton context="pensa" accent="green" variant="label" className={buttonSecondary} />
         <ThemeToggle variant="label" className={buttonSecondary} />
-        <button type="button" className={buttonSecondary} onClick={onExit}>Trocar de modo</button>
+        <button type="button" data-tour="switch-mode" className={buttonSecondary} onClick={onExit}>Trocar de modo</button>
       </div>
     </div>
   );
@@ -248,7 +258,7 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
   if (view === 'landing') {
     body = (
       <div className="space-y-5">
-        <Card>
+        <Card tour="pensa-intro">
           <p className="text-lg leading-relaxed text-slate-200">A IA pode ser um tutor que ajuda você a pensar, e não uma ferramenta que pensa por você. Neste modo, a turma testa isso na prática, durante a palestra.</p>
           <ul className="mt-3 grid gap-2 text-sm text-slate-300 sm:grid-cols-2">
             <li>1. Tentar resolver antes de perguntar.</li>
@@ -258,17 +268,17 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
           </ul>
         </Card>
         <div className="grid gap-4 md:grid-cols-3">
-          <Card className="flex flex-col">
+          <Card className="flex flex-col" tour="pensa-student">
             <h2 className="text-xl font-bold text-white">Sou estudante</h2>
             <p className="mt-1 flex-1 text-sm text-slate-400">Entre com o código do telão. Sem cadastro e sem nome.</p>
             <button type="button" className={`${buttonPrimary} mt-4 w-full`} onClick={() => setView('join')}>Entrar numa sala</button>
           </Card>
-          <Card className="flex flex-col">
+          <Card className="flex flex-col" tour="pensa-host">
             <h2 className="text-xl font-bold text-white">Sou palestrante</h2>
             <p className="mt-1 flex-1 text-sm text-slate-400">Abra a sala, projete o telão e conduza as etapas.</p>
             <button type="button" className={`${buttonPrimary} mt-4 w-full`} onClick={() => setView('create')}>Abrir sala</button>
           </Card>
-          <Card className="flex flex-col">
+          <Card className="flex flex-col" tour="pensa-solo">
             <h2 className="text-xl font-bold text-white">Praticar sozinho</h2>
             <p className="mt-1 flex-1 text-sm text-slate-400">Escolha um desafio e estude com o tutor.</p>
             <button type="button" className={`${buttonSecondary} mt-4 w-full`} onClick={() => setView('solo')}>Escolha seu desafio</button>
@@ -319,14 +329,24 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
 
   if (view === 'create') {
     body = (
-      <Card className="mx-auto max-w-xl">
+      <Card className="mx-auto max-w-3xl">
         <h2 className="text-2xl font-black text-white">Abrir sala</h2>
         {isLocal && <div className="mt-3"><Notice tone="warn">Sem Firebase configurado, a sala é uma demonstração local: funciona neste aparelho (e em outras abas deste navegador). Os celulares da turma não conseguem entrar. Use o modo sem celular e o kit impresso.</Notice></div>}
         <label className="mt-4 block text-sm font-semibold text-slate-200">Nome da palestra
           <input value={hostTitle} onChange={(event) => setHostTitle(event.target.value)} maxLength={80} className={`${inputClass} mt-1`} />
         </label>
+        <div data-tour="pensa-quick-config" className="mt-4 rounded-xl border border-slate-700 p-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="min-w-0">
+              <div className="text-sm font-bold text-white">Configuração rápida <span className="font-normal text-slate-400">(opcional)</span></div>
+              <p className="text-xs text-slate-400">{describeConfig(quickConfig)}</p>
+            </div>
+            <button type="button" aria-expanded={showQuickConfig} className={buttonSecondary} onClick={() => setShowQuickConfig((open) => !open)}>{showQuickConfig ? 'Fechar' : 'Configurar'}</button>
+          </div>
+          {showQuickConfig && <div className="mt-4 border-t border-slate-800 pt-4"><QuickConfigForm value={quickConfig} onChange={setQuickConfig} /></div>}
+        </div>
         <div className="mt-4 flex flex-wrap gap-2">
-          <button type="button" className={buttonPrimary} disabled={busy} onClick={createHostRoom}>{busy ? 'Criando…' : 'Criar sala'}</button>
+          <button type="button" data-tour="pensa-create" className={buttonPrimary} disabled={busy} onClick={createHostRoom}>{busy ? 'Criando…' : 'Criar sala'}</button>
           <button type="button" className={buttonSecondary} onClick={() => setView('landing')}>Voltar</button>
         </div>
         {!isLocal && (
@@ -371,7 +391,13 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
           participants={participants}
           joinBase={joinBase}
           onEnd={endOnDevice}
-          onShowAsStudent={() => { setJoinCode(host.code); setView('join'); }}
+          onShowAsStudent={() => {
+            // Ensaio: se este aparelho já entrou como aluno nesta sala, retoma o mesmo aluno
+            // (mesmas respostas e mesmo código de retorno) em vez de entrar de novo do zero.
+            if (student?.code === host.code) { setView('student'); return; }
+            setJoinCode(host.code);
+            setView('join');
+          }}
         />
       );
     }
@@ -409,7 +435,7 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
           <ChallengePicker programming={programming} unlocks={roomState.unlocks} excludeSourceIds={experimentContentLocked(stage.id) ? EXPERIMENT_ITEM_IDS : []} />
         )}
         {roomState && !showPicker && StageComponent && (
-          <StageComponent key={stage.id} record={student.record || {}} save={saveRecord} group={group || student.record?.group || null} returnCode={student.returnCode} />
+          <StageComponent key={stage.id} config={roomState.config} record={student.record || {}} save={saveRecord} group={group || student.record?.group || null} returnCode={student.returnCode} />
         )}
       </div>
     );

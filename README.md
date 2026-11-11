@@ -20,7 +20,7 @@ atualizações e os dados do Firebase continuem no mesmo lugar: pacote
 `obi-quest-v1` no Firestore, chaves `obi-quest-*` no armazenamento local,
 executável `OBI Quest.exe` e arquivos `OBI-Quest-*` dos instaladores.
 
-Documentação atualizada em 26/10/2026. Versão atual do código: **1.7.0**. A fonte da numeração é `package.json`; o
+Documentação atualizada em 11/11/2026. Versão atual do código: **1.8.0**. A fonte da numeração é `package.json`; o
 histórico de mudanças está em `CHANGELOG.md`.
 
 ## O que o aplicativo oferece
@@ -29,7 +29,9 @@ Ao abrir, o app pergunta qual variação usar: **OBI Quest** (treino para a OBI)
 **Pensa Comigo** (palestras sobre estudar com IA). A escolha vale para a aba
 aberta e pode ser trocada a qualquer momento pelo botão "Trocar de modo".
 As duas variações têm tema claro e escuro (botão de sol e lua); o escuro é o
-padrão e a escolha fica salva no aparelho. O OBI Quest usa uma malha
+padrão e a escolha fica salva no aparelho. Ao lado do botão de tema, o botão
+"?" (desde 11/11/2026) abre um tutorial guiado da tela atual: cada etapa
+contorna uma função na tela e mostra um balão explicando para que ela serve. O OBI Quest usa uma malha
 hexagonal azul ao fundo. O Pensa Comigo é verde, com frases e citações caindo letra por
 letra, no estilo do filme Matrix (parado quando o sistema pede menos movimento).
 
@@ -93,7 +95,8 @@ individuais funcionam e a interface pode demonstrar uma sala apenas local; não
 há multiplayer entre dispositivos.
 
 O perfil, preferências, atividades pedagógicas e recordes locais usam
-`localStorage`. Esses dados não sincronizam automaticamente entre navegador,
+`localStorage`. Sem Firebase, os pontos e os problemas de Programação concluídos
+também ficam no aparelho (desde 11/11/2026). Esses dados não sincronizam automaticamente entre navegador,
 Android e Windows.
 
 ## Modo Pensa Comigo
@@ -105,6 +108,16 @@ telão aponta para esse link). O palestrante cria a
 sala, projeta o telão e conduz as etapas: abertura com enquete anônima, quatro
 missões (Tente primeiro, Remix de prompt, Me teste, Detetive de erros),
 experimento, quiz sem IA, resultado, fechamento e re-teste.
+
+- **Configuração rápida (11/11/2026):** formulário opcional na tela "Abrir sala"
+  e no painel. Escolhe o formato da palestra (completa, curta, só as missões ou
+  só o experimento), as etapas, a questão do Tente primeiro, as questões do Me
+  teste, os casos do Detetive e a pergunta da enquete. As questões oferecidas não
+  fazem parte do experimento nem do Detetive. Sem configuração, vale a palestra
+  completa, como antes. O formato **Minicurso: Problemas A e B** usa os dois
+  problemas da atividade prática do minicurso da XIV ERCEMAPI: Problema A sem
+  IA e Problema B com o tutor, com editor C++/Python e verificação local do
+  código (sem compilar nem executar).
 
 - **Alunos:** entram por código ou QR, recebem um apelido sorteado e não digitam
   nome. Um aparelho pode ser uma dupla. Os dados do modo ficam em

@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
-  STAGES, getStage, nextStageId, previousStageId, buildJoinUrl, toCsv, readSessionValue, writeSessionValue
+  getStage, buildJoinUrl, toCsv, readSessionValue, writeSessionValue
 } from './session.js';
 import {
   computeExperimentMetrics, summarizePoll, summarizeMissions, countParticipants, countStageProgress,
-  summarizeCards, buildParticipantsCsvRows, CARD_LETTERS, MODES
+  summarizeCards, buildParticipantsCsvRows, CARD_LETTERS, MODES, summarizeProblem
 } from './metrics.js';
+import { getMinicursoProblem, MINICURSO_PROBLEMS } from './minicurso.js';
 import { countGroups, modeFor, GROUP_LABELS, GROUPS } from './assignment.js';
 import {
   OPENING_POLL, MODE_LABELS, SPEAKER_CHECKLIST, DEMO_SCRIPT, HONESTY_NOTES, WEEKLY_CHALLENGE,
@@ -16,6 +17,10 @@ import { buildPrintKit } from './printKit.js';
 import ThemeToggle from '../ThemeToggle.jsx';
 import { drawNickname, formatParticipantName } from './nicknames.js';
 import { buttonPrimary, buttonSecondary, buttonDanger, Card, Notice, Bar, QrCode, downloadText } from './ui.jsx';
+import QuickConfigForm from './QuickConfigForm.jsx';
+import {
+  activeStages, nextActiveStageId, previousActiveStageId, pollQuestionFor, normalizeConfig, finalizeConfig, describeConfig
+} from './quickConfig.js';
 
 const storage = typeof window !== 'undefined' ? window.sessionStorage : null;
 
@@ -54,10 +59,28 @@ function TelaoContent({ state, participants, joinUrl, code }) {
           <div className={`text-xl ${muted}`}>Sem cadastro. Você recebe um apelido sorteado.</div>
         </div>
         <div className="space-y-5">
-          <h2 className="text-4xl font-black leading-tight sm:text-5xl">{OPENING_POLL.question}</h2>
+          <h2 className="text-4xl font-black leading-tight sm:text-5xl">{pollQuestionFor(state.config)}</h2>
           {poll.options.map((option, index) => <Bar key={option.id} large label={`${CARD_LETTERS[index]} · ${option.label} (${option.count})`} value={option.pct} color="bg-green-400" />)}
           <p className={`text-xl ${muted}`}>{poll.total} resposta(s) anônima(s)</p>
         </div>
+      </div>
+    );
+  }
+
+  const problem = getMinicursoProblem(state.stage);
+  if (problem) {
+    const summary = summarizeProblem(participants, state.stage);
+    return (
+      <div className="space-y-6">
+        <div className="text-2xl font-bold text-green-400">{problem.stageLabel} · {problem.withAi ? 'com IA' : 'sem IA'}</div>
+        <h2 className="text-5xl font-black">Problema {problem.letter} · {problem.title}</h2>
+        <p className="text-2xl leading-relaxed">{problem.statement}</p>
+        <Progress />
+        <Bar large label="Completaram a verificação local" value={summary.acceptedPct} color="bg-emerald-400" />
+        <p className="text-3xl">Média de tentativas: <strong className="font-mono">{summary.averageAttempts}</strong></p>
+        {problem.withAi && <p className="text-3xl">Média de dicas do tutor: <strong className="font-mono">{summary.averageHints}</strong> de 3</p>}
+        <p className={`text-xl ${muted}`}>A verificação procura padrões no código; não é o veredito de um juiz. Os códigos ficam nos aparelhos.</p>
+        {cards}
       </div>
     );
   }
@@ -106,7 +129,7 @@ function TelaoContent({ state, participants, joinUrl, code }) {
       <div className="space-y-6">
         <h2 className="text-5xl font-black">Detetive de erros</h2>
         <Progress />
-        {missions.detective.cases.map((caseData) => {
+        {missions.detective.cases.filter((caseData) => normalizeConfig(state.config).detectiveCaseIds.includes(caseData.id)).map((caseData) => {
           const source = getDetectiveCase(DETECTIVE_CASES.find((entry) => entry.id === caseData.id));
           return <Bar key={caseData.id} large label={`${source.title} · ${source.hasError ? 'tinha erro' : 'estava certa'}`} value={caseData.pct} color={source.hasError ? 'bg-green-400' : 'bg-emerald-400'} />;
         })}
@@ -181,7 +204,7 @@ function TelaoContent({ state, participants, joinUrl, code }) {
         <ol className="space-y-4 text-3xl">
           {WEEKLY_CHALLENGE.map((item, index) => <li key={item.text}><strong>{index + 1}.</strong> {item.text}</li>)}
         </ol>
-        <p className="text-3xl font-bold text-green-400">Anote no caderno o código de retorno que aparece no seu aparelho.</p>
+        {normalizeConfig(state.config).stages.reteste && <p className="text-3xl font-bold text-green-400">Anote no caderno o código de retorno que aparece no seu aparelho.</p>}
       </div>
     );
   }
@@ -288,7 +311,9 @@ const buildSimulatedParticipants = (count, assignmentsOffset = 0) => {
           'tente-primeiro': { done: true, correct: pick(0.7), hints: Math.floor(random() * 4) },
           remix: { done: true, score: Math.floor(random() * 4), stillAsksAnswer: pick(0.3) },
           'me-teste': { done: true, points: Math.floor(random() * 4), total: 3, peeked: pick(0.2) ? 1 : 0 },
-          detetive: { done: true, results: Object.fromEntries(DETECTIVE_CASES.map((caseData) => [caseData.id, { judgedCorrectly: pick(0.6) }])) }
+          detetive: { done: true, results: Object.fromEntries(DETECTIVE_CASES.map((caseData) => [caseData.id, { judgedCorrectly: pick(0.6) }])) },
+          'problema-a': { done: true, accepted: pick(0.5), attempts: 1 + Math.floor(random() * 4), hints: 0 },
+          'problema-b': { done: true, accepted: pick(0.7), attempts: 1 + Math.floor(random() * 3), hints: Math.floor(random() * 4) }
         },
         experiment: { group, themes, quiz, quizDone: true }
       }
@@ -305,6 +330,9 @@ export default function HostView({ transport, code, title, state, participants, 
   const groupCounts = countGroups(state.assignments);
   const stage = getStage(state.stage);
   const isLocal = transport.kind === 'local';
+  const stages = activeStages(state.config);
+  const [configDraft, setConfigDraft] = useState(() => normalizeConfig(state.config));
+  const [editingConfig, setEditingConfig] = useState(false);
 
   useEffect(() => { writeSessionValue(storage, 'speaker-checklist', checklist); }, [checklist]);
 
@@ -313,11 +341,29 @@ export default function HostView({ transport, code, title, state, participants, 
     .catch(() => setMessage('A alteração não foi sincronizada. Ela será reenviada quando a conexão voltar, se possível.'));
 
   const setStage = (stageId) => update({ stage: stageId });
+  const saveConfig = () => {
+    const config = finalizeConfig(configDraft);
+    const patch = { config, freePlay: config.freePlay };
+    // Se a etapa atual saiu da palestra, vai para a próxima que ficou.
+    if (!activeStages(config).some((item) => item.id === state.stage)) patch.stage = nextActiveStageId(config, state.stage);
+    update(patch, 'Configuração salva na sala. Os aparelhos já recebem as novas etapas e questões.');
+    setEditingConfig(false);
+  };
   const manualCards = state.manual?.cards?.[state.stage] || {};
   const manualExperiment = state.manual?.experiment || {};
 
   const exportCsv = () => downloadText('pensa-comigo-turma-anonimizado.csv', toCsv(buildParticipantsCsvRows(participants)), 'text/csv;charset=utf-8');
-  const downloadKit = () => downloadText('pensa-comigo-kit-impresso.html', buildPrintKit({ title, roomCode: code }).html, 'text/html;charset=utf-8');
+  const downloadKit = () => {
+    const config = normalizeConfig(state.config);
+    const kit = buildPrintKit({
+      title,
+      roomCode: code,
+      pollQuestion: pollQuestionFor(state.config),
+      problems: Object.values(MINICURSO_PROBLEMS).filter((problem) => config.stages[problem.id]),
+      experiment: config.stages.experimento
+    });
+    downloadText('pensa-comigo-kit-impresso.html', kit.html, 'text/html;charset=utf-8');
+  };
   const simulate = async () => {
     const simulatedParticipants = buildSimulatedParticipants(28, participants.length);
     await Promise.all(simulatedParticipants.map((participant) => transport.updateParticipant(code, participant.uid, participant.data)));
@@ -341,22 +387,22 @@ export default function HostView({ transport, code, title, state, participants, 
           {joinUrl && <QrCode value={joinUrl} size={160} />}
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
-          <button type="button" className={buttonPrimary} onClick={() => setShowTelao(true)}>Mostrar telão</button>
+          <button type="button" data-tour="host-telao" className={buttonPrimary} onClick={() => setShowTelao(true)}>Mostrar telão</button>
           {isLocal && <button type="button" className={buttonSecondary} onClick={onShowAsStudent}>Ensaiar como aluno nesta aba</button>}
           <button type="button" className={buttonDanger} onClick={onEnd}>Encerrar neste aparelho</button>
         </div>
         {message && <div className="mt-3"><Notice>{message}</Notice></div>}
       </Card>
 
-      <Card>
+      <Card tour="host-stages">
         <h3 className="text-lg font-bold text-white">Etapas</h3>
         <p className="text-sm text-slate-400">Etapa atual: <strong className="text-white">{stage.label}</strong> · {countStageProgress(participants, state.stage)} de {counts.devices} aparelhos concluíram.</p>
         <div className="mt-3 flex flex-wrap gap-2">
-          <button type="button" className={buttonSecondary} onClick={() => setStage(previousStageId(state.stage))}>Etapa anterior</button>
-          <button type="button" className={buttonPrimary} onClick={() => setStage(nextStageId(state.stage))}>Próxima etapa</button>
+          <button type="button" className={buttonSecondary} onClick={() => setStage(previousActiveStageId(state.config, state.stage))}>Etapa anterior</button>
+          <button type="button" className={buttonPrimary} onClick={() => setStage(nextActiveStageId(state.config, state.stage))}>Próxima etapa</button>
         </div>
         <ol className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {STAGES.map((item, index) => (
+          {stages.map((item, index) => (
             <li key={item.id}>
               <button type="button" aria-current={item.id === state.stage ? 'step' : undefined} onClick={() => setStage(item.id)} className={`flex min-h-11 w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-sm ${item.id === state.stage ? 'border-green-400 bg-green-500/15 text-white' : 'border-slate-700 text-slate-300 hover:border-slate-500'}`}>
                 <span>{index + 1}. {item.label}</span>
@@ -365,6 +411,26 @@ export default function HostView({ transport, code, title, state, participants, 
             </li>
           ))}
         </ol>
+      </Card>
+
+      <Card tour="host-config">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="text-lg font-bold text-white">Configuração rápida</h3>
+            <p className="text-sm text-slate-400">{describeConfig(state.config)}</p>
+          </div>
+          <button type="button" aria-expanded={editingConfig} className={buttonSecondary} onClick={() => { setConfigDraft(normalizeConfig({ ...state.config, freePlay: Boolean(state.freePlay) })); setEditingConfig((open) => !open); }}>{editingConfig ? 'Fechar' : 'Editar'}</button>
+        </div>
+        {editingConfig && (
+          <div className="mt-4 space-y-4 border-t border-slate-800 pt-4">
+            <Notice tone="warn">Trocar questões depois que a turma respondeu deixa os números do telão misturados. Prefira ajustar antes de começar a missão.</Notice>
+            <QuickConfigForm value={configDraft} onChange={setConfigDraft} />
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className={buttonPrimary} onClick={saveConfig}>Salvar na sala</button>
+              <button type="button" className={buttonSecondary} onClick={() => setEditingConfig(false)}>Cancelar</button>
+            </div>
+          </div>
+        )}
       </Card>
 
       <div className="grid gap-5 lg:grid-cols-2">
@@ -405,7 +471,7 @@ export default function HostView({ transport, code, title, state, participants, 
         </Card>
       </div>
 
-      <Card>
+      <Card tour="host-offline">
         <h3 className="text-lg font-bold text-white">Modo sem celular</h3>
         <p className="text-sm text-slate-400">Conte os cartões A, B, C e D levantados na etapa atual ({stage.short}). Os números vão para o telão e funcionam mesmo sem rede.</p>
         <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
