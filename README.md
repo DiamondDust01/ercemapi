@@ -188,10 +188,10 @@ npm run android:apk
 ```
 
 O APK de depuração gerado localmente fica em
-`android/app/build/outputs/apk/debug/app-debug.apk`. O APK 1.7.0 pronto para
+`android/app/build/outputs/apk/debug/app-debug.apk`. O APK 1.8.0 pronto para
 teste está na branch `app-mobile`:
-[baixar ERCEMAPI 1.7.0 para Android](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-mobile/installers/android/OBI-Quest-1.7.0-android.apk).
-Ele usa a chave de depuração (`versionCode` 12), não é um pacote assinado para
+[baixar ERCEMAPI 1.8.0 para Android](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-mobile/installers/android/OBI-Quest-1.8.0-android.apk).
+Ele usa a chave de depuração (`versionCode` 13), não é um pacote assinado para
 publicação na Play Store e não foi testado em aparelho físico nesta rodada.
 
 ## Pacotes Windows
@@ -218,15 +218,16 @@ contornar esses bloqueios. O Setup 1.7.0 foi compilado, mas não foi executado
 nesta rodada; o Setup 1.4.2 anterior foi instalado, aberto e desinstalado num
 teste local isolado. Não tem assinatura digital.
 
-O pacote portátil 1.7.0 está na branch `app-pc`:
-[baixar ERCEMAPI 1.7.0 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.7.0-Windows-x64.7z).
+O pacote portátil 1.8.0 está na branch `app-pc`:
+[baixar ERCEMAPI 1.8.0 para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-1.8.0-Windows-x64.7z).
 Extraia com 7-Zip ou NanaZip e execute `OBI Quest.exe` na pasta extraída. O
-arquivo comprimido tem cerca de 99,9 MB (95,30 MiB); o GitHub recomenda manter
-arquivos abaixo de 50 MB. O instalador assistido 1.7.0, com aproximadamente
-110 MB, está em [`installers/windows/`](installers/windows/) e é armazenado com
-Git LFS por exceder 100 MiB. Para clonar e obter esse arquivo, instale Git LFS
-e execute `git lfs install` e `git lfs pull`. Também é possível baixar o
-[Setup para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-Setup-1.7.0.exe).
+arquivo comprimido tem cerca de 99,9 MB (95,31 MiB, compressão máxima do 7-Zip);
+o GitHub recomenda manter arquivos abaixo de 50 MB. O instalador assistido 1.8.0,
+com aproximadamente 110 MB, está em [`installers/windows/`](installers/windows/) e é
+armazenado com Git LFS por exceder 100 MiB. Para clonar e obter esse arquivo,
+instale Git LFS e execute `git lfs install` e `git lfs pull`. Também é possível
+baixar o
+[Setup para Windows x64](https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-Setup-1.8.0.exe).
 O instalador e o app portátil não têm assinatura digital; políticas de
 segurança do Windows podem bloquear a execução.
 
