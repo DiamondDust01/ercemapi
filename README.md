@@ -95,7 +95,8 @@ individuais funcionam e a interface pode demonstrar uma sala apenas local; não
 há multiplayer entre dispositivos.
 
 O perfil, preferências, atividades pedagógicas e recordes locais usam
-`localStorage`. Esses dados não sincronizam automaticamente entre navegador,
+`localStorage`. Sem Firebase, os pontos e os problemas de Programação concluídos
+também ficam no aparelho (desde 11/11/2026). Esses dados não sincronizam automaticamente entre navegador,
 Android e Windows.
 
 ## Modo Pensa Comigo
@@ -113,7 +114,10 @@ experimento, quiz sem IA, resultado, fechamento e re-teste.
   só o experimento), as etapas, a questão do Tente primeiro, as questões do Me
   teste, os casos do Detetive e a pergunta da enquete. As questões oferecidas não
   fazem parte do experimento nem do Detetive. Sem configuração, vale a palestra
-  completa, como antes.
+  completa, como antes. O formato **Minicurso: Problemas A e B** usa os dois
+  problemas da atividade prática do minicurso da XIV ERCEMAPI: Problema A sem
+  IA e Problema B com o tutor, com editor C++/Python e verificação local do
+  código (sem compilar nem executar).
 
 - **Alunos:** entram por código ou QR, recebem um apelido sorteado e não digitam
   nome. Um aparelho pode ser uma dupla. Os dados do modo ficam em

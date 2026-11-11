@@ -21,6 +21,10 @@ ATUALIZACOES DESDE A VERSAO 1.4.2
   tutorial guiado: contorna cada funcao da tela e mostra um balao explicando. No Pensa
   Comigo, configuracao rapida e opcional do palestrante: formato da palestra,
   etapas, questoes das missoes e pergunta da enquete.
+- 11/11/2026, ainda nao lancado: formato "Minicurso: Problemas A e B" (Problema A
+  sem IA e Problema B com o tutor). Correcoes: SUBMIT liberado no modo Desafios,
+  pontos guardados no aparelho sem Firebase, codigos de sala sempre com 6
+  caracteres e "Resposta incorreta." na Iniciacao com correcao imediata.
 
 NO USO, ISSO SIGNIFICA:
 - Ao abrir, escolha "Entrar no OBI Quest" para os modulos desta fonte. O botao
@@ -30,6 +34,9 @@ NO USO, ISSO SIGNIFICA:
 - O botao "?", ao lado do de tema, abre um tutorial guiado: a tela escurece, a
   funcao da vez fica contornada e um balao explica para que serve. Use
   Proximo/Anterior ou as setas do teclado; "Pular tutorial" ou Esc fecha.
+- Programacao, modo Desafios: o SUBMIT funciona sem cronometro (11/11/2026). No
+  modo Competicao, o envio continua dependendo do cronometro da partida.
+- Sem Firebase, os pontos e os problemas concluidos ficam salvos no aparelho.
 - O Pensa Comigo tem fonte propria: 06-pensa-comigo.ignore.
 
 INICIACAO

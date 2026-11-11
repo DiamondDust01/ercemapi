@@ -9,7 +9,8 @@ import { EXPERIMENT_ITEM_IDS, DETECTIVE_CASES, OPENING_POLL, MISSIONS } from './
 
 test('sem configuração, a palestra é a mesma de antes', () => {
   const config = normalizeConfig(undefined);
-  assert.deepEqual(activeStageIds(config), STAGE_IDS);
+  // Os problemas do minicurso só entram no formato próprio.
+  assert.deepEqual(activeStageIds(config), STAGE_IDS.filter((id) => !id.startsWith('problema-')));
   assert.equal(config.tenteItemId, MISSIONS['tente-primeiro'].itemId);
   assert.deepEqual(config.meTesteItemIds, MISSIONS['me-teste'].itemIds);
   assert.equal(detectiveCasesFor(config).length, DETECTIVE_CASES.length);

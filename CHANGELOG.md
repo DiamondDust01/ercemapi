@@ -42,6 +42,44 @@ a numeração das versões consistente entre o código e os próximos lançament
   as etapas desligadas. Sem configuração, a palestra é a mesma de antes. A
   escolha fica em `state.config` da sala (`src/pensaComigo/quickConfig.js`, com
   testes). O kit impresso continua com o conteúdo padrão.
+- 11/11/2026: formato **Minicurso: Problemas A e B** na configuração rápida,
+  com os dois problemas da atividade prática do minicurso "IA como assistente
+  no treinamento para maratonas e olimpíadas" (XIV ERCEMAPI 2026, IFCE Campus
+  Crato). Etapas: Abertura, Etapa 1 · Problema A "Brinquedos do parque" (sem
+  IA e sem dicas), Etapa 2 · Problema B "Orçamento" (com o tutor e 3 dicas
+  graduais, liberadas depois da primeira tentativa) e Fechamento. Cada problema
+  traz enunciado, entrada, saída, restrições e exemplo; o aluno escreve em C++
+  ou Python e a verificação local confere leitura, ordenação, busca binária e
+  saída, avisa sobre laços aninhados (TLE) e sobre `lower_bound`/`bisect_left`
+  no lugar errado. Ela não compila nem executa o código. O telão mostra quantos
+  concluíram, quantos completaram a verificação, a média de tentativas e de
+  dicas; a exportação CSV ganhou três colunas. A ficha de registro da folha não
+  entra no app (`src/pensaComigo/minicurso.js`, com testes).
+
+### Corrigido
+
+- 11/11/2026: Programação, modo Desafios: o botão SUBMIT só funcionava com o
+  cronômetro da Competição rodando, e esse cronômetro nem aparece no modo
+  Desafios. Agora o envio é livre no treino e só depende do cronômetro no modo
+  Competição.
+- 11/11/2026: sem Firebase, um Accepted não somava pontos nem marcava o
+  problema como concluído, e o placar ficava sempre em 0. O progresso agora fica
+  no aparelho (`localStorage`, chave `obi-quest-progress`); com Firebase, nada
+  mudou.
+- 11/11/2026: códigos de sala da Competição e de turma do Professor podiam sair
+  curtos ou vazios (`Math.random().toString(36)`). Agora têm sempre 6
+  caracteres, sem letras ambíguas, como os do Pensa Comigo. Códigos antigos
+  continuam aceitos.
+- 11/11/2026: Iniciação com correção imediata: a resposta errada aparecia como
+  "Resposta registrada."; agora diz "Resposta incorreta.". Revisão da partida
+  mostra "1 jogador" no singular.
+- 11/11/2026: Pensa Comigo: no Detetive, achar o erro mas escolher a correção
+  errada dava "Boa investigação!"; agora avisa que a correção não é essa. O
+  tutor deixou de pedir "escolha uma alternativa" em questões sem alternativas
+  (código e resposta curta). O Remix com texto curto demais não mostra mais
+  critérios vazios. "Ensaiar como aluno nesta aba" retoma o mesmo aluno de
+  ensaio, sem apagar as respostas nem trocar o código de retorno. O resumo da
+  configuração só cita as etapas ligadas.
 
 ## 1.7.0 - 2026-10-26
 

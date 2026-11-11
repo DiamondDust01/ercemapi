@@ -27,7 +27,7 @@ export const registerAttempt = (state, { choice = null, text = '', correct: expl
   else if (hasChoice && item) correct = choice === item.correct;
   const nextState = {
     ...state,
-    attempts: [...state.attempts, { choice: hasChoice ? choice : null, wrote: hasText }],
+    attempts: [...state.attempts, { choice: hasChoice ? choice : null, wrote: hasText, correct }],
     solved: state.solved || correct === true
   };
   return { state: nextState, accepted: true, correct };
@@ -46,13 +46,30 @@ export const showExplanation = (state) => (canShowExplanation(state) ? { ...stat
 export const isFinished = (state) => state.solved || state.explanationShown;
 
 // Mensagem do tutor para o próximo passo, em linguagem para 11 a 14 anos.
-export const tutorMessage = (state) => {
-  if (!hasAttempted(state)) return 'Antes de qualquer dica, mostre como você pensou: escolha uma alternativa ou escreva sua ideia.';
+// `item` ajusta o texto ao tipo de questão: só fala em "alternativa" quando há alternativas.
+export const tutorMessage = (state, item = null) => {
+  const isCode = item?.type === 'codigo';
+  const hasOptions = !item || (Array.isArray(item.options) && item.options.length > 0);
+  if (!hasAttempted(state)) {
+    if (isCode) return 'Antes de qualquer dica, mostre como você pensou: escreva seu código e verifique.';
+    return hasOptions
+      ? 'Antes de qualquer dica, mostre como você pensou: escolha uma alternativa ou escreva sua ideia.'
+      : 'Antes de qualquer dica, mostre como você pensou: escreva sua resposta ou sua ideia.';
+  }
   if (state.solved) return 'Você chegou lá! Explique para você mesmo por que essa é a resposta. Depois confira no caderno ou no livro.';
-  if (state.explanationShown) return 'Leia a explicação com calma e refaça a conta no caderno, sem olhar.';
+  if (state.explanationShown) {
+    return isCode
+      ? 'Leia a explicação com calma e reescreva o código sem olhar.'
+      : 'Leia a explicação com calma e refaça a conta no caderno, sem olhar.';
+  }
   if (state.hintsShown >= MAX_HINTS) return 'Você já viu as três dicas. Tente mais uma vez ou abra a explicação.';
   const last = state.attempts[state.attempts.length - 1];
-  if (last?.choice === null) return 'Boa, você escreveu sua ideia. Agora escolha uma alternativa ou peça a primeira dica.';
+  if (last?.correct === false) return 'Ainda não. Que tal uma dica? Ela não entrega a resposta.';
+  if (last?.choice === null) {
+    return hasOptions
+      ? 'Boa, você escreveu sua ideia. Agora escolha uma alternativa ou peça a primeira dica.'
+      : 'Boa, você escreveu sua ideia. Agora peça a primeira dica, se precisar.';
+  }
   return 'Ainda não. Que tal uma dica? Ela não entrega a resposta.';
 };
 

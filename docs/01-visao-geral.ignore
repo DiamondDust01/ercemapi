@@ -21,6 +21,10 @@ ATUALIZACOES DESDE A VERSAO 1.4.2
   tutorial guiado: contorna cada funcao da tela e mostra um balao explicando. No Pensa
   Comigo, configuracao rapida e opcional do palestrante: formato da palestra,
   etapas, questoes das missoes e pergunta da enquete.
+- 11/11/2026, ainda nao lancado: formato "Minicurso: Problemas A e B" (Problema A
+  sem IA e Problema B com o tutor). Correcoes: SUBMIT liberado no modo Desafios,
+  pontos guardados no aparelho sem Firebase, codigos de sala sempre com 6
+  caracteres e "Resposta incorreta." na Iniciacao com correcao imediata.
 
 O QUE E O PROJETO
 

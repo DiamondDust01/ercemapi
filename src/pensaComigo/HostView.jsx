@@ -5,8 +5,9 @@ import {
 } from './session.js';
 import {
   computeExperimentMetrics, summarizePoll, summarizeMissions, countParticipants, countStageProgress,
-  summarizeCards, buildParticipantsCsvRows, CARD_LETTERS, MODES
+  summarizeCards, buildParticipantsCsvRows, CARD_LETTERS, MODES, summarizeProblem
 } from './metrics.js';
+import { getMinicursoProblem } from './minicurso.js';
 import { countGroups, modeFor, GROUP_LABELS, GROUPS } from './assignment.js';
 import {
   OPENING_POLL, MODE_LABELS, SPEAKER_CHECKLIST, DEMO_SCRIPT, HONESTY_NOTES, WEEKLY_CHALLENGE,
@@ -62,6 +63,24 @@ function TelaoContent({ state, participants, joinUrl, code }) {
           {poll.options.map((option, index) => <Bar key={option.id} large label={`${CARD_LETTERS[index]} · ${option.label} (${option.count})`} value={option.pct} color="bg-green-400" />)}
           <p className={`text-xl ${muted}`}>{poll.total} resposta(s) anônima(s)</p>
         </div>
+      </div>
+    );
+  }
+
+  const problem = getMinicursoProblem(state.stage);
+  if (problem) {
+    const summary = summarizeProblem(participants, state.stage);
+    return (
+      <div className="space-y-6">
+        <div className="text-2xl font-bold text-green-400">{problem.stageLabel} · {problem.withAi ? 'com IA' : 'sem IA'}</div>
+        <h2 className="text-5xl font-black">Problema {problem.letter} · {problem.title}</h2>
+        <p className="text-2xl leading-relaxed">{problem.statement}</p>
+        <Progress />
+        <Bar large label="Completaram a verificação local" value={summary.acceptedPct} color="bg-emerald-400" />
+        <p className="text-3xl">Média de tentativas: <strong className="font-mono">{summary.averageAttempts}</strong></p>
+        {problem.withAi && <p className="text-3xl">Média de dicas do tutor: <strong className="font-mono">{summary.averageHints}</strong> de 3</p>}
+        <p className={`text-xl ${muted}`}>A verificação procura padrões no código; não é o veredito de um juiz. Os códigos ficam nos aparelhos.</p>
+        {cards}
       </div>
     );
   }
@@ -292,7 +311,9 @@ const buildSimulatedParticipants = (count, assignmentsOffset = 0) => {
           'tente-primeiro': { done: true, correct: pick(0.7), hints: Math.floor(random() * 4) },
           remix: { done: true, score: Math.floor(random() * 4), stillAsksAnswer: pick(0.3) },
           'me-teste': { done: true, points: Math.floor(random() * 4), total: 3, peeked: pick(0.2) ? 1 : 0 },
-          detetive: { done: true, results: Object.fromEntries(DETECTIVE_CASES.map((caseData) => [caseData.id, { judgedCorrectly: pick(0.6) }])) }
+          detetive: { done: true, results: Object.fromEntries(DETECTIVE_CASES.map((caseData) => [caseData.id, { judgedCorrectly: pick(0.6) }])) },
+          'problema-a': { done: true, accepted: pick(0.5), attempts: 1 + Math.floor(random() * 4), hints: 0 },
+          'problema-b': { done: true, accepted: pick(0.7), attempts: 1 + Math.floor(random() * 3), hints: Math.floor(random() * 4) }
         },
         experiment: { group, themes, quiz, quizDone: true }
       }

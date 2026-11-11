@@ -8,13 +8,16 @@ import { MISSIONS, DETECTIVE_CASES, EXPERIMENT_ITEM_IDS, OPENING_POLL, getItem, 
 
 // Etapas que o palestrante pode tirar. Abertura e Fechamento ficam sempre.
 // "experimento" liga ou desliga o bloco inteiro: Atividade, Quiz sem IA e Resultado.
+// `on` é o padrão: os problemas do minicurso só entram quando alguém os liga.
 export const OPTIONAL_STAGES = [
-  { id: 'tente-primeiro', label: 'Missão 1 · Tente primeiro' },
-  { id: 'remix', label: 'Missão 2 · Remix de prompt' },
-  { id: 'me-teste', label: 'Missão 3 · Me teste' },
-  { id: 'detetive', label: 'Missão 4 · Detetive de erros' },
-  { id: 'experimento', label: 'Experimento (atividade, quiz sem IA e resultado)' },
-  { id: 'reteste', label: 'Re-teste (outro dia)' }
+  { id: 'problema-a', label: 'Minicurso · Etapa 1 · Problema A (sem IA)', on: false },
+  { id: 'problema-b', label: 'Minicurso · Etapa 2 · Problema B (com IA)', on: false },
+  { id: 'tente-primeiro', label: 'Missão 1 · Tente primeiro', on: true },
+  { id: 'remix', label: 'Missão 2 · Remix de prompt', on: true },
+  { id: 'me-teste', label: 'Missão 3 · Me teste', on: true },
+  { id: 'detetive', label: 'Missão 4 · Detetive de erros', on: true },
+  { id: 'experimento', label: 'Experimento (atividade, quiz sem IA e resultado)', on: true },
+  { id: 'reteste', label: 'Re-teste (outro dia)', on: true }
 ];
 
 const EXPERIMENT_BLOCK = ['experimento', 'quiz', 'resultado'];
@@ -31,7 +34,7 @@ export const POLL_QUESTION_MAX = 120;
 
 export const DEFAULT_CONFIG = Object.freeze({
   preset: 'completa',
-  stages: Object.freeze(Object.fromEntries(OPTIONAL_STAGES.map((stage) => [stage.id, true]))),
+  stages: Object.freeze(Object.fromEntries(OPTIONAL_STAGES.map((stage) => [stage.id, stage.on]))),
   tenteItemId: MISSIONS['tente-primeiro'].itemId,
   meTesteItemIds: Object.freeze([...MISSIONS['me-teste'].itemIds]),
   detectiveCaseIds: Object.freeze(DETECTIVE_CASES.map((caseData) => caseData.id)),
@@ -43,7 +46,13 @@ export const PRESETS = [
   { id: 'completa', label: 'Palestra completa', description: 'As 4 missões, o experimento e o re-teste.', stages: {} },
   { id: 'curta', label: 'Palestra curta', description: 'Tente primeiro, Detetive e o experimento.', stages: { remix: false, 'me-teste': false, reteste: false } },
   { id: 'missoes', label: 'Só as missões', description: 'As 4 missões, sem o experimento.', stages: { experimento: false, reteste: false } },
-  { id: 'experimento', label: 'Só o experimento', description: 'Abertura, experimento e fechamento.', stages: { 'tente-primeiro': false, remix: false, 'me-teste': false, detetive: false, reteste: false } }
+  { id: 'experimento', label: 'Só o experimento', description: 'Abertura, experimento e fechamento.', stages: { 'tente-primeiro': false, remix: false, 'me-teste': false, detetive: false, reteste: false } },
+  {
+    id: 'minicurso',
+    label: 'Minicurso: Problemas A e B',
+    description: 'Etapa 1 · Problema A sem IA e Etapa 2 · Problema B com o tutor (XIV ERCEMAPI 2026).',
+    stages: { 'problema-a': true, 'problema-b': true, 'tente-primeiro': false, remix: false, 'me-teste': false, detetive: false, experimento: false, reteste: false }
+  }
 ];
 
 export const applyPreset = (config, presetId) => {
@@ -63,7 +72,7 @@ export const normalizeConfig = (raw) => {
   const input = raw && typeof raw === 'object' ? raw : {};
   const stages = Object.fromEntries(OPTIONAL_STAGES.map((stage) => [
     stage.id,
-    typeof input.stages?.[stage.id] === 'boolean' ? input.stages[stage.id] : true
+    typeof input.stages?.[stage.id] === 'boolean' ? input.stages[stage.id] : stage.on
   ]));
 
   const validMissionId = (id) => MISSION_ITEM_IDS.some((allowed) => String(allowed) === String(id));
@@ -130,6 +139,10 @@ export const detectiveCasesFor = (config) => {
 export const describeConfig = (config) => {
   const normalized = normalizeConfig(config);
   const preset = PRESETS.find((entry) => entry.id === normalized.preset);
-  const stages = activeStages(normalized).length;
-  return `${preset ? preset.label : 'Personalizada'} · ${stages} etapa(s) · ${normalized.meTesteItemIds.length} questão(ões) no Me teste · ${normalized.detectiveCaseIds.length} caso(s) no Detetive`;
+  const parts = [preset ? preset.label : 'Personalizada', `${activeStages(normalized).length} etapa(s)`];
+  // Só cita as questões das etapas que estão ligadas.
+  if (normalized.stages['problema-a'] || normalized.stages['problema-b']) parts.push('Problemas do minicurso');
+  if (normalized.stages['me-teste']) parts.push(`${normalized.meTesteItemIds.length} questão(ões) no Me teste`);
+  if (normalized.stages.detetive) parts.push(`${normalized.detectiveCaseIds.length} caso(s) no Detetive`);
+  return parts.join(' · ');
 };

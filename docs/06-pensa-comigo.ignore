@@ -2,6 +2,8 @@ ERCEMAPI — PENSA COMIGO
 Atualizada em 11/11/2026.
 
 Atualizacoes por data:
+- 11/11/2026: formato "Minicurso: Problemas A e B" (secao 4); correcoes no
+  Detetive, no tutor, no Remix e no ensaio como aluno.
 - 11/11/2026: configuracao rapida do palestrante (secao 4) e botao "Tutorial"
   no cabecalho, ao lado do botao de tema: contorna as funcoes da tela atual
   (inicio, abrir sala ou painel do palestrante) e mostra um balao explicando.
@@ -107,6 +109,24 @@ Configuração rápida (desde 11/11/2026): formulário opcional na tela "Abrir s
 para a sala, então todos os aparelhos e o telão usam a mesma. Sem configuração,
 vale a palestra completa, como antes. O kit impresso continua com o conteúdo
 padrão.
+
+Formato "Minicurso: Problemas A e B" (desde 11/11/2026): usa os dois problemas
+da atividade prática do minicurso "IA como assistente no treinamento para
+maratonas e olimpíadas" (XIV ERCEMAPI 2026, IFCE Campus Crato). Etapas:
+Abertura, Etapa 1 · Problema A (sem IA), Etapa 2 · Problema B (com IA) e
+Fechamento.
+- Problema A, "Brinquedos do parque": para cada brinquedo, quantos visitantes
+  têm altura ≤ x. Sem dicas: o aluno escreve, verifica e conclui; depois vê a
+  ideia de solução (ordenar e usar upper_bound/bisect_right).
+- Problema B, "Orçamento": para cada cliente, quantos preços cabem em [a, b].
+  O tutor libera três dicas graduais depois da primeira tentativa; a resposta é
+  (quantos ≤ b) − (quantos < a).
+- A verificação local procura padrões no código (leitura, ordenação, busca
+  binária, saída). Ela avisa sobre laços aninhados (tempo excedido) e sobre a
+  busca do lado errado, mas não compila nem executa o programa. O telão deixa
+  isso escrito. O código fica no aparelho; a sala recebe só concluído, passou
+  na verificação, tentativas e dicas.
+- A ficha de registro da folha impressa não faz parte do app.
 
 5. O EXPERIMENTO "COPIAR × ESTUDAR ATIVAMENTE"
 

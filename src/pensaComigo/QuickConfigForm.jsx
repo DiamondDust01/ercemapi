@@ -4,6 +4,7 @@ import {
   applyPreset, normalizeConfig, activeStages
 } from './quickConfig.js';
 import { DETECTIVE_CASES, getDetectiveCase, getItem, OPENING_POLL } from './content.js';
+import { MINICURSO_PROBLEMS } from './minicurso.js';
 import { buttonSecondary, inputClass } from './ui.jsx';
 
 const DETECTIVE_OPTIONS = DETECTIVE_CASES.map(getDetectiveCase);
@@ -62,10 +63,18 @@ export default function QuickConfigForm({ value, onChange }) {
         </div>
       </fieldset>
 
-      {(stageOn('tente-primeiro') || stageOn('me-teste') || stageOn('detetive')) && (
+      {(stageOn('problema-a') || stageOn('problema-b') || stageOn('tente-primeiro') || stageOn('me-teste') || stageOn('detetive')) && (
         <fieldset className="space-y-4">
           <legend className="text-sm font-bold text-slate-100">3. Questões</legend>
-          <p className="text-xs text-slate-500">A lista mostra só questões que não aparecem no experimento nem no Detetive, para nenhuma missão adiantar a resposta do quiz.</p>
+          {(stageOn('problema-a') || stageOn('problema-b')) && (
+            <ul className="space-y-1 rounded-xl border border-slate-700 p-3 text-sm text-slate-200">
+              {Object.values(MINICURSO_PROBLEMS).filter((problem) => stageOn(problem.id)).map((problem) => (
+                <li key={problem.id}><strong>{problem.stageLabel} · {problem.title}</strong> <span className="text-xs text-slate-400">({problem.withAi ? 'com o tutor e 3 dicas' : 'sem IA e sem dicas'})</span></li>
+              ))}
+              <li className="text-xs text-slate-500">Problemas da atividade prática do minicurso, com enunciado, exemplo e verificação local do código.</li>
+            </ul>
+          )}
+          {(stageOn('tente-primeiro') || stageOn('me-teste') || stageOn('detetive')) && <p className="text-xs text-slate-500">A lista mostra só questões que não aparecem no experimento nem no Detetive, para nenhuma missão adiantar a resposta do quiz.</p>}
 
           {stageOn('tente-primeiro') && (
             <label className="block text-sm text-slate-200">Tente primeiro (1 questão, com 3 dicas)

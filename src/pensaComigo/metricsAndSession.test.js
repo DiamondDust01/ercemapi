@@ -136,12 +136,12 @@ test('tutor generativo desligado por padrão e nenhum texto sai do aparelho', ()
 });
 
 test('etapas e bloqueio do conteúdo do experimento', () => {
-  assert.equal(nextStageId('abertura'), 'tente-primeiro');
+  assert.equal(nextStageId('abertura'), 'problema-a');
   assert.equal(previousStageId('abertura'), 'abertura');
   assert.equal(nextStageId('reteste'), 'reteste');
   assert.equal(experimentContentLocked('quiz'), true);
   assert.equal(experimentContentLocked('resultado'), false);
-  assert.equal(STAGE_IDS.length, 10);
+  assert.equal(STAGE_IDS.length, 12);
 });
 
 test('catálogo "Escolha seu desafio" normaliza origens e respeita a faixa', () => {

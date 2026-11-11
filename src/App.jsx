@@ -25,7 +25,7 @@ import {
   Plus, Repeat2
 } from 'lucide-react';
 import { readLocalConnectionQuality } from './localConnection.js';
-import { parseRoomParam } from './pensaComigo/session.js';
+import { parseRoomParam, createRoomCode } from './pensaComigo/session.js';
 import { readAppMode, writeAppMode } from './appMode.js';
 import ModeSelector from './ModeSelector.jsx';
 import BinaryBackdrop from './BinaryBackdrop.jsx';
@@ -51,6 +51,30 @@ if (app && import.meta.env.DEV && import.meta.env.VITE_FIREBASE_EMULATORS === '1
   connectFirestoreEmulator(db, '127.0.0.1', 8080);
 }
 const appId = typeof __app_id !== 'undefined' ? __app_id : import.meta.env.VITE_APP_ID || 'obi-quest-v1';
+// Progresso do treino sem Firebase: fica no aparelho, como o restante do perfil local.
+const LOCAL_PROGRESS_KEY = 'obi-quest-progress';
+const EMPTY_PROGRESS = { completedLevels: [], score: 0, iniciacaoSolved: [] };
+const readLocalProgress = () => {
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(LOCAL_PROGRESS_KEY) || 'null');
+    if (!saved || typeof saved !== 'object') return { ...EMPTY_PROGRESS };
+    return {
+      ...EMPTY_PROGRESS,
+      ...saved,
+      completedLevels: Array.isArray(saved.completedLevels) ? saved.completedLevels : [],
+      score: Number.isFinite(saved.score) ? saved.score : 0
+    };
+  } catch {
+    return { ...EMPTY_PROGRESS };
+  }
+};
+const writeLocalProgress = (progress) => {
+  try {
+    window.localStorage.setItem(LOCAL_PROGRESS_KEY, JSON.stringify(progress));
+  } catch {
+    // Sem armazenamento (ex.: janela privada): o progresso vale só nesta sessão.
+  }
+};
 // Modo Pensa Comigo (palestras em escolas), carregado só quando aberto.
 const PensaComigo = React.lazy(() => import('./pensaComigo/PensaComigo.jsx'));
 const readInitialRoomCode = () => {
@@ -869,7 +893,12 @@ export default function App() {
   }, [homeChecklist]);
 
   useEffect(() => {
-    if (!user || !db) {
+    if (!db) {
+      setUserData(readLocalProgress());
+      setLoading(false);
+      return;
+    }
+    if (!user) {
       setLoading(false);
       return;
     }
@@ -1265,7 +1294,8 @@ export default function App() {
   };
 
   const createClassroom = async () => {
-    const code = Math.random().toString(36).slice(2, 8).toUpperCase();
+    // Sempre 6 caracteres, sem letras ambíguas (Math.random().toString(36) às vezes saía curto).
+    const code = createRoomCode();
     const classroom = { code, title: teacherTitle.trim() || 'Minicurso ERCEMAPI', topic: teacherTopic, createdAt: new Date().toISOString(), participants: {} };
     updatePedagogy({ classroomCode: code, classroomAlias: 'Professor', classroomData: classroom });
     setTeacherMessage(`Sessão criada. Código de entrada: ${code}`);
@@ -1483,7 +1513,7 @@ export default function App() {
     return Math.round((independentCorrect / rounds.length) * 100);
   }, [pedagogy.sessions]);
 
-  const generateRoomCode = () => Math.random().toString(36).slice(2, 7).toUpperCase();
+  const generateRoomCode = () => createRoomCode();
 
   const roomRanking = useMemo(() => {
     const players = roomInfo?.players ? Object.values(roomInfo.players) : [];
@@ -1545,6 +1575,9 @@ export default function App() {
   const timerTone = timeLeft === 0 ? 'border-rose-500 bg-rose-500/10 text-rose-200' : timerAlert ? 'border-amber-500 bg-amber-500/10 text-amber-100' : 'border-cyan-500/20 bg-cyan-500/10 text-cyan-100';
   const timerAccent = timeLeft === 0 ? 'text-rose-400' : timerAlert ? 'text-amber-300' : 'text-cyan-300';
   const isTimerActive = timerRunning && timeLeft > 0;
+  // O cronômetro só trava o envio no modo Competição; no modo Desafios (treino) ele nem
+  // aparece na tela, então o envio fica sempre liberado.
+  const canSubmitCode = programSubTab !== 'competicao' || isTimerActive;
   const canControlCompetition = !db || !user || !roomInfo
     || (peerStatus.primaryUid || roomInfo.hostUid) === user.uid;
   const roomStartState = getRoomStartState(roomInfo);
@@ -1921,7 +1954,7 @@ export default function App() {
   const currentLevel = LEVELS.find(l => l.id === currentLevelId) || LEVELS[0];
 
   const handleRunCode = (code, lang) => {
-    if (!isTimerActive) {
+    if (!canSubmitCode) {
       addTerminalLine('O cronômetro está pausado ou zerado. Retome o tempo para enviar código.', 'error');
       return;
     }
@@ -1941,12 +1974,18 @@ export default function App() {
           setIsVictory(true);
           AudioEngine.setSettings({ tempo: 160, baseHz: 60 });
 
-          if (user && userData && !userData.completedLevels.includes(currentLevel.id)) {
-            const newCompleted = [...userData.completedLevels, currentLevel.id];
-            setDoc(doc(db, 'artifacts', appId, 'users', user.uid), {
-              completedLevels: newCompleted,
+          if (userData && !userData.completedLevels.includes(currentLevel.id)) {
+            const progress = {
+              completedLevels: [...userData.completedLevels, currentLevel.id],
               score: (userData.score || 0) + 100
-            }, { merge: true });
+            };
+            if (db && user) {
+              setDoc(doc(db, 'artifacts', appId, 'users', user.uid), progress, { merge: true });
+            } else if (!db) {
+              const next = { ...userData, ...progress };
+              setUserData(next);
+              writeLocalProgress(next);
+            }
           }
 
           if (roomInfo?.code && user && roomInfo.players?.[user.uid]) {
@@ -2446,7 +2485,7 @@ export default function App() {
 
                     {selectedAnswer && (
                       <div className={`mt-4 p-4 rounded-xl border text-sm ${hideIniciacaoCorrectness ? 'bg-slate-950 border-slate-700 text-slate-200' : isCorrectAnswer ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-200' : 'bg-rose-950/20 border-rose-500/30 text-rose-200'}`}>
-                        <p className="font-bold mb-1">{hideIniciacaoCorrectness ? 'Resposta registrada.' : isCorrectAnswer ? 'Resposta correta!' : 'Resposta registrada.'}</p>
+                        <p className="font-bold mb-1">{hideIniciacaoCorrectness ? 'Resposta registrada.' : isCorrectAnswer ? 'Resposta correta!' : 'Resposta incorreta.'}</p>
                         {!hideIniciacaoCorrectness && <p>{q.explanation}</p>}
                         {hideIniciacaoCorrectness && <p className="text-xs text-slate-500">A correção imediata está oculta.</p>}
                       </div>
@@ -2906,8 +2945,8 @@ export default function App() {
                             <dl className="grid grid-cols-2 gap-2 text-[11px]">
                               <div className="rounded bg-slate-950/70 p-2"><dt className="text-slate-500">Duração</dt><dd className="mt-1 font-bold text-white">{roomSetupMinutes} minutos</dd></div>
                               <div className="rounded bg-slate-950/70 p-2"><dt className="text-slate-500">Participantes agora</dt><dd className="mt-1 font-bold text-white">1 — você</dd></div>
-                              <div className="rounded bg-slate-950/70 p-2"><dt className="text-slate-500">Mínimo para iniciar</dt><dd className="mt-1 font-bold text-white">{roomSetupMinPlayers} jogadores</dd></div>
-                              <div className="rounded bg-slate-950/70 p-2"><dt className="text-slate-500">Máximo na sala</dt><dd className="mt-1 font-bold text-white">{roomSetupMaxPlayers} jogadores</dd></div>
+                              <div className="rounded bg-slate-950/70 p-2"><dt className="text-slate-500">Mínimo para iniciar</dt><dd className="mt-1 font-bold text-white">{roomSetupMinPlayers} {roomSetupMinPlayers === 1 ? 'jogador' : 'jogadores'}</dd></div>
+                              <div className="rounded bg-slate-950/70 p-2"><dt className="text-slate-500">Máximo na sala</dt><dd className="mt-1 font-bold text-white">{roomSetupMaxPlayers} {roomSetupMaxPlayers === 1 ? 'jogador' : 'jogadores'}</dd></div>
                             </dl>
                             <p className="text-[10px] leading-relaxed text-slate-400">
                               {roomSetupMinPlayers > 1
@@ -3165,7 +3204,7 @@ export default function App() {
                   onRun={handleRunCode}
                   onReset={() => { setTerminalOutput([]); setShowRoast(null); setIsVictory(false); }}
                   isVictory={isVictory}
-                  canSubmit={isTimerActive}
+                  canSubmit={canSubmitCode}
                 />
               </div>
 

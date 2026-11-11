@@ -21,6 +21,10 @@ ATUALIZACOES DESDE A VERSAO 1.4.2
   tutorial guiado: contorna cada funcao da tela e mostra um balao explicando. No Pensa
   Comigo, configuracao rapida e opcional do palestrante: formato da palestra,
   etapas, questoes das missoes e pergunta da enquete.
+- 11/11/2026, ainda nao lancado: formato "Minicurso: Problemas A e B" (Problema A
+  sem IA e Problema B com o tutor). Correcoes: SUBMIT liberado no modo Desafios,
+  pontos guardados no aparelho sem Firebase, codigos de sala sempre com 6
+  caracteres e "Resposta incorreta." na Iniciacao com correcao imediata.
 
 NA ARQUITETURA, ISSO SIGNIFICA:
 - Conteudo pedagogico compartilhado em src/content/obiContent.js; o Pensa Comigo
@@ -33,6 +37,12 @@ NA ARQUITETURA, ISSO SIGNIFICA:
   rede e decide as etapas ativas. O tutorial guiado (src/TutorialButton.jsx)
   destaca elementos marcados com o atributo data-tour; src/tour.js escolhe o
   elemento visivel e a posicao do balao. Nao grava nada.
+- Minicurso (11/11/2026): src/pensaComigo/minicurso.js guarda os Problemas A e B
+  e os validadores por padroes (sem executar codigo). O progresso de cada aluno
+  vai em missions.problema-a e missions.problema-b, sem o codigo.
+- Progresso sem Firebase (11/11/2026): localStorage, chave obi-quest-progress
+  (pontos e problemas concluidos). Codigos de sala e de turma usam
+  createRoomCode (6 caracteres, sem letras ambiguas).
 - Firestore: as turmas ganharam as subcolecoes pensaComigo/state e
   pensaComigoParticipants/{uid}; regras sugeridas em firestore.rules.
 - O tema claro e gerado da paleta do Tailwind (src/themeLight.css, por

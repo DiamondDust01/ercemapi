@@ -14,7 +14,7 @@ import { DEFAULT_CONFIG, finalizeConfig, normalizeConfig, describeConfig } from 
 import ChallengePicker from './ChallengePicker.jsx';
 import {
   PollStage, TenteStage, RemixStage, MeTesteStage, DetectiveStage, ExperimentStage, QuizStage, ResultStage,
-  ClosingStage, RetestStage
+  ClosingStage, RetestStage, ProblemAStage, ProblemBStage
 } from './StudentStages.jsx';
 import { buttonPrimary, buttonSecondary, buttonDanger, inputClass, Card, Notice } from './ui.jsx';
 import ThemeToggle from '../ThemeToggle.jsx';
@@ -45,6 +45,8 @@ const tutorEngine = resolveTutorEngine({
 
 const STAGE_COMPONENTS = {
   abertura: PollStage,
+  'problema-a': ProblemAStage,
+  'problema-b': ProblemBStage,
   'tente-primeiro': TenteStage,
   remix: RemixStage,
   'me-teste': MeTesteStage,
@@ -389,7 +391,13 @@ export default function PensaComigo({ db, user, appId, programming, initialRoomC
           participants={participants}
           joinBase={joinBase}
           onEnd={endOnDevice}
-          onShowAsStudent={() => { setJoinCode(host.code); setView('join'); }}
+          onShowAsStudent={() => {
+            // Ensaio: se este aparelho já entrou como aluno nesta sala, retoma o mesmo aluno
+            // (mesmas respostas e mesmo código de retorno) em vez de entrar de novo do zero.
+            if (student?.code === host.code) { setView('student'); return; }
+            setJoinCode(host.code);
+            setView('join');
+          }}
         />
       );
     }
