@@ -214,7 +214,7 @@ um instalador auxiliar temporário. Ele permite escolher a pasta de instalação
 cria atalhos no menu Iniciar e na área de trabalho, e inclui um desinstalador.
 O instalador não tem assinatura digital; políticas de segurança ainda podem
 bloquear sua compilação ou execução. Não desative proteções do Windows para
-contornar esses bloqueios. O Setup 1.7.0 foi compilado, mas não foi executado
+contornar esses bloqueios. O Setup 1.8.0 foi compilado, mas não foi executado
 nesta rodada; o Setup 1.4.2 anterior foi instalado, aberto e desinstalado num
 teste local isolado. Não tem assinatura digital.
 
