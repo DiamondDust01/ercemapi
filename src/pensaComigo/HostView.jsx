@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
-  STAGES, getStage, nextStageId, previousStageId, buildJoinUrl, toCsv, readSessionValue, writeSessionValue
+  getStage, buildJoinUrl, toCsv, readSessionValue, writeSessionValue
 } from './session.js';
 import {
   computeExperimentMetrics, summarizePoll, summarizeMissions, countParticipants, countStageProgress,
@@ -16,6 +16,10 @@ import { buildPrintKit } from './printKit.js';
 import ThemeToggle from '../ThemeToggle.jsx';
 import { drawNickname, formatParticipantName } from './nicknames.js';
 import { buttonPrimary, buttonSecondary, buttonDanger, Card, Notice, Bar, QrCode, downloadText } from './ui.jsx';
+import QuickConfigForm from './QuickConfigForm.jsx';
+import {
+  activeStages, nextActiveStageId, previousActiveStageId, pollQuestionFor, normalizeConfig, finalizeConfig, describeConfig
+} from './quickConfig.js';
 
 const storage = typeof window !== 'undefined' ? window.sessionStorage : null;
 
@@ -54,7 +58,7 @@ function TelaoContent({ state, participants, joinUrl, code }) {
           <div className={`text-xl ${muted}`}>Sem cadastro. Você recebe um apelido sorteado.</div>
         </div>
         <div className="space-y-5">
-          <h2 className="text-4xl font-black leading-tight sm:text-5xl">{OPENING_POLL.question}</h2>
+          <h2 className="text-4xl font-black leading-tight sm:text-5xl">{pollQuestionFor(state.config)}</h2>
           {poll.options.map((option, index) => <Bar key={option.id} large label={`${CARD_LETTERS[index]} · ${option.label} (${option.count})`} value={option.pct} color="bg-green-400" />)}
           <p className={`text-xl ${muted}`}>{poll.total} resposta(s) anônima(s)</p>
         </div>
@@ -106,7 +110,7 @@ function TelaoContent({ state, participants, joinUrl, code }) {
       <div className="space-y-6">
         <h2 className="text-5xl font-black">Detetive de erros</h2>
         <Progress />
-        {missions.detective.cases.map((caseData) => {
+        {missions.detective.cases.filter((caseData) => normalizeConfig(state.config).detectiveCaseIds.includes(caseData.id)).map((caseData) => {
           const source = getDetectiveCase(DETECTIVE_CASES.find((entry) => entry.id === caseData.id));
           return <Bar key={caseData.id} large label={`${source.title} · ${source.hasError ? 'tinha erro' : 'estava certa'}`} value={caseData.pct} color={source.hasError ? 'bg-green-400' : 'bg-emerald-400'} />;
         })}
@@ -305,6 +309,9 @@ export default function HostView({ transport, code, title, state, participants, 
   const groupCounts = countGroups(state.assignments);
   const stage = getStage(state.stage);
   const isLocal = transport.kind === 'local';
+  const stages = activeStages(state.config);
+  const [configDraft, setConfigDraft] = useState(() => normalizeConfig(state.config));
+  const [editingConfig, setEditingConfig] = useState(false);
 
   useEffect(() => { writeSessionValue(storage, 'speaker-checklist', checklist); }, [checklist]);
 
@@ -313,6 +320,14 @@ export default function HostView({ transport, code, title, state, participants, 
     .catch(() => setMessage('A alteração não foi sincronizada. Ela será reenviada quando a conexão voltar, se possível.'));
 
   const setStage = (stageId) => update({ stage: stageId });
+  const saveConfig = () => {
+    const config = finalizeConfig(configDraft);
+    const patch = { config, freePlay: config.freePlay };
+    // Se a etapa atual saiu da palestra, vai para a próxima que ficou.
+    if (!activeStages(config).some((item) => item.id === state.stage)) patch.stage = nextActiveStageId(config, state.stage);
+    update(patch, 'Configuração salva na sala. Os aparelhos já recebem as novas etapas e questões.');
+    setEditingConfig(false);
+  };
   const manualCards = state.manual?.cards?.[state.stage] || {};
   const manualExperiment = state.manual?.experiment || {};
 
@@ -341,22 +356,22 @@ export default function HostView({ transport, code, title, state, participants, 
           {joinUrl && <QrCode value={joinUrl} size={160} />}
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
-          <button type="button" className={buttonPrimary} onClick={() => setShowTelao(true)}>Mostrar telão</button>
+          <button type="button" data-tour="host-telao" className={buttonPrimary} onClick={() => setShowTelao(true)}>Mostrar telão</button>
           {isLocal && <button type="button" className={buttonSecondary} onClick={onShowAsStudent}>Ensaiar como aluno nesta aba</button>}
           <button type="button" className={buttonDanger} onClick={onEnd}>Encerrar neste aparelho</button>
         </div>
         {message && <div className="mt-3"><Notice>{message}</Notice></div>}
       </Card>
 
-      <Card>
+      <Card tour="host-stages">
         <h3 className="text-lg font-bold text-white">Etapas</h3>
         <p className="text-sm text-slate-400">Etapa atual: <strong className="text-white">{stage.label}</strong> · {countStageProgress(participants, state.stage)} de {counts.devices} aparelhos concluíram.</p>
         <div className="mt-3 flex flex-wrap gap-2">
-          <button type="button" className={buttonSecondary} onClick={() => setStage(previousStageId(state.stage))}>Etapa anterior</button>
-          <button type="button" className={buttonPrimary} onClick={() => setStage(nextStageId(state.stage))}>Próxima etapa</button>
+          <button type="button" className={buttonSecondary} onClick={() => setStage(previousActiveStageId(state.config, state.stage))}>Etapa anterior</button>
+          <button type="button" className={buttonPrimary} onClick={() => setStage(nextActiveStageId(state.config, state.stage))}>Próxima etapa</button>
         </div>
         <ol className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {STAGES.map((item, index) => (
+          {stages.map((item, index) => (
             <li key={item.id}>
               <button type="button" aria-current={item.id === state.stage ? 'step' : undefined} onClick={() => setStage(item.id)} className={`flex min-h-11 w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-sm ${item.id === state.stage ? 'border-green-400 bg-green-500/15 text-white' : 'border-slate-700 text-slate-300 hover:border-slate-500'}`}>
                 <span>{index + 1}. {item.label}</span>
@@ -365,6 +380,26 @@ export default function HostView({ transport, code, title, state, participants, 
             </li>
           ))}
         </ol>
+      </Card>
+
+      <Card tour="host-config">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="text-lg font-bold text-white">Configuração rápida</h3>
+            <p className="text-sm text-slate-400">{describeConfig(state.config)}</p>
+          </div>
+          <button type="button" aria-expanded={editingConfig} className={buttonSecondary} onClick={() => { setConfigDraft(normalizeConfig({ ...state.config, freePlay: Boolean(state.freePlay) })); setEditingConfig((open) => !open); }}>{editingConfig ? 'Fechar' : 'Editar'}</button>
+        </div>
+        {editingConfig && (
+          <div className="mt-4 space-y-4 border-t border-slate-800 pt-4">
+            <Notice tone="warn">Trocar questões depois que a turma respondeu deixa os números do telão misturados. Prefira ajustar antes de começar a missão.</Notice>
+            <QuickConfigForm value={configDraft} onChange={setConfigDraft} />
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className={buttonPrimary} onClick={saveConfig}>Salvar na sala</button>
+              <button type="button" className={buttonSecondary} onClick={() => setEditingConfig(false)}>Cancelar</button>
+            </div>
+          </div>
+        )}
       </Card>
 
       <div className="grid gap-5 lg:grid-cols-2">
@@ -405,7 +440,7 @@ export default function HostView({ transport, code, title, state, participants, 
         </Card>
       </div>
 
-      <Card>
+      <Card tour="host-offline">
         <h3 className="text-lg font-bold text-white">Modo sem celular</h3>
         <p className="text-sm text-slate-400">Conte os cartões A, B, C e D levantados na etapa atual ({stage.short}). Os números vão para o telão e funcionam mesmo sem rede.</p>
         <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">

@@ -1,5 +1,10 @@
 ERCEMAPI — PENSA COMIGO
-Atualizada em 26/10/2026.
+Atualizada em 11/11/2026.
+
+Atualizacoes por data:
+- 11/11/2026: configuracao rapida do palestrante (secao 4) e botao "Tutorial"
+  no cabecalho, ao lado do botao de tema: contorna as funcoes da tela atual
+  (inicio, abrir sala ou painel do palestrante) e mostra um balao explicando.
 
 Fonte de estudo em texto simples. Descreve o Pensa Comigo, variação do app
 ERCEMAPI (antes chamado OBI Quest), criada na versão 1.5.0.
@@ -86,6 +91,22 @@ representar uma dupla.
 
 O palestrante pode pular para qualquer etapa. As missões não usam itens do
 experimento, então a ordem não vaza respostas do quiz.
+
+Configuração rápida (desde 11/11/2026): formulário opcional na tela "Abrir sala"
+(botão "Configurar") e no painel (botão "Editar"). Nele o palestrante:
+- escolhe um formato: palestra completa, palestra curta (Tente primeiro,
+  Detetive e experimento), só as missões ou só o experimento;
+- liga ou desliga as missões, o bloco do experimento (atividade, quiz e
+  resultado juntos) e o re-teste; Abertura e Fechamento ficam sempre;
+- escolhe a questão do Tente primeiro, de 1 a 3 questões do Me teste e os casos
+  do Detetive. Só aparecem questões que não estão no experimento nem no
+  Detetive, para manter a regra acima;
+- troca a pergunta da enquete (as alternativas continuam as mesmas) e pode
+  liberar "Escolha seu desafio" desde o início.
+"Próxima etapa" e "Etapa anterior" pulam as etapas desligadas. A escolha vai
+para a sala, então todos os aparelhos e o telão usam a mesma. Sem configuração,
+vale a palestra completa, como antes. O kit impresso continua com o conteúdo
+padrão.
 
 5. O EXPERIMENTO "COPIAR × ESTUDAR ATIVAMENTE"
 

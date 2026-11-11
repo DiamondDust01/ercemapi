@@ -22,6 +22,27 @@ a numeração das versões consistente entre o código e os próximos lançament
 
 ## Não lançado
 
+### Adicionado
+
+- 11/11/2026: botão de **tutorial guiado** (ícone "?") ao lado do botão de
+  tema, na tela de escolha, no cabeçalho do OBI Quest e no do Pensa Comigo. Cada
+  etapa escurece a tela, contorna uma função (cartões, abas, botões do cabeçalho,
+  painel do palestrante) e mostra um balão de explicação ao lado dela, abaixo ou
+  acima conforme o espaço. Etapas cujo elemento não está na tela são puladas: no
+  celular, por exemplo, as abas apontam para a barra de baixo. Próximo/Anterior,
+  setas do teclado, "Pular tutorial" e Esc. Não grava nada no aparelho
+  (`src/TutorialButton.jsx` e `src/tour.js`, com testes).
+- 11/11/2026: **configuração rápida do palestrante** no Pensa Comigo, opcional,
+  na tela "Abrir sala" e no painel (botão "Editar"). Escolhe o formato (palestra
+  completa, curta, só as missões ou só o experimento), liga e desliga etapas,
+  escolhe a questão do Tente primeiro, as do Me teste (1 a 3) e os casos do
+  Detetive, troca a pergunta da enquete e pode liberar "Escolha seu desafio"
+  desde o início. A lista de questões exclui as do experimento e do Detetive,
+  para nenhuma missão adiantar o quiz. "Próxima etapa" e "Etapa anterior" pulam
+  as etapas desligadas. Sem configuração, a palestra é a mesma de antes. A
+  escolha fica em `state.config` da sala (`src/pensaComigo/quickConfig.js`, com
+  testes). O kit impresso continua com o conteúdo padrão.
+
 ## 1.7.0 - 2026-10-26
 
 ### Melhorado

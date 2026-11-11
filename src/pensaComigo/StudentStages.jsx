@@ -6,6 +6,7 @@ import {
   EXPERIMENT_THEMES, THEME_ORDER, QUIZ_ITEMS, CONFIDENCE_LEVELS, MODE_LABELS, WEEKLY_CHALLENGE, getItem
 } from './content.js';
 import { evaluateRemix, REMIX_CRITERIA } from './remix.js';
+import { normalizeConfig, pollQuestionFor, detectiveCasesFor } from './quickConfig.js';
 import { modeFor, GROUP_LABELS } from './assignment.js';
 import { formatReturnCode, parseReturnCode } from './returnCode.js';
 import { OPTION_LETTERS } from './tutor.js';
@@ -24,11 +25,11 @@ const MissionHeader = ({ mission }) => (
 );
 
 // ---------------------------------------------------------------------------
-export function PollStage({ record, save }) {
+export function PollStage({ record, save, config }) {
   return (
     <Card>
       <div className="text-xs font-mono uppercase tracking-widest text-green-300">Enquete anônima</div>
-      <h2 className="mt-1 text-2xl font-black text-white">{OPENING_POLL.question}</h2>
+      <h2 className="mt-1 text-2xl font-black text-white">{pollQuestionFor(config)}</h2>
       <p className="mt-1 text-sm text-slate-400">Ninguém vê o seu voto. O telão mostra só o total da turma.</p>
       <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
         {OPENING_POLL.options.map((option, index) => (
@@ -43,10 +44,11 @@ export function PollStage({ record, save }) {
 }
 
 // ---------------------------------------------------------------------------
-export function TenteStage({ record, save }) {
+export function TenteStage({ record, save, config }) {
   const mission = MISSIONS['tente-primeiro'];
   const result = record.missions?.['tente-primeiro'];
-  const item = useMemo(() => toTutorItem(mission.itemId), [mission.itemId]);
+  const itemId = normalizeConfig(config).tenteItemId;
+  const item = useMemo(() => toTutorItem(itemId), [itemId]);
   return (
     <Card>
       <MissionHeader mission={mission} />
@@ -121,14 +123,14 @@ export function RemixStage({ record, save }) {
 // ---------------------------------------------------------------------------
 const EXPLANATION_KEYWORDS = /\b(porque|pois|primeiro|depois|entao|somei|subtrai|multipliquei|dividi|contei|calculei|conta|vezes|mais|menos)\b/;
 
-export function MeTesteStage({ record, save }) {
+export function MeTesteStage({ record, save, config }) {
   const mission = MISSIONS['me-teste'];
   const saved = record.missions?.['me-teste'];
   const [answers, setAnswers] = useState({});
   const [peeked, setPeeked] = useState({});
   const [explanations, setExplanations] = useState({});
   const [feedback, setFeedback] = useState({});
-  const items = mission.itemIds.map((id) => getItem(id));
+  const items = normalizeConfig(config).meTesteItemIds.map((id) => getItem(id)).filter(Boolean);
   const finished = items.every((item) => answers[item.id] !== undefined || peeked[item.id]);
 
   const finish = () => {
@@ -191,9 +193,11 @@ export function MeTesteStage({ record, save }) {
 }
 
 // ---------------------------------------------------------------------------
-export function DetectiveStage({ record, save }) {
+export function DetectiveStage({ record, save, config }) {
   const mission = MISSIONS.detetive;
-  const cases = useMemo(() => DETECTIVE_CASES.map(getDetectiveCase), []);
+  const caseKey = normalizeConfig(config).detectiveCaseIds.join(',');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const cases = useMemo(() => detectiveCasesFor(config).map(getDetectiveCase), [caseKey]);
   const saved = record.missions?.detetive;
   const [index, setIndex] = useState(() => Object.keys(saved?.results || {}).length);
   const [verdict, setVerdict] = useState(null);

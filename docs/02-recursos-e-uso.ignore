@@ -1,5 +1,5 @@
 FONTE DE ESTUDO: MODULOS, FLUXOS E EXPERIENCIA DE USO
-Atualizada em 26/10/2026. O texto principal descreve os modulos da variacao OBI
+Atualizada em 11/11/2026. O texto principal descreve os modulos da variacao OBI
 Quest na versao 1.4.2; as mudancas posteriores estao na secao abaixo.
 
 ATUALIZACOES DESDE A VERSAO 1.4.2
@@ -17,12 +17,19 @@ ATUALIZACOES DESDE A VERSAO 1.4.2
   Pensa Comigo em verde, com chuva de citacoes no estilo Matrix, sempre com as
   frases inteiras; tema claro revisto (cartoes brancos, contornos suaves, botoes
   de cor solida).
+- 11/11/2026, ainda nao lancado: botao "?" ao lado do botao de tema abre um
+  tutorial guiado: contorna cada funcao da tela e mostra um balao explicando. No Pensa
+  Comigo, configuracao rapida e opcional do palestrante: formato da palestra,
+  etapas, questoes das missoes e pergunta da enquete.
 
 NO USO, ISSO SIGNIFICA:
 - Ao abrir, escolha "Entrar no OBI Quest" para os modulos desta fonte. O botao
   de setas no cabecalho volta para a escolha.
 - O botao de sol e lua troca entre os temas claro e escuro; a escolha fica salva
   no aparelho.
+- O botao "?", ao lado do de tema, abre um tutorial guiado: a tela escurece, a
+  funcao da vez fica contornada e um balao explica para que serve. Use
+  Proximo/Anterior ou as setas do teclado; "Pular tutorial" ou Esc fecha.
 - O Pensa Comigo tem fonte propria: 06-pensa-comigo.ignore.
 
 INICIACAO

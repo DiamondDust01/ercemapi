@@ -30,6 +30,7 @@ import { readAppMode, writeAppMode } from './appMode.js';
 import ModeSelector from './ModeSelector.jsx';
 import BinaryBackdrop from './BinaryBackdrop.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
+import TutorialButton from './TutorialButton.jsx';
 import MatrixBackdrop from './pensaComigo/MatrixBackdrop.jsx';
 import {
   INICIACAO_QUESTIONS, MENTOR_LEVELS, IA_PROMPT_LIBRARY, DEBUG_GUIDE, VARIATION_TEMPLATES,
@@ -2037,7 +2038,7 @@ export default function App() {
       <BinaryBackdrop />
       <header className="fixed top-0 left-0 right-0 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-md z-50">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 h-14 md:h-16 flex items-center justify-between gap-2">
-          <button type="button" className="flex min-w-0 items-center gap-2 text-left" onClick={() => setActiveTab('menu')} aria-label="Ir para o início">
+          <button type="button" className="flex min-w-0 items-center gap-2 text-left" onClick={() => setActiveTab('menu')} aria-label="Ir para o início" data-tour="obi-home">
             <Trophy className="h-5 w-5 shrink-0 text-indigo-400 sm:h-6 sm:w-6" />
             <span className="truncate font-black text-base tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400 sm:text-xl">
               ERCEMAPI<span className="hidden sm:inline md:hidden xl:inline"> · OBI Quest</span>
@@ -2047,21 +2048,22 @@ export default function App() {
           <div className="flex min-w-0 items-center gap-2 sm:gap-4 md:gap-6">
             <div className="hidden md:flex items-center gap-3 text-sm font-bold lg:gap-4">
               <button onClick={() => setActiveTab('menu')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'menu' ? 'text-indigo-400' : 'text-slate-400'}`}><Home className="hidden w-4 h-4 lg:block" /> Início</button>
-              <button onClick={() => setActiveTab('iniciacao')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'iniciacao' ? 'text-indigo-400' : 'text-slate-400'}`}><BookOpen className="hidden w-4 h-4 lg:block" /> <span>Iniciação<span className="hidden xl:inline"> (Papel)</span></span></button>
-              <button onClick={() => setActiveTab('programacao')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'programacao' ? 'text-indigo-400' : 'text-slate-400'}`}><Code className="hidden w-4 h-4 lg:block" /> <span><span className="lg:hidden">Código</span><span className="hidden lg:inline">Programação</span><span className="hidden xl:inline"> (PC)</span></span></button>
-              <button onClick={() => setActiveTab('mentor')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'mentor' ? 'text-indigo-400' : 'text-slate-400'}`}><Bot className="hidden w-4 h-4 lg:block" /> <span><span className="lg:hidden">Mentoria</span><span className="hidden lg:inline">IA Mentora</span></span></button>
-              <button onClick={() => setActiveTab('academy')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'academy' ? 'text-indigo-400' : 'text-slate-400'}`}><GraduationCap className="hidden w-4 h-4 lg:block" /> <span><span className="lg:hidden">Regras</span><span className="hidden lg:inline">Regulamento</span></span></button>
+              <button data-tour="nav-iniciacao" onClick={() => setActiveTab('iniciacao')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'iniciacao' ? 'text-indigo-400' : 'text-slate-400'}`}><BookOpen className="hidden w-4 h-4 lg:block" /> <span>Iniciação<span className="hidden xl:inline"> (Papel)</span></span></button>
+              <button data-tour="nav-programacao" onClick={() => setActiveTab('programacao')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'programacao' ? 'text-indigo-400' : 'text-slate-400'}`}><Code className="hidden w-4 h-4 lg:block" /> <span><span className="lg:hidden">Código</span><span className="hidden lg:inline">Programação</span><span className="hidden xl:inline"> (PC)</span></span></button>
+              <button data-tour="nav-mentor" onClick={() => setActiveTab('mentor')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'mentor' ? 'text-indigo-400' : 'text-slate-400'}`}><Bot className="hidden w-4 h-4 lg:block" /> <span><span className="lg:hidden">Mentoria</span><span className="hidden lg:inline">IA Mentora</span></span></button>
+              <button data-tour="nav-academy" onClick={() => setActiveTab('academy')} className={`flex items-center gap-2 hover:text-white transition-colors ${activeTab === 'academy' ? 'text-indigo-400' : 'text-slate-400'}`}><GraduationCap className="hidden w-4 h-4 lg:block" /> <span><span className="lg:hidden">Regras</span><span className="hidden lg:inline">Regulamento</span></span></button>
             </div>
 
             <div className="flex shrink-0 items-center gap-1 border-l border-slate-800 pl-2 sm:gap-3 sm:pl-4 md:gap-1 md:pl-3 lg:gap-3 lg:pl-4 xl:gap-4 xl:pl-6">
-              <button type="button" onClick={() => chooseAppMode(null)} aria-label="Trocar de modo" title="Trocar de modo" className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-800 hover:text-white">
+              <button type="button" data-tour="switch-mode" onClick={() => chooseAppMode(null)} aria-label="Trocar de modo" title="Trocar de modo" className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-800 hover:text-white">
                 <ArrowLeftRight className="w-5 h-5" />
               </button>
+              <TutorialButton context="obi" accent="indigo" />
               <ThemeToggle />
-              <div className="flex min-h-9 items-center gap-1 rounded-full bg-emerald-400/10 px-2 py-1 text-xs font-bold text-emerald-400 sm:gap-2 sm:px-3 sm:text-sm">
+              <div data-tour="obi-score" className="flex min-h-9 items-center gap-1 rounded-full bg-emerald-400/10 px-2 py-1 text-xs font-bold text-emerald-400 sm:gap-2 sm:px-3 sm:text-sm">
                 <Activity className="h-4 w-4" /> <span>{userData?.score || 0}<span className="hidden sm:inline"> pts</span></span>
               </div>
-              <button type="button" onClick={toggleAudio} aria-label={audioEnabled ? 'Desativar áudio' : 'Ativar áudio'} className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-800">
+              <button type="button" data-tour="obi-audio" onClick={toggleAudio} aria-label={audioEnabled ? 'Desativar áudio' : 'Ativar áudio'} className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-800">
                 {audioEnabled ? <Volume2 className="w-5 h-5 text-indigo-400" /> : <VolumeX className="w-5 h-5" />}
               </button>
             </div>
@@ -2204,7 +2206,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4">
+              <div data-tour="obi-competicao" className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4">
                   <div className="text-xl font-black text-white mb-1">Competição em sala</div>
                   <p className="text-sm text-slate-300 leading-relaxed">Crie uma sala, compartilhe o código com seus adversários e use o cronômetro para simular uma rodada competitiva. O perfil salvo já é reaproveitado na criação da sala.</p>
                 </div>
@@ -3205,7 +3207,7 @@ export default function App() {
             { id: 'mentor', label: 'Mentoria', Icon: Bot },
             { id: 'academy', label: 'Regras', Icon: GraduationCap }
           ].map(({ id, label, Icon }) => (
-            <button key={id} type="button" onClick={() => setActiveTab(id)} aria-current={activeTab === id ? 'page' : undefined} className={`flex min-h-14 flex-col items-center justify-center gap-1 px-1 text-[10px] font-semibold leading-none transition-colors ${activeTab === id ? 'text-cyan-300' : 'text-slate-500 hover:text-slate-200'}`}>
+            <button key={id} type="button" data-tour={`nav-${id}-mobile`} onClick={() => setActiveTab(id)} aria-current={activeTab === id ? 'page' : undefined} className={`flex min-h-14 flex-col items-center justify-center gap-1 px-1 text-[10px] font-semibold leading-none transition-colors ${activeTab === id ? 'text-cyan-300' : 'text-slate-500 hover:text-slate-200'}`}>
               <Icon className="h-5 w-5" strokeWidth={activeTab === id ? 2.5 : 1.8} />
               <span>{label}</span>
             </button>
