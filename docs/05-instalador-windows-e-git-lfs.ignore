@@ -1,0 +1,63 @@
+INSTALADOR WINDOWS DO OBI QUEST 1.4.2: TESTE, TAMANHO E DISTRIBUICAO
+
+Este documento explica o instalador assistido do OBI Quest para Windows x64,
+por que ele nao foi reduzido para menos de 100 MB e como foi publicado no GitHub.
+Foi escrito como fonte de texto simples para estudo e consulta no NotebookLM.
+
+O QUE FOI TESTADO
+
+O arquivo OBI-Quest-Setup-1.4.2.exe foi gerado com NSIS. Em um teste local
+isolado, o instalador foi iniciado em modo silencioso, instalou o aplicativo em
+uma pasta temporaria, e o executavel "OBI Quest.exe" foi aberto. A janela do
+aplicativo permaneceu ativa e respondeu durante a verificacao. Em seguida,
+o desinstalador foi executado e removeu a instalacao temporaria.
+
+Esse teste confirma o fluxo basico nesta maquina Windows. Nao equivale a testar
+em todas as versoes do Windows, arquiteturas ou configuracoes de seguranca. O
+instalador nao tem assinatura digital; o Windows ou uma politica institucional
+pode apresentar avisos ou bloquear a execucao. Nao desative nem contorne essas
+protecoes.
+
+POR QUE NAO FOI POSSIVEL REDUZIR O ARQUIVO
+
+O executavel tem 110.065.190 bytes, aproximadamente 110,1 MB decimais ou
+104,9 MiB. Portanto, e maior que o limite regular de 100 MiB por arquivo do
+GitHub. O instalador NSIS ja usa compressao LZMA. Compacta-lo novamente como ZIP
+nao ajudou: o arquivo ZIP de teste ficou ligeiramente maior que o original.
+
+Nao se deve confundir compactar o executavel com armazenar seu conteudo no Git
+LFS. O Git LFS nao reduz o arquivo: ele guarda o binario em armazenamento LFS e
+mantem no Git um pequeno ponteiro com o identificador e tamanho do objeto. Assim,
+o arquivo completo pode ser baixado sem dividir ou modificar o instalador.
+
+PUBLICACAO E DOWNLOAD
+
+O Setup foi adicionado a branch app-pc no caminho
+installers/windows/OBI-Quest-Setup-1.4.2.exe, por meio do Git LFS. A publicacao
+foi verificada: o objeto LFS foi enviado, a verificacao de integridade passou e
+a URL publica respondeu com HTTP 200. O commit de publicacao foi 0ebe7d4.
+
+Baixe o instalador diretamente:
+https://github.com/DiamondDust01/obi-quest/raw/refs/heads/app-pc/installers/windows/OBI-Quest-Setup-1.4.2.exe
+
+Para obter o binario ao clonar ou atualizar a branch com Git, instale Git LFS,
+execute "git lfs install" uma vez e depois "git lfs pull" no repositorio. Sem
+Git LFS, o conteudo recebido pode ser apenas o arquivo-ponteiro, e nao o
+instalador executavel.
+
+Identificador SHA-256 do instalador:
+BE8E285F9AEE2580648CBCA1631D0541EAAAB186F1845EF61F69309BCB781517
+
+O Setup e a distribuicao portatil sao formas distintas de obter o aplicativo.
+O instalador oferece um fluxo assistido, pasta de destino, atalhos e
+desinstalador. A versao portatil e distribuida como arquivo compactado e precisa
+ser extraida antes da execucao. Ambas sao distribuicoes sem assinatura digital.
+
+LIMITES E FONTE DE VERDADE
+
+O instalador esta na branch app-pc, nao necessariamente na branch main. O codigo
+de empacotamento e o README especifico de Windows tambem estao em app-pc. Para
+confirmar o estado mais recente, consulte a branch app-pc e o arquivo
+installers/windows/README.md. O tamanho, hash, versao e disponibilidade podem
+mudar em atualizacoes futuras; confirme os valores no artefato publicado antes
+de reutiliza-los.
